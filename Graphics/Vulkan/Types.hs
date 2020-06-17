@@ -4,7 +4,7 @@ module Graphics.Vulkan.Types where
 
 
 import Data.Void (Void)
-import Data.Word (Word32)
+import Data.Word (Word32. Word64)
 
 import Foreign.C.Types (CSize)
 import Foreign.Ptr (Ptr, FunPtr)
