@@ -5,8 +5,8 @@ module Main (main) where
 
 import Control.Concurrent
 
-import Constants
-import SDL2
+import SDL2.Constants
+import SDL2.SDL2
 
 
 main :: IO ()
