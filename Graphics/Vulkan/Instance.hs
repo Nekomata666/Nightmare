@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Instance (createVkApplicationInfo, createVkApplicationInfo, vkCreateInstance) where
+module Graphics.Vulkan.Instance (createVkApplicationInfo, createVkInstanceCreateInfo, vkCreateInstance) where
 
 
 import Data.Void (Void)
@@ -49,6 +49,5 @@ vkCreateInstance vkInfo = alloca $ \pVkInfo ->
     alloca $ \pVkInstance -> do
         poke pVkInfo vkInfo
         vkR <- c_vkCreateInstance pVkInfo nullPtr pVkInstance
-        putStrLn $ "vkCreateInstance: " ++ show vkR
         inst <- peek pVkInstance
         return (inst, vkR)
