@@ -4,8 +4,9 @@ module Graphics.Utilities where
 
 
 import Data.Bits (shiftL, (.|.))
-import Data.Word (Word32)
+import Data.Foldable (foldlM)
 import Data.Maybe
+import Data.Word (Word32)
 
 import Foreign
 import Foreign.C.Types
@@ -49,3 +50,11 @@ fromMaybeStringListIO c m
 
 makeAPI :: Major -> Minor -> Patch -> Version
 makeAPI major minor patch = shiftL major 22 .|. shiftL minor 12 .|. patch
+
+stringListToCStringList :: [String] -> IO [CString]
+stringListToCStringList [] = return []
+stringListToCStringList s = foldlM helper [] s
+    where
+        helper cs s' = do
+            ncs <- newCString s'
+            return $ cs ++ [ncs]
