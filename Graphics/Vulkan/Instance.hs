@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Instance (createVkApplicationInfo, createVkApplicationInfo, vkCreateInstance) where
+module Graphics.Vulkan.Instance (createVkApplicationInfo, createVkInstanceCreateInfo, vkCreateInstance) where
 
 
 import Data.Void (Void)
