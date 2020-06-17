@@ -3,6 +3,7 @@
 module Graphics.Vulkan.Types where
 
 
+import Data.Void (Void)
 import Data.Word (Word32)
 
 import Foreign.C.Types (CSize)
