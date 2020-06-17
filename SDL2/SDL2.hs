@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module SDL2.SDL2 (sdl2CreateWindow, sdl2Init, sdl2Quit) where
+module SDL2.SDL2 (sdl2CreateWindow, sdl2DestroyWindow, sdl2Init, sdl2Quit) where
 
 
 import Data.Int     (Int32)
@@ -21,6 +21,9 @@ type Width = Int32
 foreign import ccall unsafe "SDL_CreateWindow"
     c_SDL_CreateWindow :: CString -> Word32 -> Word32 -> Width -> Height -> Int32 -> IO HWindow
 
+foreign import ccall unsafe "SDL_DestroyWindow"
+    c_SDL_DestroyWindow :: HWindow -> IO ()
+
 foreign import ccall unsafe "SDL_Init"
     c_SDL_Init :: Word32 -> IO Int32
 
@@ -31,6 +34,9 @@ sdl2CreateWindow :: String -> Word32 -> Word32 -> Width -> Height -> Int32 -> IO
 sdl2CreateWindow n x0 y0 x1 y1 f = do
     cs <- newCString n
     c_SDL_CreateWindow cs x0 y0 x1 y1 f
+
+sdl2DestroyWindow :: HWindow -> IO ()
+sdl2DestroyWindow = c_SDL_DestroyWindow
 
 sdl2Init :: Word32 -> IO Int32
 sdl2Init = c_SDL_Init
