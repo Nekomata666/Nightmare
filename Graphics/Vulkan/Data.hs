@@ -30,3 +30,13 @@ data VkApplicationInfo = VkApplicationInfo{
     engineVersion       :: Word32,
     apiVersion          :: Word32
 }
+data VkInstanceCreateInfo = VkInstanceCreateInfo{
+    sType                   :: VkStructureType,
+    next                    :: Ptr Void,
+    flags                   :: VkFlags,
+    applicationInfo         :: Ptr VkApplicationInfo,
+    enabledLayerCount       :: Word32,
+    enabledLayerNames       :: Ptr CString,
+    enabledExtensionCount   :: Word32,
+    enabledExtensionNames   :: Ptr CString
+}
