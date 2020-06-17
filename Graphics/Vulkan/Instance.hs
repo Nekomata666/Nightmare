@@ -9,6 +9,8 @@ import Data.Word (Word32)
 import Foreign
 import Foreign.C.String
 
+import Graphics.Utilities
+
 import Graphics.Vulkan.Data
 import Graphics.Vulkan.Enumerations
 import Graphics.Vulkan.Types
