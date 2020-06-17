@@ -7,6 +7,7 @@ import Data.Word (Word32)
 
 import Foreign.C.Types (CSize)
 import Foreign.Ptr (Ptr, FunPtr)
+import Foreign.Storable
 
 import Graphics.Vulkan.Enumerations (VkInternalAllocationType, VkSystemAllocationScope)
 
@@ -27,3 +28,11 @@ type PFN_vkReallocationFunction = FunPtr (Ptr Void -> Ptr Void -> CSize -> CSize
 type PFN_vkFreeFunction = FunPtr (Ptr Void -> Ptr Void -> IO ())
 type PFN_vkInternalAllocationNotification = FunPtr (Ptr Void -> CSize -> VkInternalAllocationType -> VkSystemAllocationScope -> IO ())
 type PFN_vkInternalFreeNotification = FunPtr (Ptr Void -> CSize -> VkInternalAllocationType -> VkSystemAllocationScope -> IO ())
+
+instance Storable VkInstance where
+    sizeOf _ = 8
+    alignment _ = 8
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkInstance v)
+    poke p (VkInstance v) = pokeByteOff p 0 v
