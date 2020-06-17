@@ -13,6 +13,14 @@ import Graphics.Vulkan.Enumerations
 import Graphics.Vulkan.Types
 
 
+data VkAllocationCallbacks = VkAllocationCallbacks{
+    userData                :: Ptr Void,
+    pfnAllocation           :: PFN_vkAllocationFunction,
+    pfnReallocation         :: PFN_vkReallocationFunction,
+    pfnFree                 :: PFN_vkFreeFunction,
+    pfnInternalAllocation   :: PFN_vkInternalAllocationNotification,
+    pfnInternalFree         :: PFN_vkInternalFreeNotification
+}
 data VkApplicationInfo = VkApplicationInfo{
     sType               :: VkStructureType,
     next                :: Ptr Void,
