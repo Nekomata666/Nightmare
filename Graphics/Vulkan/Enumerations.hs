@@ -3,14 +3,28 @@
 module Graphics.Vulkan.Enumerations where
 
 
+import Data.Word (Word32)
+
+import Foreign
+
+
 -- Vulkan newtypes
+newtype VkInternalAllocationType = VkInternalAllocationType { unVkInternalAllocationType :: Word32 }
+    deriving (Eq)
 newtype VkResult = VkResult { unVkResult :: Int32 }
     deriving (Eq)
 newtype VkStructureType = VkStructureType { unVkStructureType :: Int32 }
     deriving (Eq)
+newtype VkSystemAllocationScope = VkSystemAllocationScope { unVkSystemAllocationScope :: Word32 }
+    deriving (Eq)
 
 
 -- Vulkan enumerations
+-- VkInternalAllocationType
+internalAllocationTypeExecutable     :: VkInternalAllocationType
+internalAllocationTypeExecutable     = VkInternalAllocationType 0
+
+-- VkResult
 success                      :: VkResult
 success                      = VkResult 0
 notReady                     :: VkResult
@@ -62,6 +76,7 @@ errorValidationFailedEXT     = VkResult (-1000011001)
 errorInvalidShaderNV         :: VkResult
 errorInvalidShaderNV         = VkResult (-1000012000)
 
+-- VkStructureType
 structureTypeApplicationInfo                                  :: VkStructureType
 structureTypeApplicationInfo                                  = VkStructureType 0
 structureTypeInstanceCreateInfo                               :: VkStructureType
@@ -186,3 +201,48 @@ structureTypeExportMemoryAllocateInfoNV                       :: VkStructureType
 structureTypeExportMemoryAllocateInfoNV                       = VkStructureType 1000056001
 structureTypeValidationFlagsEXT                               :: VkStructureType
 structureTypeValidationFlagsEXT                               = VkStructureType 1000061000
+
+-- VkSystemAllocationScope
+systemAllocationScopeCommand     :: VkSystemAllocationScope
+systemAllocationScopeCommand     = VkSystemAllocationScope 0
+systemAllocationScopeObject      :: VkSystemAllocationScope
+systemAllocationScopeObject      = VkSystemAllocationScope 1
+systemAllocationScopeCache       :: VkSystemAllocationScope
+systemAllocationScopeCache       = VkSystemAllocationScope 2
+systemAllocationScopeDevice      :: VkSystemAllocationScope
+systemAllocationScopeDevice      = VkSystemAllocationScope 3
+systemAllocationScopeInstance    :: VkSystemAllocationScope
+systemAllocationScopeInstance    = VkSystemAllocationScope 4
+
+
+instance Storable VkInternalAllocationType where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkInternalAllocationType v)
+    poke p (VkInternalAllocationType v) = pokeByteOff p 0 v
+
+instance Storable VkResult where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkResult v)
+    poke p (VkResult v) = pokeByteOff p 0 v
+
+instance Storable VkStructureType where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkStructureType v)
+    poke p (VkStructureType v) = pokeByteOff p 0 v
+    
+instance Storable VkSystemAllocationScope where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkSystemAllocationScope v)
+    poke p (VkSystemAllocationScope v) = pokeByteOff p 0 v
