@@ -1,3 +1,28 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
 module Graphics.Vulkan.Instance where
+
+
+import Data.Void (Void)
+import Data.Word (Word32)
+
+import Foreign
+import Foreign.C.String
+
+import Graphics.Vulkan.Data
+import Graphics.Vulkan.Types
+
+
+type ApplicationName    = String
+type ApplicationVersion = Word32
+type EngineName         = String
+type EngineVersion      = Word32
+type APIVersion         = Word32
+
+
+createVkApplicationInfo :: Ptr Void -> ApplicationName -> ApplicationVersion -> EngineName -> EngineVersion -> APIVersion ->
+    IO VkApplicationInfo
+createVkApplicationInfo v aN appV eN eV apiV = do
+    aN' <- newCString aN
+    eN' <- newCString eN
+    return $ VkApplicationInfo structureTypeApplicationInfo v aN' appV eN' eV apiV
