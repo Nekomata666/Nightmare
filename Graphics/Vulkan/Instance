@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Instance where
+module Graphics.Vulkan.Instance (createVkApplicationInfo, createVkApplicationInfo) where
 
 
 import Data.Void (Void)
@@ -27,3 +27,11 @@ createVkApplicationInfo v aN appV eN eV apiV = do
     aN' <- newCString aN
     eN' <- newCString eN
     return $ VkApplicationInfo structureTypeApplicationInfo v aN' appV eN' eV apiV
+
+createVkInstanceCreateInfo :: Ptr Void -> VkFlags -> Maybe VkApplicationInfo -> LayerCount -> Maybe LayerNames ->
+    ExtensionCount -> Maybe ExtensionNames -> IO VkInstanceCreateInfo
+createVkInstanceCreateInfo v f aI lC lN eC eN = do
+    aI' <- fromMaybeIO aI
+    lN' <- fromMaybeStringListIO lC lN
+    eN' <- fromMaybeStringListIO eC eN
+    return $ VkInstanceCreateInfo structureTypeInstanceCreateInfo v f aI' lC lN' eC eN'
