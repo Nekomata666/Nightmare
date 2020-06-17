@@ -8,6 +8,8 @@ import Data.Word (Word32)
 import Foreign.C.Types (CSize)
 import Foreign.Ptr (Ptr, FunPtr)
 
+import Graphics.Vulkan.Enumerations (VkInternalAllocationType, VkSystemAllocationScope)
+
 
 -- Vulkan Type aliases.
 type VkFlags    = Word32
