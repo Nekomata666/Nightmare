@@ -5,4 +5,5 @@ module Graphics.Vulkan where
 
 initialize :: IO ()
 initialize = do
-  return ()
+    let api = makeAPI 1 2 141
+    return ()
