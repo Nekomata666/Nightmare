@@ -21,6 +21,7 @@ data VkAllocationCallbacks = VkAllocationCallbacks{
     pfnInternalAllocation   :: PFN_vkInternalAllocationNotification,
     pfnInternalFree         :: PFN_vkInternalFreeNotification
 }
+
 data VkApplicationInfo = VkApplicationInfo{
     sType               :: VkStructureType,
     next                :: Ptr Void,
@@ -30,6 +31,16 @@ data VkApplicationInfo = VkApplicationInfo{
     engineVersion       :: Word32,
     apiVersion          :: Word32
 }
+
+data VkDeviceQueueCreateInfo = VkDeviceQueueCreateInfo{
+    sType :: VkStructureType,
+    next :: Ptr Void,
+    flags :: VkDeviceQueueCreateFlags,
+    queueFamilyIndex :: Word32,
+    queueCount :: Word32,
+    queuePriorities :: Ptr Float
+}
+
 data VkInstanceCreateInfo = VkInstanceCreateInfo{
     sType                   :: VkStructureType,
     next                    :: Ptr Void,
@@ -139,6 +150,25 @@ instance Storable VkApplicationInfo where
         pokeByteOff p 32 v5
         pokeByteOff p 40 v6
         pokeByteOff p 44 v7
+
+instance Storable VkDeviceQueueCreateInfo where
+    sizeOf _ = 40
+    alignment _ = 8
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 8
+        v3 <- peekByteOff p 16
+        v4 <- peekByteOff p 20
+        v5 <- peekByteOff p 24
+        v6 <- peekByteOff p 32
+        return (VkDeviceQueueCreateInfo v1 v2 v3 v4 v5 v6)
+    poke p (VkDeviceQueueCreateInfo v1 v2 v3 v4 v5 v6) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 8 v2
+        pokeByteOff p 16 v3
+        pokeByteOff p 20 v4
+        pokeByteOff p 24 v5
+        pokeByteOff p 32 v6
 
 instance Storable VkInstanceCreateInfo where
     sizeOf _ = 64
