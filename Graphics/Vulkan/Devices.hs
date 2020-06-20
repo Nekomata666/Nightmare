@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Devices (vkCreateDeviceInfo, vkCreateDeviceQueueInfo, vkEnumeratePhysicalDevices, vkGetPhysicalDeviceFeatures) where
+module Graphics.Vulkan.Devices (vkCreateDevice, vkCreateDeviceInfo, vkCreateDeviceQueueInfo, vkEnumeratePhysicalDevices, vkGetPhysicalDeviceFeatures) where
 
 
 import Data.Void (Void)
@@ -16,11 +16,21 @@ import Graphics.Vulkan.Enumerations
 import Graphics.Vulkan.Types
 
 
+foreign import ccall unsafe "vkCreateDevice"
+    c_vkCreateDevice :: VkPhysicalDevice -> Ptr VkDeviceCreateInfo -> Ptr VkAllocationCallbacks -> Ptr VkDevice -> IO VkResult
+
 foreign import ccall unsafe "vkEnumeratePhysicalDevices"
     c_vkEnumeratePhysicalDevices :: VkInstance -> Ptr Word32 -> Ptr VkPhysicalDevice -> IO VkResult
 
 foreign import ccall unsafe "vkGetPhysicalDeviceFeatures"
     c_vkGetPhysicalDeviceFeatures :: VkPhysicalDevice -> Ptr VkPhysicalDeviceFeatures -> IO ()
+
+vkCreateDevice :: VkPhysicalDevice -> VkDeviceCreateInfo -> IO VkDevice
+vkCreateDevice physical dCI = alloca $ \pDCI ->
+    alloca $ \pPD -> do
+        poke pDCI dCI
+        _ <- c_vkCreateDevice physical pDCI nullPtr pPD
+        peek pPD
 
 vkCreateDeviceInfo :: Ptr Void -> VkDeviceCreateFlags -> Word32 -> VkDeviceQueueCreateInfo -> Word32 -> [String] ->
     VkPhysicalDeviceFeatures -> IO VkDeviceCreateInfo
