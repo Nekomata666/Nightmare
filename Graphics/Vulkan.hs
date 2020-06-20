@@ -25,5 +25,6 @@ initialize = do
     physFe  <- vkGetPhysicalDeviceFeatures d0
     queuIn  <- vkCreateDeviceQueueInfo nullPtr (VkDeviceQueueCreateFlags 0) 0 1 [1.0]
     devInf  <- vkCreateDeviceInfo nullPtr (VkDeviceCreateFlags 0) 1 queuIn 1 ["VK_KHR_swapchain"] physFe
+    vkDev0  <- vkCreateDevice d0 devInf
 
     return ()
