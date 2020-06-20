@@ -17,6 +17,9 @@ import Graphics.Vulkan.Enumerations (VkInternalAllocationType, VkSystemAllocatio
 type VkFlags    = Word32
 type VkHandle   = Word64
 
+-- Vulkan Types
+newtype VkBool  = VkBool { unVkBool :: Word32 }
+
 
 -- Vulkan Handles
 newtype VkInstance = VkInstance { unVkInstance :: VkHandle }
@@ -30,6 +33,15 @@ type PFN_vkReallocationFunction = FunPtr (Ptr Void -> Ptr Void -> CSize -> CSize
 type PFN_vkFreeFunction = FunPtr (Ptr Void -> Ptr Void -> IO ())
 type PFN_vkInternalAllocationNotification = FunPtr (Ptr Void -> CSize -> VkInternalAllocationType -> VkSystemAllocationScope -> IO ())
 type PFN_vkInternalFreeNotification = FunPtr (Ptr Void -> CSize -> VkInternalAllocationType -> VkSystemAllocationScope -> IO ())
+
+-- Storable instances for Vulkan types.
+instance Storable VkBool where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkBool v)
+    poke p (VkBool v) = pokeByteOff p 0 v
 
 instance Storable VkInstance where
     sizeOf _ = 8

@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Devices (vkEnumeratePhysicalDevices) where
+module Graphics.Vulkan.Devices (vkEnumeratePhysicalDevices, vkGetPhysicalDeviceFeatures) where
 
 
 import Data.Word (Word32)
@@ -18,6 +18,9 @@ import Graphics.Vulkan.Types
 foreign import ccall unsafe "vkEnumeratePhysicalDevices"
     c_vkEnumeratePhysicalDevices :: VkInstance -> Ptr Word32 -> Ptr VkPhysicalDevice -> IO VkResult
 
+foreign import ccall unsafe "vkGetPhysicalDeviceFeatures"
+    c_vkGetPhysicalDeviceFeatures :: VkPhysicalDevice -> Ptr VkPhysicalDeviceFeatures -> IO ()
+
 vkEnumeratePhysicalDevices :: VkInstance -> IO [VkPhysicalDevice]
 vkEnumeratePhysicalDevices vkInst = do
         n <- firstPass
@@ -33,3 +36,8 @@ vkEnumeratePhysicalDevices vkInst = do
                     peekArray i pPD
                     where
                         i = cast n
+
+vkGetPhysicalDeviceFeatures :: VkPhysicalDevice -> IO VkPhysicalDeviceFeatures
+vkGetPhysicalDeviceFeatures pD = alloca $ \pF -> do
+    c_vkGetPhysicalDeviceFeatures pD pF
+    peek pF

@@ -41,6 +41,64 @@ data VkInstanceCreateInfo = VkInstanceCreateInfo{
     enabledExtensionNames   :: Ptr CString
 }
 
+data VkPhysicalDeviceFeatures = VkPhysicalDeviceFeatures{
+    robustBufferAccess :: VkBool,
+    fullDrawIndexUint32 :: VkBool,
+    imageCubeArray :: VkBool,
+    independentBlend :: VkBool,
+    geometryShader :: VkBool,
+    tessellationShader :: VkBool,
+    sampleRateShading :: VkBool,
+    dualSrcBlend :: VkBool,
+    logicOp :: VkBool,
+    multiDrawIndirect :: VkBool,
+    drawIndirectFirstInstance :: VkBool,
+    depthClamp :: VkBool,
+    depthBiasClamp :: VkBool,
+    fillModeNonSolid :: VkBool,
+    depthBounds :: VkBool,
+    wideLines :: VkBool,
+    largePoints :: VkBool,
+    alphaToOne :: VkBool,
+    multiViewport :: VkBool,
+    samplerAnisotropy :: VkBool,
+    textureCompressionETC2 :: VkBool,
+    textureCompressionASTC_LDR :: VkBool,
+    textureCompressionBC :: VkBool,
+    occlusionQueryPrecise :: VkBool,
+    pipelineStatisticsQuery :: VkBool,
+    vertexPipelineStoresAndAtomics :: VkBool,
+    fragmentStoresAndAtomics :: VkBool,
+    shaderTessellationAndGeometryPointSize :: VkBool,
+    shaderImageGatherExtended :: VkBool,
+    shaderStorageImageExtendedFormats :: VkBool,
+    shaderStorageImageMultisample :: VkBool,
+    shaderStorageImageReadWithoutFormat :: VkBool,
+    shaderStorageImageWriteWithoutFormat :: VkBool,
+    shaderUniformBufferArrayDynamicIndexing :: VkBool,
+    shaderSampledImageArrayDynamicIndexing :: VkBool,
+    shaderStorageBufferArrayDynamicIndexing :: VkBool,
+    shaderStorageImageArrayDynamicIndexing :: VkBool,
+    shaderClipDistance :: VkBool,
+    shaderCullDistance :: VkBool,
+    shaderFloat64 :: VkBool,
+    shaderInt64 :: VkBool,
+    shaderInt16 :: VkBool,
+    shaderResourceResidency :: VkBool,
+    shaderResourceMinLod :: VkBool,
+    sparseBinding :: VkBool,
+    sparseResidencyBuffer :: VkBool,
+    sparseResidencyImage2D :: VkBool,
+    sparseResidencyImage3D :: VkBool,
+    sparseResidency2Samples :: VkBool,
+    sparseResidency4Samples :: VkBool,
+    sparseResidency8Samples :: VkBool,
+    sparseResidency16Samples :: VkBool,
+    sparseResidencyAliased :: VkBool,
+    variableMultisampleRate :: VkBool,
+    inheritedQueries :: VkBool
+}
+
 -- Storable instances
 instance Storable VkAllocationCallbacks where
     sizeOf _ = 48
@@ -104,3 +162,120 @@ instance Storable VkInstanceCreateInfo where
         pokeByteOff p 40 v6
         pokeByteOff p 48 v7
         pokeByteOff p 56 v8
+
+instance Storable VkPhysicalDeviceFeatures where
+    sizeOf _ = 220
+    alignment _ = 4
+    peek p = do
+        v01 <- peekByteOff p 0
+        v02 <- peekByteOff p 4
+        v03 <- peekByteOff p 8
+        v04 <- peekByteOff p 12
+        v05 <- peekByteOff p 16
+        v06 <- peekByteOff p 20
+        v07 <- peekByteOff p 24
+        v08 <- peekByteOff p 28
+        v09 <- peekByteOff p 32
+        v10 <- peekByteOff p 36
+        v11 <- peekByteOff p 40
+        v12 <- peekByteOff p 44
+        v13 <- peekByteOff p 48
+        v14 <- peekByteOff p 52
+        v15 <- peekByteOff p 56
+        v16 <- peekByteOff p 60
+        v17 <- peekByteOff p 64
+        v18 <- peekByteOff p 68
+        v19 <- peekByteOff p 72
+        v20 <- peekByteOff p 76
+        v21 <- peekByteOff p 80
+        v22 <- peekByteOff p 84
+        v23 <- peekByteOff p 88
+        v24 <- peekByteOff p 92
+        v25 <- peekByteOff p 96
+        v26 <- peekByteOff p 100
+        v27 <- peekByteOff p 104
+        v28 <- peekByteOff p 108
+        v29 <- peekByteOff p 112
+        v30 <- peekByteOff p 116
+        v31 <- peekByteOff p 120
+        v32 <- peekByteOff p 124
+        v33 <- peekByteOff p 128
+        v34 <- peekByteOff p 132
+        v35 <- peekByteOff p 136
+        v36 <- peekByteOff p 140
+        v37 <- peekByteOff p 144
+        v38 <- peekByteOff p 148
+        v39 <- peekByteOff p 152
+        v40 <- peekByteOff p 156
+        v41 <- peekByteOff p 160
+        v42 <- peekByteOff p 164
+        v43 <- peekByteOff p 168
+        v44 <- peekByteOff p 172
+        v45 <- peekByteOff p 176
+        v46 <- peekByteOff p 180
+        v47 <- peekByteOff p 184
+        v48 <- peekByteOff p 188
+        v49 <- peekByteOff p 192
+        v50 <- peekByteOff p 196
+        v51 <- peekByteOff p 200
+        v52 <- peekByteOff p 204
+        v53 <- peekByteOff p 208
+        v54 <- peekByteOff p 212
+        v55 <- peekByteOff p 216
+        return (VkPhysicalDeviceFeatures v01 v02 v03 v04 v05 v06 v07 v08 v09 v10 v11 v12 v13 v14 v15 v16 v17 v18 v19 v20 v21 v22 v23 v24 v25 v26 v27 v28 v29 v30 v31 v32 v33 v34 v35 v36 v37 v38 v39 v40 v41 v42 v43 v44 v45 v46 v47 v48 v49 v50 v51 v52 v53 v54 v55)
+    poke p (VkPhysicalDeviceFeatures v01 v02 v03 v04 v05 v06 v07 v08 v09 v10 v11 v12 v13 v14 v15 v16 v17 v18 v19 v20 v21 v22 v23 v24 v25 v26 v27 v28 v29 v30 v31 v32 v33 v34 v35 v36 v37 v38 v39 v40 v41 v42 v43 v44 v45 v46 v47 v48 v49 v50 v51 v52 v53 v54 v55) = do
+        pokeByteOff p 0 v01
+        pokeByteOff p 4 v02
+        pokeByteOff p 8 v03
+        pokeByteOff p 12 v04
+        pokeByteOff p 16 v05
+        pokeByteOff p 20 v06
+        pokeByteOff p 24 v07
+        pokeByteOff p 28 v08
+        pokeByteOff p 32 v09
+        pokeByteOff p 36 v10
+        pokeByteOff p 40 v11
+        pokeByteOff p 44 v12
+        pokeByteOff p 48 v13
+        pokeByteOff p 52 v14
+        pokeByteOff p 56 v15
+        pokeByteOff p 60 v16
+        pokeByteOff p 64 v17
+        pokeByteOff p 68 v18
+        pokeByteOff p 72 v19
+        pokeByteOff p 76 v20
+        pokeByteOff p 80 v21
+        pokeByteOff p 84 v22
+        pokeByteOff p 88 v23
+        pokeByteOff p 92 v24
+        pokeByteOff p 96 v25
+        pokeByteOff p 100 v26
+        pokeByteOff p 104 v27
+        pokeByteOff p 108 v28
+        pokeByteOff p 112 v29
+        pokeByteOff p 116 v30
+        pokeByteOff p 120 v31
+        pokeByteOff p 124 v32
+        pokeByteOff p 128 v33
+        pokeByteOff p 132 v34
+        pokeByteOff p 136 v35
+        pokeByteOff p 140 v36
+        pokeByteOff p 144 v37
+        pokeByteOff p 148 v38
+        pokeByteOff p 152 v39
+        pokeByteOff p 156 v40
+        pokeByteOff p 160 v41
+        pokeByteOff p 164 v42
+        pokeByteOff p 168 v43
+        pokeByteOff p 172 v44
+        pokeByteOff p 176 v45
+        pokeByteOff p 180 v46
+        pokeByteOff p 184 v47
+        pokeByteOff p 188 v48
+        pokeByteOff p 192 v49
+        pokeByteOff p 196 v50
+        pokeByteOff p 200 v51
+        pokeByteOff p 204 v52
+        pokeByteOff p 208 v53
+        pokeByteOff p 212 v54
+        pokeByteOff p 216 v55
