@@ -32,6 +32,19 @@ data VkApplicationInfo = VkApplicationInfo{
     apiVersion          :: Word32
 }
 
+data VkDeviceCreateInfo = VkDeviceCreateInfo{
+    sType :: VkStructureType,
+    next :: Ptr Void,
+    flags :: VkDeviceCreateFlags,
+    queueCreateInfoCount :: Word32,
+    queueCreateInfos :: Ptr VkDeviceQueueCreateInfo,
+    enabledLayerCount :: Word32,
+    enabledLayerNames :: Ptr CString,
+    enabledExtensionCount :: Word32,
+    enabledExtensionNames :: Ptr CString,
+    enabledFeatures :: Ptr VkPhysicalDeviceFeatures
+}
+
 data VkDeviceQueueCreateInfo = VkDeviceQueueCreateInfo{
     sType :: VkStructureType,
     next :: Ptr Void,
@@ -150,6 +163,33 @@ instance Storable VkApplicationInfo where
         pokeByteOff p 32 v5
         pokeByteOff p 40 v6
         pokeByteOff p 44 v7
+
+instance Storable VkDeviceCreateInfo where
+    sizeOf _ = 72
+    alignment _ = 8
+    peek p = do
+        v01 <- peekByteOff p 0
+        v02 <- peekByteOff p 8
+        v03 <- peekByteOff p 16
+        v04 <- peekByteOff p 20
+        v05 <- peekByteOff p 24
+        v06 <- peekByteOff p 32
+        v07 <- peekByteOff p 40
+        v08 <- peekByteOff p 48
+        v09 <- peekByteOff p 56
+        v10 <- peekByteOff p 64
+        return (VkDeviceCreateInfo v01 v02 v03 v04 v05 v06 v07 v08 v09 v10)
+    poke p (VkDeviceCreateInfo v01 v02 v03 v04 v05 v06 v07 v08 v09 v10) = do
+        pokeByteOff p 0 v01
+        pokeByteOff p 8 v02
+        pokeByteOff p 16 v03
+        pokeByteOff p 20 v04
+        pokeByteOff p 24 v05
+        pokeByteOff p 32 v06
+        pokeByteOff p 40 v07
+        pokeByteOff p 48 v08
+        pokeByteOff p 56 v09
+        pokeByteOff p 64 v10
 
 instance Storable VkDeviceQueueCreateInfo where
     sizeOf _ = 40
