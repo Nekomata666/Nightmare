@@ -7,6 +7,7 @@ import Foreign.Ptr (nullPtr)
 
 import Graphics.Utilities
 
+import Graphics.Vulkan.Devices
 import Graphics.Vulkan.Instance
 
 
