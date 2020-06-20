@@ -23,6 +23,7 @@ initialize = do
     physDe  <- vkEnumeratePhysicalDevices $ fst vkInst
     let d0  = head physDe
     physFe  <- vkGetPhysicalDeviceFeatures d0
-    queueIn <- vkCreateDeviceQueueInfo nullPtr (VkDeviceQueueCreateFlags 0) 0 1 [1.0]
+    queuIn  <- vkCreateDeviceQueueInfo nullPtr (VkDeviceQueueCreateFlags 0) 0 1 [1.0]
+    devInf  <- vkCreateDeviceInfo nullPtr (VkDeviceCreateFlags 0) 1 queuIn 1 ["VK_KHR_swapchain"] physFe
 
     return ()

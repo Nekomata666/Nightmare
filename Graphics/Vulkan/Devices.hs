@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Devices (vkCreateDeviceQueueInfo, vkEnumeratePhysicalDevices, vkGetPhysicalDeviceFeatures) where
+module Graphics.Vulkan.Devices (vkCreateDeviceInfo, vkCreateDeviceQueueInfo, vkEnumeratePhysicalDevices, vkGetPhysicalDeviceFeatures) where
 
 
 import Data.Void (Void)
@@ -21,6 +21,20 @@ foreign import ccall unsafe "vkEnumeratePhysicalDevices"
 
 foreign import ccall unsafe "vkGetPhysicalDeviceFeatures"
     c_vkGetPhysicalDeviceFeatures :: VkPhysicalDevice -> Ptr VkPhysicalDeviceFeatures -> IO ()
+
+vkCreateDeviceInfo :: Ptr Void -> VkDeviceCreateFlags -> Word32 -> VkDeviceQueueCreateInfo -> Word32 -> [String] ->
+    VkPhysicalDeviceFeatures -> IO VkDeviceCreateInfo
+vkCreateDeviceInfo v fl qC dQCI eC e fe =
+    alloca $ \pQ ->
+        alloca $ \pF ->
+            allocaArray i $ \pE -> do
+                e' <- stringListToCStringList e
+                poke pQ dQCI
+                poke pF fe
+                pokeArray pE e'
+                return $ VkDeviceCreateInfo structureTypeDeviceCreateInfo v fl qC pQ 0 nullPtr eC pE pF
+                where
+                    i = cast eC
 
 vkCreateDeviceQueueInfo :: Ptr Void -> VkDeviceQueueCreateFlags -> Word32 -> Word32 -> [Float] -> IO VkDeviceQueueCreateInfo
 vkCreateDeviceQueueInfo v f fI c p = allocaArray i $ \pP -> do
