@@ -18,6 +18,7 @@ initialize = do
     vkInfo  <- createVkInstanceCreateInfo nullPtr 0 (Just app) 1
         (Just ["VK_LAYER_KHRONOS_validation"]) 2
         (Just ["VK_EXT_debug_report", "VK_KHR_surface"])
-    vkIn <- vkCreateInstance vkInfo
+    vkInst <- vkCreateInstance vkInfo
+    physDe  <- vkEnumeratePhysicalDevices $ fst vkInst
 
     return ()
