@@ -20,6 +20,7 @@ type VkHandle   = Word64
 
 -- Vulkan Handles
 newtype VkInstance = VkInstance { unVkInstance :: VkHandle }
+newtype VkPhysicalDevice = VkPhysicalDevice { unVkPhysicalDevice :: VkHandle }
 
 
 -- Vulkan function pointers.
@@ -37,3 +38,11 @@ instance Storable VkInstance where
         v <- peekByteOff p 0
         return (VkInstance v)
     poke p (VkInstance v) = pokeByteOff p 0 v
+
+instance Storable VkPhysicalDevice where
+    sizeOf _ = 8
+    alignment _ = 8
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkPhysicalDevice v)
+    poke p (VkPhysicalDevice v) = pokeByteOff p 0 v
