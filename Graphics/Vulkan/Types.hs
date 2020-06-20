@@ -20,6 +20,9 @@ type VkHandle   = Word64
 -- Vulkan Types
 newtype VkBool  = VkBool { unVkBool :: Word32 }
 
+-- Vulkan Flags
+newtype VkDeviceQueueCreateFlags = VkDeviceQueueCreateFlags { unVkDeviceQueueCreateFlags :: VkFlags }
+
 
 -- Vulkan Handles
 newtype VkInstance = VkInstance { unVkInstance :: VkHandle }
@@ -42,6 +45,15 @@ instance Storable VkBool where
         v <- peekByteOff p 0
         return (VkBool v)
     poke p (VkBool v) = pokeByteOff p 0 v
+
+-- Storable instances for Vulkan flags.
+instance Storable VkDeviceQueueCreateFlags where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkDeviceQueueCreateFlags v)
+    poke p (VkDeviceQueueCreateFlags v) = pokeByteOff p 0 v
 
 instance Storable VkInstance where
     sizeOf _ = 8

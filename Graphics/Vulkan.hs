@@ -9,6 +9,7 @@ import Graphics.Utilities
 
 import Graphics.Vulkan.Devices
 import Graphics.Vulkan.Instance
+import Graphics.Vulkan.Types
 
 
 initialize :: IO ()
@@ -22,5 +23,6 @@ initialize = do
     physDe  <- vkEnumeratePhysicalDevices $ fst vkInst
     let d0  = head physDe
     physFe  <- vkGetPhysicalDeviceFeatures d0
+    queueIn <- vkCreateDeviceQueueInfo nullPtr (VkDeviceQueueCreateFlags 0) 0 1 [1.0]
 
     return ()
