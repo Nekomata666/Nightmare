@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Buffers (vkCreateBufferInfo) where
+module Graphics.Vulkan.Buffers (vkCreateBuffer, vkCreateBufferInfo) where
 
 
 import Data.Void (Void)
@@ -14,6 +14,16 @@ import Graphics.Vulkan.Data
 import Graphics.Vulkan.Enumerations
 import Graphics.Vulkan.Types
 
+
+foreign import ccall unsafe "vkCreateBuffer"
+    c_vkCreateBuffer :: VkDevice -> Ptr VkBufferCreateInfo -> Ptr VkAllocationCallbacks -> Ptr VkBuffer -> IO VkResult
+
+vkCreateBuffer :: VkDevice -> VkBufferCreateInfo -> IO VkBuffer
+vkCreateBuffer device info = alloca $ \pInfo ->
+    alloca $ \pBuffer -> do
+        poke pInfo info
+        _ <- c_vkCreateBuffer device pInfo nullPtr pBuffer
+        peek pBuffer
 
 vkCreateBufferInfo :: Ptr Void -> VkBufferCreateFlags -> VkDeviceSize -> [VkBufferUsageFlagBits] -> VkSharingMode ->
     Word32 -> [Word32] -> IO VkBufferCreateInfo
