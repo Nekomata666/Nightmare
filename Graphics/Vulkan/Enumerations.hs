@@ -9,9 +9,13 @@ import Foreign
 
 
 -- Vulkan newtypes
+newtype VkBufferUsageFlagBits = VkBufferUsageFlagBits { unVkBufferUsageFlagBits :: Word32 }
+    deriving (Eq)
 newtype VkInternalAllocationType = VkInternalAllocationType { unVkInternalAllocationType :: Word32 }
     deriving (Eq)
 newtype VkResult = VkResult { unVkResult :: Int32 }
+    deriving (Eq)
+newtype VkSharingMode = VkSharingMode { unVkSharingMode :: Word32 }
     deriving (Eq)
 newtype VkStructureType = VkStructureType { unVkStructureType :: Int32 }
     deriving (Eq)
@@ -20,6 +24,26 @@ newtype VkSystemAllocationScope = VkSystemAllocationScope { unVkSystemAllocation
 
 
 -- Vulkan enumerations
+-- VkBufferUsageFlagBits
+bufferUsageTransferSRCBit            :: VkBufferUsageFlagBits
+bufferUsageTransferSRCBit            = VkBufferUsageFlagBits 1
+bufferUsageTransferDSTBit            :: VkBufferUsageFlagBits
+bufferUsageTransferDSTBit            = VkBufferUsageFlagBits 2
+bufferUsageUniformTexelBufferBit     :: VkBufferUsageFlagBits
+bufferUsageUniformTexelBufferBit     = VkBufferUsageFlagBits 4
+bufferUsageStorageTexelBufferBit     :: VkBufferUsageFlagBits
+bufferUsageStorageTexelBufferBit     = VkBufferUsageFlagBits 8
+bufferUsageUniformBufferBit          :: VkBufferUsageFlagBits
+bufferUsageUniformBufferBit          = VkBufferUsageFlagBits 16
+bufferUsageStorageBufferBit          :: VkBufferUsageFlagBits
+bufferUsageStorageBufferBit          = VkBufferUsageFlagBits 32
+bufferUsageIndexBufferBit            :: VkBufferUsageFlagBits
+bufferUsageIndexBufferBit            = VkBufferUsageFlagBits 64
+bufferUsageVertexBufferBit           :: VkBufferUsageFlagBits
+bufferUsageVertexBufferBit           = VkBufferUsageFlagBits 128
+bufferUsageIndirectBufferBit         :: VkBufferUsageFlagBits
+bufferUsageIndirectBufferBit         = VkBufferUsageFlagBits 256
+
 -- VkInternalAllocationType
 internalAllocationTypeExecutable     :: VkInternalAllocationType
 internalAllocationTypeExecutable     = VkInternalAllocationType 0
@@ -75,6 +99,12 @@ errorValidationFailedEXT     :: VkResult
 errorValidationFailedEXT     = VkResult (-1000011001)
 errorInvalidShaderNV         :: VkResult
 errorInvalidShaderNV         = VkResult (-1000012000)
+
+-- VkSharingMode
+sharingModeExclusive     :: VkSharingMode
+sharingModeExclusive     = VkSharingMode 0
+sharingModeConcurrent    :: VkSharingMode
+sharingModeConcurrent    = VkSharingMode 1
 
 -- VkStructureType
 structureTypeApplicationInfo                                  :: VkStructureType
@@ -215,8 +245,16 @@ systemAllocationScopeInstance    :: VkSystemAllocationScope
 systemAllocationScopeInstance    = VkSystemAllocationScope 4
 
 
+instance Storable VkBufferUsageFlagBits where
+    sizeOf _    = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkBufferUsageFlagBits v)
+    poke p (VkBufferUsageFlagBits v) = pokeByteOff p 0 v
+
 instance Storable VkInternalAllocationType where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -224,23 +262,31 @@ instance Storable VkInternalAllocationType where
     poke p (VkInternalAllocationType v) = pokeByteOff p 0 v
 
 instance Storable VkResult where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
         return (VkResult v)
     poke p (VkResult v) = pokeByteOff p 0 v
 
-instance Storable VkStructureType where
+instance Storable VkSharingMode where
     sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkSharingMode v)
+    poke p (VkSharingMode v) = pokeByteOff p 0 v
+
+instance Storable VkStructureType where
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
         return (VkStructureType v)
     poke p (VkStructureType v) = pokeByteOff p 0 v
-    
+
 instance Storable VkSystemAllocationScope where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0

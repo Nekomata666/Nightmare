@@ -21,12 +21,15 @@ type VkHandle   = Word64
 newtype VkBool  = VkBool { unVkBool :: Word32 }
 
 -- Vulkan Flags
+newtype VkBufferCreateFlags = VkBufferCreateFlags { unVkBufferCreateFlags :: VkFlags }
+newtype VkBufferUsageFlags = VkBufferUsageFlags { unVkBufferUsageFlags :: VkFlags }
 newtype VkDeviceCreateFlags = VkDeviceCreateFlags { unVkDeviceCreateFlags :: VkFlags }
 newtype VkDeviceQueueCreateFlags = VkDeviceQueueCreateFlags { unVkDeviceQueueCreateFlags :: VkFlags }
 
 
 -- Vulkan Handles
 newtype VkDevice = VkDevice { unVkDevice :: VkHandle }
+newtype VkDeviceSize = VkDeviceSize { unVkDeviceSize :: VkHandle }
 newtype VkInstance = VkInstance { unVkInstance :: VkHandle }
 newtype VkPhysicalDevice = VkPhysicalDevice { unVkPhysicalDevice :: VkHandle }
 
@@ -49,6 +52,22 @@ instance Storable VkBool where
     poke p (VkBool v) = pokeByteOff p 0 v
 
 -- Storable instances for Vulkan flags.
+instance Storable VkBufferCreateFlags where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkBufferCreateFlags v)
+    poke p (VkBufferCreateFlags v) = pokeByteOff p 0 v
+
+instance Storable VkBufferUsageFlags where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkBufferUsageFlags v)
+    poke p (VkBufferUsageFlags v) = pokeByteOff p 0 v
+
 instance Storable VkDeviceCreateFlags where
     sizeOf _ = 4
     alignment _ = 4
@@ -73,6 +92,14 @@ instance Storable VkDevice where
         v <- peekByteOff p 0
         return (VkDevice v)
     poke p (VkDevice v) = pokeByteOff p 0 v
+
+instance Storable VkDeviceSize where
+    sizeOf _ = 8
+    alignment _ = 8
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkDeviceSize v)
+    poke p (VkDeviceSize v) = pokeByteOff p 0 v
 
 instance Storable VkInstance where
     sizeOf _ = 8

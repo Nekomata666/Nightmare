@@ -7,7 +7,9 @@ import Foreign.Ptr (nullPtr)
 
 import Graphics.Utilities
 
+import Graphics.Vulkan.Buffers
 import Graphics.Vulkan.Devices
+import Graphics.Vulkan.Enumerations
 import Graphics.Vulkan.Instance
 import Graphics.Vulkan.Types
 
@@ -26,5 +28,7 @@ initialize = do
     queuIn  <- vkCreateDeviceQueueInfo nullPtr (VkDeviceQueueCreateFlags 0) 0 1 [1.0]
     devInf  <- vkCreateDeviceInfo nullPtr (VkDeviceCreateFlags 0) 1 queuIn 1 ["VK_KHR_swapchain"] physFe
     vkDev0  <- vkCreateDevice d0 devInf
+    buInfo  <- vkCreateBufferInfo nullPtr (VkBufferCreateFlags 0) (VkDeviceSize 2136746240)
+        [bufferUsageStorageBufferBit, bufferUsageTransferDSTBit] sharingModeExclusive 3 [0]
 
     return ()
