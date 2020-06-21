@@ -28,6 +28,7 @@ newtype VkDeviceQueueCreateFlags = VkDeviceQueueCreateFlags { unVkDeviceQueueCre
 
 
 -- Vulkan Handles
+newtype VkBuffer = VkBuffer { unVkBuffer :: VkHandle }
 newtype VkDevice = VkDevice { unVkDevice :: VkHandle }
 newtype VkDeviceSize = VkDeviceSize { unVkDeviceSize :: VkHandle }
 newtype VkInstance = VkInstance { unVkInstance :: VkHandle }
@@ -85,6 +86,14 @@ instance Storable VkDeviceQueueCreateFlags where
     poke p (VkDeviceQueueCreateFlags v) = pokeByteOff p 0 v
 
 -- Storable instances for Vulkan handles.
+instance Storable VkBuffer where
+    sizeOf _ = 8
+    alignment _ = 8
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkBuffer v)
+    poke p (VkBuffer v) = pokeByteOff p 0 v
+
 instance Storable VkDevice where
     sizeOf _ = 8
     alignment _ = 8
