@@ -32,6 +32,17 @@ data VkApplicationInfo = VkApplicationInfo{
     apiVersion          :: Word32
 }
 
+data VkBufferCreateInfo = VkBufferCreateInfo{
+    sType :: VkStructureType,
+    next :: Ptr Void,
+    flags :: VkBufferCreateFlags,
+    size :: VkDeviceSize,
+    usage :: VkBufferUsageFlags,
+    sharingMode :: VkSharingMode,
+    queueFamilyIndexCount :: Word32,
+    queueFamilyIndices :: Ptr Word32
+}
+
 data VkDeviceCreateInfo = VkDeviceCreateInfo{
     sType :: VkStructureType,
     next :: Ptr Void,
@@ -163,6 +174,29 @@ instance Storable VkApplicationInfo where
         pokeByteOff p 32 v5
         pokeByteOff p 40 v6
         pokeByteOff p 44 v7
+
+instance Storable VkBufferCreateInfo where
+    sizeOf _ = 56
+    alignment _ = 8
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 8
+        v3 <- peekByteOff p 16
+        v4 <- peekByteOff p 24
+        v5 <- peekByteOff p 32
+        v6 <- peekByteOff p 36
+        v7 <- peekByteOff p 40
+        v8 <- peekByteOff p 48
+        return (VkBufferCreateInfo v1 v2 v3 v4 v5 v6 v7 v8)
+    poke p (VkBufferCreateInfo v1 v2 v3 v4 v5 v6 v7 v8) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 8 v2
+        pokeByteOff p 16 v3
+        pokeByteOff p 24 v4
+        pokeByteOff p 32 v5
+        pokeByteOff p 36 v6
+        pokeByteOff p 40 v7
+        pokeByteOff p 48 v8
 
 instance Storable VkDeviceCreateInfo where
     sizeOf _ = 72

@@ -58,3 +58,6 @@ stringListToCStringList s = foldlM helper [] s
         helper cs s' = do
             ncs <- newCString s'
             return $ cs ++ [ncs]
+
+vkBits :: (a -> Word32) -> [a] -> Word32
+vkBits f = foldr (\x -> (.|. f x)) 0
