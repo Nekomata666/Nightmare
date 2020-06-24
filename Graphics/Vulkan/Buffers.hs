@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Buffers (vkCreateBuffer, vkCreateBufferInfo, vkGetBufferMemoryRequirements) where
+module Graphics.Vulkan.Buffers (vkBindBufferMemory, vkCreateBuffer, vkCreateBufferInfo, vkGetBufferMemoryRequirements) where
 
 
 import Data.Void (Void)
@@ -15,11 +15,17 @@ import Graphics.Vulkan.Enumerations
 import Graphics.Vulkan.Types
 
 
+foreign import ccall unsafe "vkBindBufferMemory"
+    c_vkBindBufferMemory :: VkDevice  -> VkBuffer -> VkDeviceMemory -> VkDeviceSize -> IO VkResult
+
 foreign import ccall unsafe "vkCreateBuffer"
     c_vkCreateBuffer :: VkDevice -> Ptr VkBufferCreateInfo -> Ptr VkAllocationCallbacks -> Ptr VkBuffer -> IO VkResult
 
 foreign import ccall unsafe "vkGetBufferMemoryRequirements"
     c_vkGetBufferMemoryRequirements :: VkDevice -> VkBuffer -> Ptr VkMemoryRequirements -> IO ()
+
+vkBindBufferMemory :: VkDevice  -> VkBuffer -> VkDeviceMemory -> VkDeviceSize -> IO VkResult
+vkBindBufferMemory = c_vkBindBufferMemory
 
 vkCreateBuffer :: VkDevice -> VkBufferCreateInfo -> IO VkBuffer
 vkCreateBuffer device info = alloca $ \pInfo ->
