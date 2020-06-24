@@ -34,5 +34,6 @@ initialize = do
     buffer  <- vkCreateBuffer vkDev0 buInfo
     buffMR  <- vkGetBufferMemoryRequirements vkDev0 buffer
     let buffMI = vkCreateMemoryAllocateInfo nullPtr (VkDeviceSize $ 2136746240 + 16) 1
+    buffMe  <- vkAllocateMemory vkDev0 buffMI
 
     return ()
