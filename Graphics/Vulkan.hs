@@ -31,5 +31,6 @@ initialize = do
     buInfo  <- vkCreateBufferInfo nullPtr (VkBufferCreateFlags 0) (VkDeviceSize 2136746240)
         [bufferUsageStorageBufferBit, bufferUsageTransferDSTBit] sharingModeExclusive 3 [0]
     buffer  <- vkCreateBuffer vkDev0 buInfo
+    buffMR  <- vkGetBufferMemoryRequirements vkDev0 buffer
 
     return ()
