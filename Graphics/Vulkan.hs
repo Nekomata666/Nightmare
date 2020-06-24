@@ -8,6 +8,7 @@ import Foreign.Ptr (nullPtr)
 import Graphics.Utilities
 
 import Graphics.Vulkan.Buffers
+import Graphics.Vulkan.Constants
 import Graphics.Vulkan.Devices
 import Graphics.Vulkan.Enumerations
 import Graphics.Vulkan.Instance
@@ -35,5 +36,6 @@ initialize = do
     buffMR  <- vkGetBufferMemoryRequirements vkDev0 buffer
     let buffMI = vkCreateMemoryAllocateInfo nullPtr (VkDeviceSize $ 2136746240 + 16) 1
     buffMe  <- vkAllocateMemory vkDev0 buffMI
+    buffMa  <- vkMapMemory vkDev0 buffMe (VkDeviceSize 0) wholeSize (VkMemoryMapFlags 0)
 
     return ()

@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Memory (vkAllocateMemory, vkCreateMemoryAllocateInfo) where
+module Graphics.Vulkan.Memory (vkAllocateMemory, vkCreateMemoryAllocateInfo, vkMapMemory) where
 
 
 import Data.Void (Void)
@@ -19,6 +19,10 @@ foreign import ccall unsafe "vkAllocateMemory"
     c_vkAllocateMemory :: VkDevice -> Ptr VkMemoryAllocateInfo -> Ptr VkAllocationCallbacks -> Ptr
         VkDeviceMemory -> IO VkResult
 
+foreign import ccall unsafe "vkMapMemory"
+    c_vkMapMemory :: VkDevice -> VkDeviceMemory -> VkDeviceSize -> VkDeviceSize -> VkMemoryMapFlags
+        -> Ptr (Ptr Void) -> IO VkResult
+
 vkAllocateMemory :: VkDevice -> VkMemoryAllocateInfo -> IO VkDeviceMemory
 vkAllocateMemory d i = alloca $ \pInfo ->
     alloca $ \pMem -> do
@@ -28,3 +32,8 @@ vkAllocateMemory d i = alloca $ \pInfo ->
 
 vkCreateMemoryAllocateInfo :: Ptr Void -> VkDeviceSize -> Word32 -> VkMemoryAllocateInfo
 vkCreateMemoryAllocateInfo = VkMemoryAllocateInfo structureTypeMemoryAllocateInfo
+
+vkMapMemory :: VkDevice -> VkDeviceMemory -> VkDeviceSize -> VkDeviceSize -> VkMemoryMapFlags -> IO (Ptr Void)
+vkMapMemory d dm o s f = alloca $ \p -> do
+    _ <- c_vkMapMemory d dm o s f p
+    peek p
