@@ -9,6 +9,7 @@ import Graphics.Utilities
 
 import Graphics.Vulkan.Buffers
 import Graphics.Vulkan.Constants
+import Graphics.Vulkan.Data (VkMemoryRequirements(..))
 import Graphics.Vulkan.Devices
 import Graphics.Vulkan.Enumerations
 import Graphics.Vulkan.Instance
@@ -37,5 +38,6 @@ initialize = do
     let buffMI = vkCreateMemoryAllocateInfo nullPtr (VkDeviceSize $ 2136746240 + 16) 1
     buffMe  <- vkAllocateMemory vkDev0 buffMI
     buffMa  <- vkMapMemory vkDev0 buffMe (VkDeviceSize 0) wholeSize (VkMemoryMapFlags 0)
+    buffMB  <- vkBindBufferMemory vkDev0 buffer buffMe (alignment buffMR)
 
     return ()
