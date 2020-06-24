@@ -11,6 +11,7 @@ import Graphics.Vulkan.Buffers
 import Graphics.Vulkan.Devices
 import Graphics.Vulkan.Enumerations
 import Graphics.Vulkan.Instance
+import Graphics.Vulkan.Memory
 import Graphics.Vulkan.Types
 
 
@@ -32,5 +33,6 @@ initialize = do
         [bufferUsageStorageBufferBit, bufferUsageTransferDSTBit] sharingModeExclusive 3 [0]
     buffer  <- vkCreateBuffer vkDev0 buInfo
     buffMR  <- vkGetBufferMemoryRequirements vkDev0 buffer
+    let buffMI = vkCreateMemoryAllocateInfo nullPtr (VkDeviceSize $ 2136746240 + 16) 1
 
     return ()

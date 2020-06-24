@@ -76,6 +76,13 @@ data VkInstanceCreateInfo = VkInstanceCreateInfo{
     enabledExtensionNames   :: Ptr CString
 }
 
+data VkMemoryAllocateInfo = VkMemoryAllocateInfo{
+    sType :: VkStructureType,
+    next :: Ptr Void,
+    allocationSize :: VkDeviceSize,
+    memoryTypeIndex :: Word32
+}
+
 data VkMemoryRequirements = VkMemoryRequirements{
     size :: VkDeviceSize,
     alignment :: VkDeviceSize,
@@ -272,6 +279,21 @@ instance Storable VkInstanceCreateInfo where
         pokeByteOff p 40 v6
         pokeByteOff p 48 v7
         pokeByteOff p 56 v8
+
+instance Storable VkMemoryAllocateInfo where
+    sizeOf _ = 32
+    alignment _ = 8
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 8
+        v3 <- peekByteOff p 16
+        v4 <- peekByteOff p 24
+        return (VkMemoryAllocateInfo v1 v2 v3 v4)
+    poke p (VkMemoryAllocateInfo v1 v2 v3 v4) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 8 v2
+        pokeByteOff p 16 v3
+        pokeByteOff p 24 v4
 
 instance Storable VkMemoryRequirements where
     sizeOf _ = 24
