@@ -25,6 +25,7 @@ newtype VkBufferCreateFlags = VkBufferCreateFlags { unVkBufferCreateFlags :: VkF
 newtype VkBufferUsageFlags = VkBufferUsageFlags { unVkBufferUsageFlags :: VkFlags }
 newtype VkDeviceCreateFlags = VkDeviceCreateFlags { unVkDeviceCreateFlags :: VkFlags }
 newtype VkDeviceQueueCreateFlags = VkDeviceQueueCreateFlags { unVkDeviceQueueCreateFlags :: VkFlags }
+newtype VkMemoryMapFlags = VkMemoryMapFlags { unVkMemoryMapFlags :: VkFlags }
 
 
 -- Vulkan Handles
@@ -85,6 +86,14 @@ instance Storable VkDeviceQueueCreateFlags where
         v <- peekByteOff p 0
         return (VkDeviceQueueCreateFlags v)
     poke p (VkDeviceQueueCreateFlags v) = pokeByteOff p 0 v
+
+instance Storable VkMemoryMapFlags where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkMemoryMapFlags v)
+    poke p (VkMemoryMapFlags v) = pokeByteOff p 0 v
 
 -- Storable instances for Vulkan handles.
 instance Storable VkBuffer where
