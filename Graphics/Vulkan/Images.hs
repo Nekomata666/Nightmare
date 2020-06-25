@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Images (vkCreateImageInfo) where
+module Graphics.Vulkan.Images (vkCreateImage, vkCreateImageInfo) where
 
 
 import Data.Void (Void)
@@ -14,6 +14,16 @@ import Graphics.Vulkan.Data
 import Graphics.Vulkan.Enumerations
 import Graphics.Vulkan.Types
 
+
+foreign import ccall unsafe "vkCreateImage"
+    c_vkCreateImage :: VkDevice -> Ptr VkImageCreateInfo -> Ptr VkAllocationCallbacks -> Ptr VkImage -> IO VkResult
+
+vkCreateImage :: VkDevice -> VkImageCreateInfo -> IO VkImage
+vkCreateImage device info = alloca $ \pInfo ->
+    alloca $ \pImage -> do
+        poke pInfo info
+        _ <- c_vkCreateImage device pInfo nullPtr pImage
+        peek pImage
 
 -- Note: ImageLayout needs to be imageLayoutUndefined or imageLayoutPreinitialized
 vkCreateImageInfo :: Ptr Void -> [VkImageCreateFlagBits] -> VkImageType -> VkFormat -> VkExtent3D ->
