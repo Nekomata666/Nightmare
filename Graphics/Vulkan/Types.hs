@@ -25,6 +25,8 @@ newtype VkBufferCreateFlags = VkBufferCreateFlags { unVkBufferCreateFlags :: VkF
 newtype VkBufferUsageFlags = VkBufferUsageFlags { unVkBufferUsageFlags :: VkFlags }
 newtype VkDeviceCreateFlags = VkDeviceCreateFlags { unVkDeviceCreateFlags :: VkFlags }
 newtype VkDeviceQueueCreateFlags = VkDeviceQueueCreateFlags { unVkDeviceQueueCreateFlags :: VkFlags }
+newtype VkImageCreateFlags = VkImageCreateFlags { unVkImageCreateFlags :: VkFlags }
+newtype VkImageUsageFlags = VkImageUsageFlags { unVkImageUsageFlags :: VkFlags }
 newtype VkMemoryMapFlags = VkMemoryMapFlags { unVkMemoryMapFlags :: VkFlags }
 
 
@@ -86,6 +88,22 @@ instance Storable VkDeviceQueueCreateFlags where
         v <- peekByteOff p 0
         return (VkDeviceQueueCreateFlags v)
     poke p (VkDeviceQueueCreateFlags v) = pokeByteOff p 0 v
+
+instance Storable VkImageCreateFlags where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkImageCreateFlags v)
+    poke p (VkImageCreateFlags v) = pokeByteOff p 0 v
+
+instance Storable VkImageUsageFlags where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkImageUsageFlags v)
+    poke p (VkImageUsageFlags v) = pokeByteOff p 0 v
 
 instance Storable VkMemoryMapFlags where
     sizeOf _ = 4

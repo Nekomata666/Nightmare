@@ -9,9 +9,10 @@ import Graphics.Utilities
 
 import Graphics.Vulkan.Buffers
 import Graphics.Vulkan.Constants
-import Graphics.Vulkan.Data (VkMemoryRequirements(..))
+import Graphics.Vulkan.Data (VkExtent3D(..), VkMemoryRequirements(..))
 import Graphics.Vulkan.Devices
 import Graphics.Vulkan.Enumerations
+import Graphics.Vulkan.Images
 import Graphics.Vulkan.Instance
 import Graphics.Vulkan.Memory
 import Graphics.Vulkan.Types
@@ -39,5 +40,8 @@ initialize = do
     buffMe  <- vkAllocateMemory vkDev0 buffMI
     buffMa  <- vkMapMemory vkDev0 buffMe (VkDeviceSize 0) wholeSize (VkMemoryMapFlags 0)
     buffMB  <- vkBindBufferMemory vkDev0 buffer buffMe (alignment buffMR)
+    imInfo  <- vkCreateImageInfo nullPtr [imageCreateMutableFormatBit] imageType2D formatR16G16B16A16UNorm
+                (VkExtent3D 256 256 1) 8 1 sampleCount1Bit imageTilingLinear
+                [imageUsageColorAttachmentBit, imageUsageTransferDSTBit] sharingModeExclusive 1 [0] imageLayoutUndefined
 
     return ()
