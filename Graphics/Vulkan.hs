@@ -43,5 +43,6 @@ initialize = do
     imInfo  <- vkCreateImageInfo nullPtr [imageCreateMutableFormatBit] imageType2D formatR16G16B16A16UNorm
                 (VkExtent3D 256 256 1) 8 1 sampleCount1Bit imageTilingLinear
                 [imageUsageColorAttachmentBit, imageUsageTransferDSTBit] sharingModeExclusive 1 [0] imageLayoutUndefined
+    vkIma0  <- vkCreateImage vkDev0 imInfo
 
     return ()

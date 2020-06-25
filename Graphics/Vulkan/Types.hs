@@ -35,6 +35,7 @@ newtype VkBuffer = VkBuffer { unVkBuffer :: VkHandle }
 newtype VkDevice = VkDevice { unVkDevice :: VkHandle }
 newtype VkDeviceMemory = VkDeviceMemory { unVkDeviceMemory :: VkHandle }
 newtype VkDeviceSize = VkDeviceSize { unVkDeviceSize :: VkHandle }
+newtype VkImage = VkImage { unVkImage :: VkHandle }
 newtype VkInstance = VkInstance { unVkInstance :: VkHandle }
 newtype VkPhysicalDevice = VkPhysicalDevice { unVkPhysicalDevice :: VkHandle }
 
@@ -145,6 +146,14 @@ instance Storable VkDeviceSize where
         v <- peekByteOff p 0
         return (VkDeviceSize v)
     poke p (VkDeviceSize v) = pokeByteOff p 0 v
+
+instance Storable VkImage where
+    sizeOf _ = 8
+    alignment _ = 8
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkImage v)
+    poke p (VkImage v) = pokeByteOff p 0 v
 
 instance Storable VkInstance where
     sizeOf _ = 8
