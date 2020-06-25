@@ -65,6 +65,30 @@ data VkDeviceQueueCreateInfo = VkDeviceQueueCreateInfo{
     queuePriorities :: Ptr Float
 }
 
+data VkExtent3D = VkExtent3D{
+    width :: Word32,
+    height :: Word32,
+    depth :: Word32
+}
+
+data VkImageCreateInfo = VkImageCreateInfo{
+    sType :: VkStructureType,
+    next :: Ptr Void,
+    flags :: VkImageCreateFlags,
+    imageType :: VkImageType,
+    format :: VkFormat,
+    extent :: VkExtent3D,
+    mipLevels :: Word32,
+    arrayLayers :: Word32,
+    samples :: VkSampleCountFlagBits,
+    tiling :: VkImageTiling,
+    usage :: VkImageUsageFlags,
+    sharingMode :: VkSharingMode,
+    queueFamilyIndexCount :: Word32,
+    queueFamilyIndices :: Ptr Word32,
+    initialLayout :: VkImageLayout
+}
+
 data VkInstanceCreateInfo = VkInstanceCreateInfo{
     sType                   :: VkStructureType,
     next                    :: Ptr Void,
@@ -256,6 +280,56 @@ instance Storable VkDeviceQueueCreateInfo where
         pokeByteOff p 20 v4
         pokeByteOff p 24 v5
         pokeByteOff p 32 v6
+
+instance Storable VkExtent3D where
+    sizeOf _ = 12
+    alignment _ = 4
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 4
+        v3 <- peekByteOff p 8
+        return (VkExtent3D v1 v2 v3)
+    poke p (VkExtent3D v1 v2 v3) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 4 v2
+        pokeByteOff p 8 v3
+
+instance Storable VkImageCreateInfo where
+    sizeOf _ = 88
+    alignment _ = 8
+    peek p = do
+        v01 <- peekByteOff p 0
+        v02 <- peekByteOff p 8
+        v03 <- peekByteOff p 16
+        v04 <- peekByteOff p 20
+        v05 <- peekByteOff p 24
+        v06 <- peekByteOff p 28
+        v07 <- peekByteOff p 40
+        v08 <- peekByteOff p 44
+        v09 <- peekByteOff p 48
+        v10 <- peekByteOff p 52
+        v11 <- peekByteOff p 56
+        v12 <- peekByteOff p 60
+        v13 <- peekByteOff p 64
+        v14 <- peekByteOff p 72
+        v15 <- peekByteOff p 80
+        return (VkImageCreateInfo v01 v02 v03 v04 v05 v06 v07 v08 v09 v10 v11 v12 v13 v14 v15)
+    poke p (VkImageCreateInfo v01 v02 v03 v04 v05 v06 v07 v08 v09 v10 v11 v12 v13 v14 v15) = do
+        pokeByteOff p 0 v01
+        pokeByteOff p 8 v02
+        pokeByteOff p 16 v03
+        pokeByteOff p 20 v04
+        pokeByteOff p 24 v05
+        pokeByteOff p 28 v06
+        pokeByteOff p 40 v07
+        pokeByteOff p 44 v08
+        pokeByteOff p 48 v09
+        pokeByteOff p 52 v10
+        pokeByteOff p 56 v11
+        pokeByteOff p 60 v12
+        pokeByteOff p 64 v13
+        pokeByteOff p 72 v14
+        pokeByteOff p 80 v15
 
 instance Storable VkInstanceCreateInfo where
     sizeOf _ = 64
