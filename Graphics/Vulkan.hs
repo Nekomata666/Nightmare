@@ -45,5 +45,6 @@ initialize = do
                 [imageUsageColorAttachmentBit, imageUsageTransferDSTBit] sharingModeExclusive 1 [0] imageLayoutUndefined
     vkIma0  <- vkCreateImage vkDev0 imInfo
     imagMR  <- vkGetImageMemoryRequirements vkDev0 vkIma0
+    let imagMI = vkCreateMemoryAllocateInfo nullPtr (VkDeviceSize $ 699904 + 256) 2
 
     return ()
