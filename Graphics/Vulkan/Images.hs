@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Images (vkBindImageMemory, vkCreateImage, vkCreateImageInfo, vkGetImageMemoryRequirements) where
+module Graphics.Vulkan.Images (vkBindImageMemory, vkCreateImage, vkCreateImageInfo, vkCreateImageSubresource, vkGetImageMemoryRequirements) where
 
 
 import Data.Void (Void)
@@ -23,6 +23,11 @@ foreign import ccall unsafe "vkCreateImage"
 
 foreign import ccall unsafe "vkGetImageMemoryRequirements"
     c_vkGetImageMemoryRequirements :: VkDevice -> VkImage -> Ptr VkMemoryRequirements -> IO ()
+
+vkCreateImageSubresource :: [VkImageAspectFlagBits] -> Word32 -> Word32 -> IO VkImageSubresource
+vkCreateImageSubresource b m a = return $ VkImageSubresource f m a
+    where
+        f = VkImageAspectFlags $ vkBits unVkImageAspectFlagBits b
 
 vkBindImageMemory :: VkDevice  -> VkImage -> VkDeviceMemory -> VkDeviceSize -> IO VkResult
 vkBindImageMemory = c_vkBindImageMemory

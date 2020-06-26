@@ -49,5 +49,6 @@ initialize = do
     imagMe  <- vkAllocateMemory vkDev0 imagMI
     imagMa  <- vkMapMemory vkDev0 imagMe (VkDeviceSize 0) wholeSize (VkMemoryMapFlags 0)
     imagMB  <- vkBindImageMemory vkDev0 vkIma0 imagMe (alignment imagMR)
+    imagSu  <- vkCreateImageSubresource [imageAspectColorBit] 4 0
 
     return ()

@@ -13,6 +13,8 @@ newtype VkBufferUsageFlagBits = VkBufferUsageFlagBits { unVkBufferUsageFlagBits 
     deriving (Eq)
 newtype VkFormat = VkFormat { unVkFormat :: Word32 }
     deriving (Eq)
+newtype VkImageAspectFlagBits = VkImageAspectFlagBits { unVkImageAspectFlagBits :: Word32 }
+    deriving (Eq)
 newtype VkImageCreateFlagBits = VkImageCreateFlagBits { unVkImageCreateFlagBits :: Word32 }
     deriving (Eq)
 newtype VkImageLayout = VkImageLayout { unVkImageLayout :: Word32 }
@@ -448,6 +450,16 @@ formatPVRTC22BPPSRGBBlockImg     = VkFormat 1000054006
 formatPVRTC24BPPSRGBBlockImg     :: VkFormat
 formatPVRTC24BPPSRGBBlockImg     = VkFormat 1000054007
 
+-- VkImageAspectFlagBits
+imageAspectColorBit          :: VkImageAspectFlagBits
+imageAspectColorBit          = VkImageAspectFlagBits 1
+imageAspectDepthBit          :: VkImageAspectFlagBits
+imageAspectDepthBit          = VkImageAspectFlagBits 2
+imageAspectStencilBit        :: VkImageAspectFlagBits
+imageAspectStencilBit        = VkImageAspectFlagBits 4
+imageAspectMetadataBit       :: VkImageAspectFlagBits
+imageAspectMetadataBit       = VkImageAspectFlagBits 8
+
 -- VkImageCreateFlagBits
 imageCreateSparseBindingBit      :: VkImageCreateFlagBits
 imageCreateSparseBindingBit      = VkImageCreateFlagBits 1
@@ -746,6 +758,14 @@ instance Storable VkFormat where
         v <- peekByteOff p 0
         return (VkFormat v)
     poke p (VkFormat v) = pokeByteOff p 0 v
+
+instance Storable VkImageAspectFlagBits where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkImageAspectFlagBits v)
+    poke p (VkImageAspectFlagBits v) = pokeByteOff p 0 v
 
 instance Storable VkImageCreateFlagBits where
     sizeOf _ = 4
