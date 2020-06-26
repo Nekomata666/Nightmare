@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Command () where
+module Graphics.Vulkan.Command (createClearColorValue) where
 
 
 import Data.Maybe (Maybe)
@@ -14,3 +14,9 @@ import Graphics.Utilities
 import Graphics.Vulkan.Data
 import Graphics.Vulkan.Enumerations
 import Graphics.Vulkan.Types
+
+
+createClearColorValue :: [Word32] -> IO VkClearColorValue
+createClearColorValue v = allocaArray 4 $ \p -> do
+    pokeArray p v
+    return $ VkClearColorValue p

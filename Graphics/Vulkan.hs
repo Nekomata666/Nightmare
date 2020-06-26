@@ -8,6 +8,7 @@ import Foreign.Ptr (nullPtr)
 import Graphics.Utilities
 
 import Graphics.Vulkan.Buffers
+import Graphics.Vulkan.Command
 import Graphics.Vulkan.Constants
 import Graphics.Vulkan.Data (VkExtent3D(..), VkMemoryRequirements(..))
 import Graphics.Vulkan.Devices
@@ -51,5 +52,6 @@ initialize = do
     imagMB  <- vkBindImageMemory vkDev0 vkIma0 imagMe (alignment imagMR)
     imagSu  <- vkCreateImageSubresource [imageAspectColorBit] 4 0
     imagSL  <- vkGetImageSubresourceLayout vkDev0 vkIma0 imagSu
+    clearC  <- createClearColorValue [0,0,0,0]
 
     return ()
