@@ -177,6 +177,14 @@ data VkPhysicalDeviceFeatures = VkPhysicalDeviceFeatures{
     inheritedQueries :: VkBool
 }
 
+data VkSubresourceLayout = VkSubresourceLayout{
+    offset :: VkDeviceSize,
+    size :: VkDeviceSize,
+    rowPitch :: VkDeviceSize,
+    arrayPitch :: VkDeviceSize,
+    depthPitch :: VkDeviceSize
+}
+
 -- Storable instances
 instance Storable VkAllocationCallbacks where
     sizeOf _ = 48
@@ -336,6 +344,19 @@ instance Storable VkImageCreateInfo where
         pokeByteOff p 64 v13
         pokeByteOff p 72 v14
         pokeByteOff p 80 v15
+
+instance Storable VkImageSubresource where
+    sizeOf _ = 12
+    alignment _ = 4
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 4
+        v3 <- peekByteOff p 8
+        return (VkImageSubresource v1 v2 v3)
+    poke p (VkImageSubresource v1 v2 v3) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 4 v2
+        pokeByteOff p 8 v3
 
 instance Storable VkInstanceCreateInfo where
     sizeOf _ = 64
@@ -504,3 +525,20 @@ instance Storable VkPhysicalDeviceFeatures where
         pokeByteOff p 208 v53
         pokeByteOff p 212 v54
         pokeByteOff p 216 v55
+
+instance Storable VkSubresourceLayout where
+    sizeOf _ = 40
+    alignment _ = 8
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 8
+        v3 <- peekByteOff p 16
+        v4 <- peekByteOff p 24
+        v5 <- peekByteOff p 32
+        return (VkSubresourceLayout v1 v2 v3 v4 v5)
+    poke p (VkSubresourceLayout v1 v2 v3 v4 v5) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 8 v2
+        pokeByteOff p 16 v3
+        pokeByteOff p 24 v4
+        pokeByteOff p 32 v5

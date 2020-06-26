@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Images (vkBindImageMemory, vkCreateImage, vkCreateImageInfo, vkCreateImageSubresource, vkGetImageMemoryRequirements) where
+module Graphics.Vulkan.Images (vkBindImageMemory, vkCreateImage, vkCreateImageInfo, vkCreateImageSubresource, vkGetImageMemoryRequirements, vkGetImageSubresourceLayout) where
 
 
 import Data.Void (Void)
@@ -23,6 +23,9 @@ foreign import ccall unsafe "vkCreateImage"
 
 foreign import ccall unsafe "vkGetImageMemoryRequirements"
     c_vkGetImageMemoryRequirements :: VkDevice -> VkImage -> Ptr VkMemoryRequirements -> IO ()
+
+foreign import ccall unsafe "vkGetImageSubresourceLayout"
+    c_vkGetImageSubresourceLayout :: VkDevice -> VkImage -> Ptr VkImageSubresource -> Ptr VkSubresourceLayout -> IO ()
 
 vkCreateImageSubresource :: [VkImageAspectFlagBits] -> Word32 -> Word32 -> IO VkImageSubresource
 vkCreateImageSubresource b m a = return $ VkImageSubresource f m a
@@ -55,3 +58,10 @@ vkGetImageMemoryRequirements :: VkDevice -> VkImage -> IO VkMemoryRequirements
 vkGetImageMemoryRequirements d i = alloca $ \p -> do
     c_vkGetImageMemoryRequirements d i p
     peek p
+
+vkGetImageSubresourceLayout :: VkDevice -> VkImage -> VkImageSubresource -> IO VkSubresourceLayout
+vkGetImageSubresourceLayout d i s = alloca $ \pSub ->
+    alloca $ \pLay -> do
+        poke pSub s
+        c_vkGetImageSubresourceLayout d i pSub pLay
+        peek pLay
