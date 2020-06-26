@@ -89,6 +89,12 @@ data VkImageCreateInfo = VkImageCreateInfo{
     initialLayout :: VkImageLayout
 }
 
+data VkImageSubresource = VkImageSubresource{
+    aspectMask :: VkImageAspectFlags,
+    mipLevel :: Word32,
+    arrayLayer :: Word32
+}
+
 data VkInstanceCreateInfo = VkInstanceCreateInfo{
     sType                   :: VkStructureType,
     next                    :: Ptr Void,
