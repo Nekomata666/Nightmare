@@ -46,5 +46,8 @@ initialize = do
     vkIma0  <- vkCreateImage vkDev0 imInfo
     imagMR  <- vkGetImageMemoryRequirements vkDev0 vkIma0
     let imagMI = vkCreateMemoryAllocateInfo nullPtr (VkDeviceSize $ 699904 + 256) 2
+    imagMe  <- vkAllocateMemory vkDev0 imagMI
+    imagMa  <- vkMapMemory vkDev0 imagMe (VkDeviceSize 0) wholeSize (VkMemoryMapFlags 0)
+    imagMB  <- vkBindImageMemory vkDev0 vkIma0 imagMe (alignment imagMR)
 
     return ()

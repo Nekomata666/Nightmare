@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Images (vkCreateImage, vkCreateImageInfo, vkGetImageMemoryRequirements) where
+module Graphics.Vulkan.Images (vkBindImageMemory, vkCreateImage, vkCreateImageInfo, vkGetImageMemoryRequirements) where
 
 
 import Data.Void (Void)
@@ -15,11 +15,17 @@ import Graphics.Vulkan.Enumerations
 import Graphics.Vulkan.Types
 
 
+foreign import ccall unsafe "vkBindImageMemory"
+    c_vkBindImageMemory :: VkDevice  -> VkImage -> VkDeviceMemory -> VkDeviceSize -> IO VkResult
+
 foreign import ccall unsafe "vkCreateImage"
     c_vkCreateImage :: VkDevice -> Ptr VkImageCreateInfo -> Ptr VkAllocationCallbacks -> Ptr VkImage -> IO VkResult
 
 foreign import ccall unsafe "vkGetImageMemoryRequirements"
     c_vkGetImageMemoryRequirements :: VkDevice -> VkImage -> Ptr VkMemoryRequirements -> IO ()
+
+vkBindImageMemory :: VkDevice  -> VkImage -> VkDeviceMemory -> VkDeviceSize -> IO VkResult
+vkBindImageMemory = c_vkBindImageMemory
 
 vkCreateImage :: VkDevice -> VkImageCreateInfo -> IO VkImage
 vkCreateImage device info = alloca $ \pInfo ->
