@@ -43,6 +43,12 @@ data VkBufferCreateInfo = VkBufferCreateInfo{
     queueFamilyIndices :: Ptr Word32
 }
 
+-- Note: At most, we can add Int32.
+-- Using only Word32s!
+data VkClearColorValue = VkClearColorValue{
+    word32 :: Ptr Word32 -- [4]
+}
+
 data VkDeviceCreateInfo = VkDeviceCreateInfo{
     sType :: VkStructureType,
     next :: Ptr Void,
@@ -248,6 +254,14 @@ instance Storable VkBufferCreateInfo where
         pokeByteOff p 36 v6
         pokeByteOff p 40 v7
         pokeByteOff p 48 v8
+
+instance Storable VkClearColorValue where
+    sizeOf _ = 16
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkClearColorValue v)
+    poke p (VkClearColorValue v) = pokeByteOff p 0 v
 
 instance Storable VkDeviceCreateInfo where
     sizeOf _ = 72
