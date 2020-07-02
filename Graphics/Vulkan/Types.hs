@@ -40,6 +40,7 @@ newtype VkDeviceSize = VkDeviceSize { unVkDeviceSize :: VkHandle }
 newtype VkImage = VkImage { unVkImage :: VkHandle }
 newtype VkInstance = VkInstance { unVkInstance :: VkHandle }
 newtype VkPhysicalDevice = VkPhysicalDevice { unVkPhysicalDevice :: VkHandle }
+newtype VkShaderModule = VkShaderModule { unVkShaderModule :: VkHandle }
 
 
 -- Vulkan function pointers.
@@ -188,3 +189,11 @@ instance Storable VkPhysicalDevice where
         v <- peekByteOff p 0
         return (VkPhysicalDevice v)
     poke p (VkPhysicalDevice v) = pokeByteOff p 0 v
+
+instance Storable VkShaderModule where
+    sizeOf _ = 8
+    alignment _ = 8
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkShaderModule v)
+    poke p (VkShaderModule v) = pokeByteOff p 0 v
