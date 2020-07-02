@@ -54,6 +54,7 @@ initialize = do
     imagSu  <- vkCreateImageSubresource [imageAspectColorBit] 4 0
     imagSL  <- vkGetImageSubresourceLayout vkDev0 vkIma0 imagSu
     clearC  <- createClearColorValue [0,0,0,0]
-    shader  <- createShaderModuleInfo nullPtr (VkShaderModuleCreateFlags 0) "Shaders/Simple.spv"
+    vkSMIn  <- createShaderModuleInfo nullPtr (VkShaderModuleCreateFlags 0) "Shaders/Simple.spv"
+    vkSMod  <- vkCreateShaderModule vkDev0 vkSMIn
 
     return ()
