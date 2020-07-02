@@ -12,11 +12,17 @@ import Foreign
 import Foreign.C.Types
 import Foreign.C.String
 
+import System.IO (hClose, hGetBuf, openBinaryFile, IOMode(ReadMode))
+
 
 type Major      = Word32
 type Minor      = Word32
 type Patch      = Word32
 type Version    = Word32
+
+
+maxBytes :: Int
+maxBytes = 2147483648
 
 
 cast :: (Read a, Show b) => b -> a
@@ -50,6 +56,13 @@ fromMaybeStringListIO c m
 
 makeAPI :: Major -> Minor -> Patch -> Version
 makeAPI major minor patch = shiftL major 22 .|. shiftL minor 12 .|. patch
+
+openVulkanFile :: Storable a => String -> FilePath -> IO (Ptr a, CSize)
+openVulkanFile s fP = alloca $ \p -> do
+    h <- openBinaryFile fP ReadMode
+    i <- hGetBuf h p maxBytes
+    hClose h
+    return (p, CSize $ cast i)
 
 stringListToCStringList :: [String] -> IO [CString]
 stringListToCStringList [] = return []

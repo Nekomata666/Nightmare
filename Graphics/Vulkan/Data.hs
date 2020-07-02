@@ -8,6 +8,7 @@ import Data.Word (Word8, Word32)
 
 import Foreign
 import Foreign.C.String
+import Foreign.C.Types
 
 import Graphics.Vulkan.Enumerations
 import Graphics.Vulkan.Types
@@ -181,6 +182,14 @@ data VkPhysicalDeviceFeatures = VkPhysicalDeviceFeatures{
     sparseResidencyAliased :: VkBool,
     variableMultisampleRate :: VkBool,
     inheritedQueries :: VkBool
+}
+
+data VkShaderModuleCreateInfo = VkShaderModuleCreateInfo{
+    sType :: VkStructureType,
+    next :: Ptr Void,
+    flags :: VkShaderModuleCreateFlags,
+    codeSize :: CSize,
+    pCode :: Ptr Word32
 }
 
 data VkSubresourceLayout = VkSubresourceLayout{
@@ -539,6 +548,23 @@ instance Storable VkPhysicalDeviceFeatures where
         pokeByteOff p 208 v53
         pokeByteOff p 212 v54
         pokeByteOff p 216 v55
+
+instance Storable VkShaderModuleCreateInfo where
+    sizeOf _ = 40
+    alignment _ = 8
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 8
+        v3 <- peekByteOff p 16
+        v4 <- peekByteOff p 24
+        v5 <- peekByteOff p 32
+        return (VkShaderModuleCreateInfo v1 v2 v3 v4 v5)
+    poke p (VkShaderModuleCreateInfo v1 v2 v3 v4 v5) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 8 v2
+        pokeByteOff p 16 v3
+        pokeByteOff p 24 v4
+        pokeByteOff p 32 v5
 
 instance Storable VkSubresourceLayout where
     sizeOf _ = 40

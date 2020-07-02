@@ -16,6 +16,7 @@ import Graphics.Vulkan.Enumerations
 import Graphics.Vulkan.Images
 import Graphics.Vulkan.Instance
 import Graphics.Vulkan.Memory
+import Graphics.Vulkan.Shaders
 import Graphics.Vulkan.Types
 
 
@@ -53,5 +54,6 @@ initialize = do
     imagSu  <- vkCreateImageSubresource [imageAspectColorBit] 4 0
     imagSL  <- vkGetImageSubresourceLayout vkDev0 vkIma0 imagSu
     clearC  <- createClearColorValue [0,0,0,0]
+    shader  <- createShaderModuleInfo nullPtr (VkShaderModuleCreateFlags 0) "Shaders/Simple.spv"
 
     return ()
