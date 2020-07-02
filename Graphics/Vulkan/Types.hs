@@ -29,6 +29,7 @@ newtype VkImageAspectFlags = VkImageAspectFlags { unVkImageAspectFlags :: VkFlag
 newtype VkImageCreateFlags = VkImageCreateFlags { unVkImageCreateFlags :: VkFlags }
 newtype VkImageUsageFlags = VkImageUsageFlags { unVkImageUsageFlags :: VkFlags }
 newtype VkMemoryMapFlags = VkMemoryMapFlags { unVkMemoryMapFlags :: VkFlags }
+newtype VkShaderModuleCreateFlags = VkShaderModuleCreateFlags { unVkShaderModuleCreateFlags :: VkFlags }
 
 
 -- Vulkan Handles
@@ -122,6 +123,14 @@ instance Storable VkMemoryMapFlags where
         v <- peekByteOff p 0
         return (VkMemoryMapFlags v)
     poke p (VkMemoryMapFlags v) = pokeByteOff p 0 v
+
+instance Storable VkShaderModuleCreateFlags where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkShaderModuleCreateFlags v)
+    poke p (VkShaderModuleCreateFlags v) = pokeByteOff p 0 v
 
 -- Storable instances for Vulkan handles.
 instance Storable VkBuffer where
