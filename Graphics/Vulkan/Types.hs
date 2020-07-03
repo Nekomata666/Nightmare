@@ -23,6 +23,7 @@ newtype VkBool  = VkBool { unVkBool :: Word32 }
 -- Vulkan Flags
 newtype VkBufferCreateFlags = VkBufferCreateFlags { unVkBufferCreateFlags :: VkFlags }
 newtype VkBufferUsageFlags = VkBufferUsageFlags { unVkBufferUsageFlags :: VkFlags }
+newtype VkDescriptorSetLayoutCreateFlags = VkDescriptorSetLayoutCreateFlags { unVkDescriptorSetLayoutCreateFlags :: VkFlags }
 newtype VkDeviceCreateFlags = VkDeviceCreateFlags { unVkDeviceCreateFlags :: VkFlags }
 newtype VkDeviceQueueCreateFlags = VkDeviceQueueCreateFlags { unVkDeviceQueueCreateFlags :: VkFlags }
 newtype VkImageAspectFlags = VkImageAspectFlags { unVkImageAspectFlags :: VkFlags }
@@ -79,6 +80,14 @@ instance Storable VkBufferUsageFlags where
         v <- peekByteOff p 0
         return (VkBufferUsageFlags v)
     poke p (VkBufferUsageFlags v) = pokeByteOff p 0 v
+
+instance Storable VkDescriptorSetLayoutCreateFlags where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkDescriptorSetLayoutCreateFlags v)
+    poke p (VkDescriptorSetLayoutCreateFlags v) = pokeByteOff p 0 v
 
 instance Storable VkDeviceCreateFlags where
     sizeOf _ = 4
