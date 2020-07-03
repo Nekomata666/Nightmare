@@ -10,7 +10,7 @@ import Graphics.Utilities
 import Graphics.Vulkan.Buffers
 import Graphics.Vulkan.Command
 import Graphics.Vulkan.Constants
-import Graphics.Vulkan.Data (VkComputePipelineCreateInfo(..), VkDescriptorPoolSize(..), VkExtent3D(..), VkMemoryRequirements(..))
+import Graphics.Vulkan.Data (VkComputePipelineCreateInfo(..), VkDescriptorBufferInfo(..), VkDescriptorPoolSize(..), VkExtent3D(..), VkMemoryRequirements(..))
 import Graphics.Vulkan.Descriptor
 import Graphics.Vulkan.Devices
 import Graphics.Vulkan.Enumerations
@@ -74,5 +74,7 @@ initialize = do
     vkDeP0 <- vkCreateDescriptorPool vkDev0 vkDPCI
     vkDSAI <- createVkDescriptorSetAllocateInfo nullPtr vkDeP0 1 [vkDSL0]
     vkAlDS <- vkAllocateDescriptorSets vkDev0 vkDSAI
+    let vkDBIn = VkDescriptorBufferInfo buffer (VkDeviceSize 0) wholeSize
+    vkWDS0 <- createVkWriteDescriptorSet nullPtr (head vkAlDS) 0 0 1 descriptorTypeStorageBuffer Nothing (Just vkDBIn) Nothing
 
     return ()
