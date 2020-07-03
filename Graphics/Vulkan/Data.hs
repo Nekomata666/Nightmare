@@ -60,6 +60,20 @@ data VkComputePipelineCreateInfo = VkComputePipelineCreateInfo{
     basePipelineIndex :: Int32
 }
 
+data VkDescriptorPoolCreateInfo = VkDescriptorPoolCreateInfo{
+    sType :: VkStructureType,
+    next :: Ptr Void,
+    flags :: VkDescriptorPoolCreateFlags,
+    maxSets :: Word32,
+    poolSizeCount :: Word32,
+    pPoolSizes :: Ptr VkDescriptorPoolSize
+}
+
+data VkDescriptorPoolSize = VkDescriptorPoolSize{
+    dType :: VkDescriptorType,
+    descriptorCount :: Word32
+}
+
 data VkDescriptorSetLayoutBinding = VkDescriptorSetLayoutBinding{
     binding :: Word32,
     descriptorType :: VkDescriptorType,
@@ -365,6 +379,36 @@ instance Storable VkComputePipelineCreateInfo where
         pokeByteOff p 72 v5
         pokeByteOff p 80 v6
         pokeByteOff p 88 v7
+
+instance Storable VkDescriptorPoolCreateInfo where
+    sizeOf _ = 40
+    alignment _ = 8
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 8
+        v3 <- peekByteOff p 16
+        v4 <- peekByteOff p 20
+        v5 <- peekByteOff p 24
+        v6 <- peekByteOff p 32
+        return (VkDescriptorPoolCreateInfo v1 v2 v3 v4 v5 v6)
+    poke p (VkDescriptorPoolCreateInfo v1 v2 v3 v4 v5 v6) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 8 v2
+        pokeByteOff p 16 v3
+        pokeByteOff p 20 v4
+        pokeByteOff p 24 v5
+        pokeByteOff p 32 v6
+
+instance Storable VkDescriptorPoolSize where
+    sizeOf _ = 8
+    alignment _ = 4
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 4
+        return (VkDescriptorPoolSize v1 v2)
+    poke p (VkDescriptorPoolSize v1 v2) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 4 v2
 
 instance Storable VkDescriptorSetLayoutBinding where
     sizeOf _ = 24
