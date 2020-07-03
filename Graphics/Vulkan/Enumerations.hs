@@ -31,6 +31,8 @@ newtype VkResult = VkResult { unVkResult :: Int32 }
     deriving (Eq)
 newtype VkSampleCountFlagBits = VkSampleCountFlagBits { unVkSampleCountFlagBits :: Word32 }
     deriving (Eq)
+newtype VkShaderStageFlagBits = VkShaderStageFlagBits { unVkShaderStageFlagBits :: Word32 }
+    deriving (Eq)
 newtype VkSharingMode = VkSharingMode { unVkSharingMode :: Word32 }
     deriving (Eq)
 newtype VkStructureType = VkStructureType { unVkStructureType :: Int32 }
@@ -598,6 +600,24 @@ sampleCount32Bit             = VkSampleCountFlagBits 32
 sampleCount64Bit             :: VkSampleCountFlagBits
 sampleCount64Bit             = VkSampleCountFlagBits 64
 
+-- VkShaderStageFlagBits
+shaderStageVertexBit                     :: VkShaderStageFlagBits
+shaderStageVertexBit                     = VkShaderStageFlagBits 1
+shaderStageTessellationControlBit        :: VkShaderStageFlagBits
+shaderStageTessellationControlBit        = VkShaderStageFlagBits 2
+shaderStageTessellationEvaluationBit     :: VkShaderStageFlagBits
+shaderStageTessellationEvaluationBit     = VkShaderStageFlagBits 4
+shaderStageGeometryBit                   :: VkShaderStageFlagBits
+shaderStageGeometryBit                   = VkShaderStageFlagBits 8
+shaderStageFragmentBit                   :: VkShaderStageFlagBits
+shaderStageFragmentBit                   = VkShaderStageFlagBits 16
+shaderStageComputeBit                    :: VkShaderStageFlagBits
+shaderStageComputeBit                    = VkShaderStageFlagBits 32
+shaderStageAllGraphics                   :: VkShaderStageFlagBits
+shaderStageAllGraphics                   = VkShaderStageFlagBits 31
+shaderStageAll                           :: VkShaderStageFlagBits
+shaderStageAll                           = VkShaderStageFlagBits 2147483647
+
 -- VkSharingMode
 sharingModeExclusive     :: VkSharingMode
 sharingModeExclusive     = VkSharingMode 0
@@ -830,6 +850,14 @@ instance Storable VkSampleCountFlagBits where
         v <- peekByteOff p 0
         return (VkSampleCountFlagBits v)
     poke p (VkSampleCountFlagBits v) = pokeByteOff p 0 v
+
+instance Storable VkShaderStageFlagBits where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkShaderStageFlagBits v)
+    poke p (VkShaderStageFlagBits v) = pokeByteOff p 0 v
 
 instance Storable VkSharingMode where
     sizeOf _ = 4

@@ -16,6 +16,7 @@ import Graphics.Vulkan.Enumerations
 import Graphics.Vulkan.Images
 import Graphics.Vulkan.Instance
 import Graphics.Vulkan.Memory
+import Graphics.Vulkan.Pipelines
 import Graphics.Vulkan.Shaders
 import Graphics.Vulkan.Types
 
@@ -56,5 +57,6 @@ initialize = do
     clearC  <- createClearColorValue [0,0,0,0]
     vkSMIn  <- createShaderModuleInfo nullPtr (VkShaderModuleCreateFlags 0) "Shaders/Simple.spv"
     vkSMod  <- vkCreateShaderModule vkDev0 vkSMIn
+    vkPSSI  <- createPipelineShaderStageInfo nullPtr (VkPipelineShaderStageCreateFlags 0) shaderStageComputeBit vkSMod "main" Nothing
 
     return ()

@@ -184,12 +184,35 @@ data VkPhysicalDeviceFeatures = VkPhysicalDeviceFeatures{
     inheritedQueries :: VkBool
 }
 
+data VkPipelineShaderStageCreateInfo = VkPipelineShaderStageCreateInfo{
+    sType :: VkStructureType,
+    next :: Ptr Void,
+    flags :: VkPipelineShaderStageCreateFlags,
+    stage :: VkShaderStageFlagBits,
+    vkModule :: VkShaderModule,
+    pName :: CString,
+    pSpecializationInfo :: Ptr VkSpecializationInfo
+}
+
 data VkShaderModuleCreateInfo = VkShaderModuleCreateInfo{
     sType :: VkStructureType,
     next :: Ptr Void,
     flags :: VkShaderModuleCreateFlags,
     codeSize :: CSize,
     pCode :: Ptr Word32
+}
+
+data VkSpecializationInfo = VkSpecializationInfo{
+    mapEntryCount :: Word32,
+    pMapEntries :: Ptr VkSpecializationMapEntry,
+    dataSize :: CSize,
+    pData :: Ptr Void
+}
+
+data VkSpecializationMapEntry = VkSpecializationMapEntry{
+    constantID :: Word32,
+    offset :: Word32,
+    size :: CSize
 }
 
 data VkSubresourceLayout = VkSubresourceLayout{
@@ -549,6 +572,27 @@ instance Storable VkPhysicalDeviceFeatures where
         pokeByteOff p 212 v54
         pokeByteOff p 216 v55
 
+instance Storable VkPipelineShaderStageCreateInfo where
+    sizeOf _ = 48
+    alignment _ = 8
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 8
+        v3 <- peekByteOff p 16
+        v4 <- peekByteOff p 20
+        v5 <- peekByteOff p 24
+        v6 <- peekByteOff p 32
+        v7 <- peekByteOff p 40
+        return (VkPipelineShaderStageCreateInfo v1 v2 v3 v4 v5 v6 v7)
+    poke p (VkPipelineShaderStageCreateInfo v1 v2 v3 v4 v5 v6 v7) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 8 v2
+        pokeByteOff p 16 v3
+        pokeByteOff p 20 v4
+        pokeByteOff p 24 v5
+        pokeByteOff p 32 v6
+        pokeByteOff p 40 v7
+
 instance Storable VkShaderModuleCreateInfo where
     sizeOf _ = 40
     alignment _ = 8
@@ -565,6 +609,34 @@ instance Storable VkShaderModuleCreateInfo where
         pokeByteOff p 16 v3
         pokeByteOff p 24 v4
         pokeByteOff p 32 v5
+
+instance Storable VkSpecializationInfo where
+    sizeOf _ = 32
+    alignment _ = 8
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 8
+        v3 <- peekByteOff p 16
+        v4 <- peekByteOff p 24
+        return (VkSpecializationInfo v1 v2 v3 v4)
+    poke p (VkSpecializationInfo v1 v2 v3 v4) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 8 v2
+        pokeByteOff p 16 v3
+        pokeByteOff p 24 v4
+
+instance Storable VkSpecializationMapEntry where
+    sizeOf _ = 16
+    alignment _ = 8
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 4
+        v3 <- peekByteOff p 8
+        return (VkSpecializationMapEntry v1 v2 v3)
+    poke p (VkSpecializationMapEntry v1 v2 v3) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 4 v2
+        pokeByteOff p 8 v3
 
 instance Storable VkSubresourceLayout where
     sizeOf _ = 40
