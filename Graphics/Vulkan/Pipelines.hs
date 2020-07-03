@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Pipelines (createVkPipelineShaderStageInfo, createVkPipelineCacheInfo, createVkPipelineLayoutCreateInfo, vkCreatePipelineLayout) where
+module Graphics.Vulkan.Pipelines (createVkPipelineShaderStageInfo, createVkPipelineCacheInfo, createVkPipelineLayoutCreateInfo, vkCreatePipelineCache, vkCreatePipelineLayout) where
 
 
 import Data.Maybe
@@ -21,6 +21,10 @@ import Graphics.Vulkan.Types
 type Name                   = String
 type PushConstantRangeCount = Word32
 type SetLayoutCount         = Word32
+
+foreign import ccall unsafe "vkCreatePipelineCache"
+    c_vkCreatePipelineCache :: VkDevice -> Ptr VkPipelineCacheCreateInfo -> Ptr VkAllocationCallbacks ->
+        Ptr VkPipelineCache -> IO VkResult
 
 foreign import ccall unsafe "vkCreatePipelineLayout"
     c_vkCreatePipelineLayout :: VkDevice -> Ptr VkPipelineLayoutCreateInfo -> Ptr VkAllocationCallbacks ->
@@ -50,6 +54,13 @@ createVkPipelineShaderStageInfo v pSSCF sSF sM n mVKSI = do
     n' <- newCString n
     pInfo <- fromMaybeIO mVKSI
     return $ VkPipelineShaderStageCreateInfo structureTypePipelineShaderStageCreateInfo v pSSCF sSF sM n' pInfo
+
+vkCreatePipelineCache :: VkDevice -> VkPipelineCacheCreateInfo -> IO VkPipelineCache
+vkCreatePipelineCache d pCCI = alloca $ \pPCCI ->
+    alloca $ \pPC -> do
+        poke pPCCI pCCI
+        _ <- c_vkCreatePipelineCache d pPCCI nullPtr pPC
+        peek pPC
 
 vkCreatePipelineLayout :: VkDevice -> VkPipelineLayoutCreateInfo -> IO VkPipelineLayout
 vkCreatePipelineLayout d pLCI = alloca $ \pPLCI ->
