@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Descriptor (createVkDescriptorPoolCreateInfo, createVkDescriptorSetAllocateInfo, createVkDescriptorSetLayoutBinding, createVkDescriptorSetLayoutCreateInfo, vkAllocateDescriptorSets, vkCreateDescriptorPool, vkCreateDescriptorSetLayout) where
+module Graphics.Vulkan.Descriptor (createVkDescriptorPoolCreateInfo, createVkDescriptorSetAllocateInfo, createVkDescriptorSetLayoutBinding, createVkDescriptorSetLayoutCreateInfo, createVkWriteDescriptorSet, vkAllocateDescriptorSets, vkCreateDescriptorPool, vkCreateDescriptorSetLayout) where
 
 
 import Data.Maybe
@@ -17,6 +17,7 @@ import Graphics.Vulkan.Types
 
 
 -- Type aliases.
+type ArrayElement           = Word32
 type Binding                = Word32
 type BindingCount           = Word32
 type DescriptorCount        = Word32
@@ -65,6 +66,14 @@ createVkDescriptorSetLayoutCreateInfo :: Ptr Void -> VkDescriptorSetLayoutCreate
 createVkDescriptorSetLayoutCreateInfo v dSLCF bC dSLB = do
     p <- fromMaybeListIO bC dSLB
     return $ VkDescriptorSetLayoutCreateInfo structureTypeDescriptorSetLayoutCreateInfo v dSLCF bC p
+
+createVkWriteDescriptorSet :: Ptr Void -> VkDescriptorSet -> Binding -> ArrayElement -> DescriptorCount -> VkDescriptorType ->
+    Maybe VkDescriptorImageInfo -> Maybe VkDescriptorBufferInfo -> Maybe VkBufferView -> IO VkWriteDescriptorSet
+createVkWriteDescriptorSet v dS b aE dC dT dII dBI bV = do
+    pDII <- fromMaybeIO dII
+    pDBI <- fromMaybeIO dBI
+    pBV  <- fromMaybeIO bV
+    return $ VkWriteDescriptorSet structureTypeWriteDescriptorSet v dS b aE dC dT pDII pDBI pBV
 
 vkAllocateDescriptorSets :: VkDevice -> VkDescriptorSetAllocateInfo -> IO [VkDescriptorSet]
 vkAllocateDescriptorSets d dSAI@(VkDescriptorSetAllocateInfo _ _ _ c _) = alloca $ \pDSAI ->

@@ -60,6 +60,18 @@ data VkComputePipelineCreateInfo = VkComputePipelineCreateInfo{
     basePipelineIndex :: Int32
 }
 
+data VkDescriptorBufferInfo = VkDescriptorBufferInfo{
+    buffer :: VkBuffer,
+    offset :: VkDeviceSize,
+    range :: VkDeviceSize
+}
+
+data VkDescriptorImageInfo = VkDescriptorImageInfo{
+    sampler :: VkSampler,
+    imageView :: VkImageView,
+    imageLayout :: VkImageLayout
+}
+
 data VkDescriptorPoolCreateInfo = VkDescriptorPoolCreateInfo{
     sType :: VkStructureType,
     next :: Ptr Void,
@@ -295,6 +307,19 @@ data VkSubresourceLayout = VkSubresourceLayout{
     depthPitch :: VkDeviceSize
 }
 
+data VkWriteDescriptorSet = VkWriteDescriptorSet{
+    sType :: VkStructureType,
+    next :: Ptr Void,
+    dstSet :: VkDescriptorSet,
+    dstBinding :: Word32,
+    dstArrayElement :: Word32,
+    descriptorCount :: Word32,
+    descriptorType :: VkDescriptorType,
+    pImageInfo :: Ptr VkDescriptorImageInfo,
+    pBufferInfo :: Ptr VkDescriptorBufferInfo,
+    pTexelBufferView :: Ptr VkBufferView
+}
+
 -- Storable instances
 instance Storable VkAllocationCallbacks where
     sizeOf _ = 48
@@ -387,6 +412,32 @@ instance Storable VkComputePipelineCreateInfo where
         pokeByteOff p 72 v5
         pokeByteOff p 80 v6
         pokeByteOff p 88 v7
+
+instance Storable VkDescriptorBufferInfo where
+    sizeOf _ = 24
+    alignment _ = 8
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 8
+        v3 <- peekByteOff p 16
+        return (VkDescriptorBufferInfo v1 v2 v3)
+    poke p (VkDescriptorBufferInfo v1 v2 v3) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 8 v2
+        pokeByteOff p 16 v3
+
+instance Storable VkDescriptorImageInfo where
+    sizeOf _ = 24
+    alignment _ = 8
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 8
+        v3 <- peekByteOff p 16
+        return (VkDescriptorImageInfo v1 v2 v3)
+    poke p (VkDescriptorImageInfo v1 v2 v3) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 8 v2
+        pokeByteOff p 16 v3
 
 instance Storable VkDescriptorPoolCreateInfo where
     sizeOf _ = 40
@@ -879,3 +930,30 @@ instance Storable VkSubresourceLayout where
         pokeByteOff p 16 v3
         pokeByteOff p 24 v4
         pokeByteOff p 32 v5
+
+instance Storable VkWriteDescriptorSet where
+    sizeOf _ = 64
+    alignment _ = 8
+    peek p = do
+        v01 <- peekByteOff p 0
+        v02 <- peekByteOff p 8
+        v03 <- peekByteOff p 16
+        v04 <- peekByteOff p 24
+        v05 <- peekByteOff p 28
+        v06 <- peekByteOff p 32
+        v07 <- peekByteOff p 36
+        v08 <- peekByteOff p 40
+        v09 <- peekByteOff p 48
+        v10 <- peekByteOff p 56
+        return (VkWriteDescriptorSet v01 v02 v03 v04 v05 v06 v07 v08 v09 v10)
+    poke p (VkWriteDescriptorSet v01 v02 v03 v04 v05 v06 v07 v08 v09 v10) = do
+        pokeByteOff p 0 v01
+        pokeByteOff p 8 v02
+        pokeByteOff p 16 v03
+        pokeByteOff p 24 v04
+        pokeByteOff p 28 v05
+        pokeByteOff p 32 v06
+        pokeByteOff p 36 v07
+        pokeByteOff p 40 v08
+        pokeByteOff p 48 v09
+        pokeByteOff p 56 v10
