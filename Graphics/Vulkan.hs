@@ -63,5 +63,6 @@ initialize = do
     vDSLCI  <- createVkDescriptorSetLayoutCreateInfo nullPtr (VkDescriptorSetLayoutCreateFlags 0) 1 (Just [vkDSLB])
     vkDSL0  <- vkCreateDescriptorSetLayout vkDev0 vDSLCI
     vkPLCI  <- createVkPipelineLayoutCreateInfo nullPtr (VkPipelineLayoutCreateFlags 0) 1 [vkDSL0] 0 Nothing
+    vkPiLa  <- vkCreatePipelineLayout vkDev0 vkPLCI
 
     return ()
