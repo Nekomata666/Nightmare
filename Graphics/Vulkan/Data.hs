@@ -345,6 +345,27 @@ instance Storable VkClearColorValue where
         return (VkClearColorValue v)
     poke p (VkClearColorValue v) = pokeByteOff p 0 v
 
+instance Storable VkComputePipelineCreateInfo where
+    sizeOf _ = 96
+    alignment _ = 8
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 8
+        v3 <- peekByteOff p 16
+        v4 <- peekByteOff p 24
+        v5 <- peekByteOff p 72
+        v6 <- peekByteOff p 80
+        v7 <- peekByteOff p 88
+        return (VkComputePipelineCreateInfo v1 v2 v3 v4 v5 v6 v7)
+    poke p (VkComputePipelineCreateInfo v1 v2 v3 v4 v5 v6 v7) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 8 v2
+        pokeByteOff p 16 v3
+        pokeByteOff p 24 v4
+        pokeByteOff p 72 v5
+        pokeByteOff p 80 v6
+        pokeByteOff p 88 v7
+
 instance Storable VkDescriptorSetLayoutBinding where
     sizeOf _ = 24
     alignment _ = 8
