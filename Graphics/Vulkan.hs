@@ -61,6 +61,7 @@ initialize = do
     vkPSSI  <- createPipelineShaderStageInfo nullPtr (VkPipelineShaderStageCreateFlags 0) shaderStageComputeBit vkSMod "main" Nothing
     vkDSLB  <- createVkDescriptorSetLayoutBinding 0 descriptorTypeStorageBuffer 1 [shaderStageComputeBit] Nothing
     vDSLCI  <- createVkDescriptorSetLayoutCreateInfo nullPtr (VkDescriptorSetLayoutCreateFlags 0) 1 (Just [vkDSLB])
-    vkDSLa  <- vkCreateDescriptorSetLayout vkDev0 vDSLCI
+    vkDSL0  <- vkCreateDescriptorSetLayout vkDev0 vDSLCI
+    vkPLCI  <- createVkPipelineLayoutCreateInfo nullPtr (VkPipelineLayoutCreateFlags 0) 1 [vkDSL0] 0 Nothing
 
     return ()
