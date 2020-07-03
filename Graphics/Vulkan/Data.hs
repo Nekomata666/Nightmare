@@ -50,6 +50,14 @@ data VkClearColorValue = VkClearColorValue{
     word32 :: Ptr Word32 -- [4]
 }
 
+data VkDescriptorSetLayoutBinding = VkDescriptorSetLayoutBinding{
+    binding :: Word32,
+    descriptorType :: VkDescriptorType,
+    descriptorCount :: Word32,
+    stageFlags :: VkShaderStageFlags,
+    pImmutableSamplers :: Ptr VkSampler
+}
+
 data VkDeviceCreateInfo = VkDeviceCreateInfo{
     sType :: VkStructureType,
     next :: Ptr Void,
@@ -294,6 +302,23 @@ instance Storable VkClearColorValue where
         v <- peekByteOff p 0
         return (VkClearColorValue v)
     poke p (VkClearColorValue v) = pokeByteOff p 0 v
+
+instance Storable VkDescriptorSetLayoutBinding where
+    sizeOf _ = 24
+    alignment _ = 8
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 4
+        v3 <- peekByteOff p 8
+        v4 <- peekByteOff p 12
+        v5 <- peekByteOff p 16
+        return (VkDescriptorSetLayoutBinding v1 v2 v3 v4 v5)
+    poke p (VkDescriptorSetLayoutBinding v1 v2 v3 v4 v5) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 4 v2
+        pokeByteOff p 8 v3
+        pokeByteOff p 12 v4
+        pokeByteOff p 16 v5
 
 instance Storable VkDeviceCreateInfo where
     sizeOf _ = 72

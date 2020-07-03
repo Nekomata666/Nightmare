@@ -11,6 +11,8 @@ import Foreign
 -- Vulkan newtypes
 newtype VkBufferUsageFlagBits = VkBufferUsageFlagBits { unVkBufferUsageFlagBits :: Word32 }
     deriving (Eq)
+newtype VkDescriptorType = VkDescriptorType { unVkDescriptorType :: Word32 }
+    deriving (Eq)
 newtype VkFormat = VkFormat { unVkFormat :: Word32 }
     deriving (Eq)
 newtype VkImageAspectFlagBits = VkImageAspectFlagBits { unVkImageAspectFlagBits :: Word32 }
@@ -61,6 +63,30 @@ bufferUsageVertexBufferBit           :: VkBufferUsageFlagBits
 bufferUsageVertexBufferBit           = VkBufferUsageFlagBits 128
 bufferUsageIndirectBufferBit         :: VkBufferUsageFlagBits
 bufferUsageIndirectBufferBit         = VkBufferUsageFlagBits 256
+
+-- VkDescriptorType
+descriptorTypeSampler                :: VkDescriptorType
+descriptorTypeSampler                = VkDescriptorType 0
+descriptorTypeCombinedImageSampler   :: VkDescriptorType
+descriptorTypeCombinedImageSampler   = VkDescriptorType 1
+descriptorTypeSampledImage           :: VkDescriptorType
+descriptorTypeSampledImage           = VkDescriptorType 2
+descriptorTypeStorageImage           :: VkDescriptorType
+descriptorTypeStorageImage           = VkDescriptorType 3
+descriptorTypeUniformTexelBuffer     :: VkDescriptorType
+descriptorTypeUniformTexelBuffer     = VkDescriptorType 4
+descriptorTypeStorageTexelBuffer     :: VkDescriptorType
+descriptorTypeStorageTexelBuffer     = VkDescriptorType 5
+descriptorTypeUniformBuffer          :: VkDescriptorType
+descriptorTypeUniformBuffer          = VkDescriptorType 6
+descriptorTypeStorageBuffer          :: VkDescriptorType
+descriptorTypeStorageBuffer          = VkDescriptorType 7
+descriptorTypeUniformBufferDynamic   :: VkDescriptorType
+descriptorTypeUniformBufferDynamic   = VkDescriptorType 8
+descriptorTypeStorageBufferDynamic   :: VkDescriptorType
+descriptorTypeStorageBufferDynamic   = VkDescriptorType 9
+descriptorTypeInputAttachment        :: VkDescriptorType
+descriptorTypeInputAttachment        = VkDescriptorType 10
 
 -- VkFormat
 -- Todo: Remove unwanted formats, like: SRGB, SFloat, UFloat
@@ -770,6 +796,14 @@ instance Storable VkBufferUsageFlagBits where
         v <- peekByteOff p 0
         return (VkBufferUsageFlagBits v)
     poke p (VkBufferUsageFlagBits v) = pokeByteOff p 0 v
+
+instance Storable VkDescriptorType where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkDescriptorType v)
+    poke p (VkDescriptorType v) = pokeByteOff p 0 v
 
 instance Storable VkFormat where
     sizeOf _ = 4

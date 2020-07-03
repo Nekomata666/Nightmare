@@ -31,6 +31,7 @@ newtype VkImageUsageFlags = VkImageUsageFlags { unVkImageUsageFlags :: VkFlags }
 newtype VkMemoryMapFlags = VkMemoryMapFlags { unVkMemoryMapFlags :: VkFlags }
 newtype VkPipelineShaderStageCreateFlags = VkPipelineShaderStageCreateFlags { unVkPipelineShaderStageCreateFlags :: VkFlags }
 newtype VkShaderModuleCreateFlags = VkShaderModuleCreateFlags { unVkShaderModuleCreateFlags :: VkFlags }
+newtype VkShaderStageFlags = VkShaderStageFlags { unVkShaderStageFlags :: VkFlags }
 
 
 -- Vulkan Handles
@@ -41,6 +42,7 @@ newtype VkDeviceSize = VkDeviceSize { unVkDeviceSize :: VkHandle }
 newtype VkImage = VkImage { unVkImage :: VkHandle }
 newtype VkInstance = VkInstance { unVkInstance :: VkHandle }
 newtype VkPhysicalDevice = VkPhysicalDevice { unVkPhysicalDevice :: VkHandle }
+newtype VkSampler = VkSampler { unVkSampler :: VkHandle }
 newtype VkShaderModule = VkShaderModule { unVkShaderModule :: VkHandle }
 
 
@@ -142,6 +144,14 @@ instance Storable VkShaderModuleCreateFlags where
         return (VkShaderModuleCreateFlags v)
     poke p (VkShaderModuleCreateFlags v) = pokeByteOff p 0 v
 
+instance Storable VkShaderStageFlags where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkShaderStageFlags v)
+    poke p (VkShaderStageFlags v) = pokeByteOff p 0 v
+
 -- Storable instances for Vulkan handles.
 instance Storable VkBuffer where
     sizeOf _ = 8
@@ -198,6 +208,14 @@ instance Storable VkPhysicalDevice where
         v <- peekByteOff p 0
         return (VkPhysicalDevice v)
     poke p (VkPhysicalDevice v) = pokeByteOff p 0 v
+
+instance Storable VkSampler where
+    sizeOf _ = 8
+    alignment _ = 8
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkSampler v)
+    poke p (VkSampler v) = pokeByteOff p 0 v
 
 instance Storable VkShaderModule where
     sizeOf _ = 8

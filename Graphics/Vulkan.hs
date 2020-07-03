@@ -11,6 +11,7 @@ import Graphics.Vulkan.Buffers
 import Graphics.Vulkan.Command
 import Graphics.Vulkan.Constants
 import Graphics.Vulkan.Data (VkExtent3D(..), VkMemoryRequirements(..))
+import Graphics.Vulkan.Descriptor
 import Graphics.Vulkan.Devices
 import Graphics.Vulkan.Enumerations
 import Graphics.Vulkan.Images
@@ -58,5 +59,6 @@ initialize = do
     vkSMIn  <- createShaderModuleInfo nullPtr (VkShaderModuleCreateFlags 0) "Shaders/Simple.spv"
     vkSMod  <- vkCreateShaderModule vkDev0 vkSMIn
     vkPSSI  <- createPipelineShaderStageInfo nullPtr (VkPipelineShaderStageCreateFlags 0) shaderStageComputeBit vkSMod "main" Nothing
+    vkDSLB  <- createVkDescriptorSetLayoutBinding 0 descriptorTypeStorageBuffer 1 [shaderStageComputeBit] Nothing
 
     return ()
