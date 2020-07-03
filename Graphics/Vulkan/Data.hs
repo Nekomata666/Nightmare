@@ -200,6 +200,16 @@ data VkPhysicalDeviceFeatures = VkPhysicalDeviceFeatures{
     inheritedQueries :: VkBool
 }
 
+data VkPipelineLayoutCreateInfo = VkPipelineLayoutCreateInfo{
+    sType :: VkStructureType,
+    next :: Ptr Void,
+    flags :: VkPipelineLayoutCreateFlags,
+    setLayoutCount :: Word32,
+    pSetLayouts :: Ptr VkDescriptorSetLayout,
+    pushConstantRangeCount :: Word32,
+    pPushConstantRanges :: Ptr VkPushConstantRange
+}
+
 data VkPipelineShaderStageCreateInfo = VkPipelineShaderStageCreateInfo{
     sType :: VkStructureType,
     next :: Ptr Void,
@@ -208,6 +218,12 @@ data VkPipelineShaderStageCreateInfo = VkPipelineShaderStageCreateInfo{
     vkModule :: VkShaderModule,
     pName :: CString,
     pSpecializationInfo :: Ptr VkSpecializationInfo
+}
+
+data VkPushConstantRange = VkPushConstantRange{
+    stageFlags :: VkShaderStageFlags,
+    offset :: Word32,
+    size :: Word32
 }
 
 data VkShaderModuleCreateInfo = VkShaderModuleCreateInfo{
@@ -622,6 +638,27 @@ instance Storable VkPhysicalDeviceFeatures where
         pokeByteOff p 212 v54
         pokeByteOff p 216 v55
 
+instance Storable VkPipelineLayoutCreateInfo where
+    sizeOf _ = 48
+    alignment _ = 8
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 8
+        v3 <- peekByteOff p 16
+        v4 <- peekByteOff p 20
+        v5 <- peekByteOff p 24
+        v6 <- peekByteOff p 32
+        v7 <- peekByteOff p 40
+        return (VkPipelineLayoutCreateInfo v1 v2 v3 v4 v5 v6 v7)
+    poke p (VkPipelineLayoutCreateInfo v1 v2 v3 v4 v5 v6 v7) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 8 v2
+        pokeByteOff p 16 v3
+        pokeByteOff p 20 v4
+        pokeByteOff p 24 v5
+        pokeByteOff p 32 v6
+        pokeByteOff p 40 v7
+
 instance Storable VkPipelineShaderStageCreateInfo where
     sizeOf _ = 48
     alignment _ = 8
@@ -642,6 +679,19 @@ instance Storable VkPipelineShaderStageCreateInfo where
         pokeByteOff p 24 v5
         pokeByteOff p 32 v6
         pokeByteOff p 40 v7
+
+instance Storable VkPushConstantRange where
+    sizeOf _ = 12
+    alignment _ = 4
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 4
+        v3 <- peekByteOff p 8
+        return (VkPushConstantRange v1 v2 v3)
+    poke p (VkPushConstantRange v1 v2 v3) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 4 v2
+        pokeByteOff p 8 v3
 
 instance Storable VkShaderModuleCreateInfo where
     sizeOf _ = 40
