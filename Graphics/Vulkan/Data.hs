@@ -74,6 +74,14 @@ data VkDescriptorPoolSize = VkDescriptorPoolSize{
     descriptorCount :: Word32
 }
 
+data VkDescriptorSetAllocateInfo = VkDescriptorSetAllocateInfo{
+    sType :: VkStructureType,
+    next :: Ptr Void,
+    descriptorPool :: VkDescriptorPool,
+    descriptorSetCount :: Word32,
+    pSetLayouts :: Ptr VkDescriptorSetLayout
+}
+
 data VkDescriptorSetLayoutBinding = VkDescriptorSetLayoutBinding{
     binding :: Word32,
     descriptorType :: VkDescriptorType,
@@ -409,6 +417,23 @@ instance Storable VkDescriptorPoolSize where
     poke p (VkDescriptorPoolSize v1 v2) = do
         pokeByteOff p 0 v1
         pokeByteOff p 4 v2
+
+instance Storable VkDescriptorSetAllocateInfo where
+    sizeOf _ = 40
+    alignment _ = 8
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 8
+        v3 <- peekByteOff p 16
+        v4 <- peekByteOff p 24
+        v5 <- peekByteOff p 32
+        return (VkDescriptorSetAllocateInfo v1 v2 v3 v4 v5)
+    poke p (VkDescriptorSetAllocateInfo v1 v2 v3 v4 v5) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 8 v2
+        pokeByteOff p 16 v3
+        pokeByteOff p 24 v4
+        pokeByteOff p 32 v5
 
 instance Storable VkDescriptorSetLayoutBinding where
     sizeOf _ = 24

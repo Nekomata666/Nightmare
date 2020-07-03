@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Descriptor (createVkDescriptorPoolCreateInfo, createVkDescriptorSetLayoutBinding, createVkDescriptorSetLayoutCreateInfo, vkCreateDescriptorPool, vkCreateDescriptorSetLayout) where
+module Graphics.Vulkan.Descriptor (createVkDescriptorPoolCreateInfo, createVkDescriptorSetAllocateInfo, createVkDescriptorSetLayoutBinding, createVkDescriptorSetLayoutCreateInfo, vkCreateDescriptorPool, vkCreateDescriptorSetLayout) where
 
 
 import Data.Maybe
@@ -20,6 +20,7 @@ import Graphics.Vulkan.Types
 type Binding                = Word32
 type BindingCount           = Word32
 type DescriptorCount        = Word32
+type DescriptorSetCount     = Word32
 type MaxSets                = Word32
 type PoolSizeCount          = Word32
 
@@ -38,6 +39,14 @@ createVkDescriptorPoolCreateInfo v dPCF mS pSC dPS = allocaArray i $ \p -> do
     return $ VkDescriptorPoolCreateInfo structureTypeDescriptorPoolCreateInfo v dPCF mS pSC p
     where
         i = cast pSC
+
+createVkDescriptorSetAllocateInfo :: Ptr Void -> VkDescriptorPool -> DescriptorSetCount -> [VkDescriptorSetLayout] ->
+    IO VkDescriptorSetAllocateInfo
+createVkDescriptorSetAllocateInfo v dP dSC dSL= allocaArray i $ \p -> do
+    pokeArray p dSL
+    return $ VkDescriptorSetAllocateInfo structureTypeDescriptorSetAllocateInfo v dP dSC p
+    where
+        i = cast dSC
 
 createVkDescriptorSetLayoutBinding :: Binding -> VkDescriptorType -> DescriptorCount -> [VkShaderStageFlagBits] ->
     Maybe VkSampler -> IO VkDescriptorSetLayoutBinding
