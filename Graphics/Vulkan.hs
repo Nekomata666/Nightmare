@@ -72,5 +72,6 @@ initialize = do
     let vkDPS0 = VkDescriptorPoolSize descriptorTypeStorageBuffer 1
     vkDPCI <- createVkDescriptorPoolCreateInfo nullPtr (VkDescriptorPoolCreateFlags 0) 1 1 [vkDPS0]
     vkDeP0 <- vkCreateDescriptorPool vkDev0 vkDPCI
+    vkDSAI <- createVkDescriptorSetAllocateInfo nullPtr vkDeP0 1 [vkDSL0]
 
     return ()
