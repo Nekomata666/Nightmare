@@ -10,7 +10,7 @@ import Graphics.Utilities
 import Graphics.Vulkan.Buffers
 import Graphics.Vulkan.Command
 import Graphics.Vulkan.Constants
-import Graphics.Vulkan.Data (VkExtent3D(..), VkMemoryRequirements(..))
+import Graphics.Vulkan.Data (VkComputePipelineCreateInfo(..), VkExtent3D(..), VkMemoryRequirements(..))
 import Graphics.Vulkan.Descriptor
 import Graphics.Vulkan.Devices
 import Graphics.Vulkan.Enumerations
@@ -64,5 +64,7 @@ initialize = do
     vkDSL0  <- vkCreateDescriptorSetLayout vkDev0 vDSLCI
     vkPLCI  <- createVkPipelineLayoutCreateInfo nullPtr (VkPipelineLayoutCreateFlags 0) 1 [vkDSL0] 0 Nothing
     vkPiLa  <- vkCreatePipelineLayout vkDev0 vkPLCI
+    let vkCPCI = VkComputePipelineCreateInfo structureTypeComputePipelineCreateInfo nullPtr
+               (VkPipelineCreateFlags 0) vkPSSI vkPiLa (VkPipeline 0) 0
 
     return ()

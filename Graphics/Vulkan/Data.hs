@@ -50,6 +50,16 @@ data VkClearColorValue = VkClearColorValue{
     word32 :: Ptr Word32 -- [4]
 }
 
+data VkComputePipelineCreateInfo = VkComputePipelineCreateInfo{
+    sType :: VkStructureType,
+    next :: Ptr Void,
+    flags :: VkPipelineCreateFlags,
+    stage :: VkPipelineShaderStageCreateInfo,
+    layout :: VkPipelineLayout,
+    basePipelineHandle :: VkPipeline,
+    basePipelineIndex :: Int32
+}
+
 data VkDescriptorSetLayoutBinding = VkDescriptorSetLayoutBinding{
     binding :: Word32,
     descriptorType :: VkDescriptorType,

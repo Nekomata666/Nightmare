@@ -30,6 +30,7 @@ newtype VkImageAspectFlags = VkImageAspectFlags { unVkImageAspectFlags :: VkFlag
 newtype VkImageCreateFlags = VkImageCreateFlags { unVkImageCreateFlags :: VkFlags }
 newtype VkImageUsageFlags = VkImageUsageFlags { unVkImageUsageFlags :: VkFlags }
 newtype VkMemoryMapFlags = VkMemoryMapFlags { unVkMemoryMapFlags :: VkFlags }
+newtype VkPipelineCreateFlags = VkPipelineCreateFlags { unVkPipelineCreateFlags :: VkFlags }
 newtype VkPipelineLayoutCreateFlags = VkPipelineLayoutCreateFlags { unVkPipelineLayoutCreateFlags :: VkFlags }
 newtype VkPipelineShaderStageCreateFlags = VkPipelineShaderStageCreateFlags { unVkPipelineShaderStageCreateFlags :: VkFlags }
 newtype VkShaderModuleCreateFlags = VkShaderModuleCreateFlags { unVkShaderModuleCreateFlags :: VkFlags }
@@ -45,6 +46,7 @@ newtype VkDeviceSize = VkDeviceSize { unVkDeviceSize :: VkHandle }
 newtype VkImage = VkImage { unVkImage :: VkHandle }
 newtype VkInstance = VkInstance { unVkInstance :: VkHandle }
 newtype VkPhysicalDevice = VkPhysicalDevice { unVkPhysicalDevice :: VkHandle }
+newtype VkPipeline = VkPipeline { unVkPipeline :: VkHandle }
 newtype VkPipelineLayout = VkPipelineLayout { unVkPipelineLayout :: VkHandle }
 newtype VkSampler = VkSampler { unVkSampler :: VkHandle }
 newtype VkShaderModule = VkShaderModule { unVkShaderModule :: VkHandle }
@@ -139,6 +141,14 @@ instance Storable VkMemoryMapFlags where
         v <- peekByteOff p 0
         return (VkMemoryMapFlags v)
     poke p (VkMemoryMapFlags v) = pokeByteOff p 0 v
+
+instance Storable VkPipelineCreateFlags where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkPipelineCreateFlags v)
+    poke p (VkPipelineCreateFlags v) = pokeByteOff p 0 v
 
 instance Storable VkPipelineLayoutCreateFlags where
     sizeOf _ = 4
@@ -236,6 +246,14 @@ instance Storable VkPhysicalDevice where
         v <- peekByteOff p 0
         return (VkPhysicalDevice v)
     poke p (VkPhysicalDevice v) = pokeByteOff p 0 v
+
+instance Storable VkPipeline where
+    sizeOf _ = 8
+    alignment _ = 8
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkPipeline v)
+    poke p (VkPipeline v) = pokeByteOff p 0 v
 
 instance Storable VkPipelineLayout where
     sizeOf _ = 8
