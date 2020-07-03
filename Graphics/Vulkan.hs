@@ -68,5 +68,6 @@ initialize = do
     vkPiCa  <- vkCreatePipelineCache vkDev0 vkPCCI
     let vkCPCI = VkComputePipelineCreateInfo structureTypeComputePipelineCreateInfo nullPtr
                (VkPipelineCreateFlags 0) vkPSSI vkPiLa (VkPipeline 0) 0
+    vkCoPi <- vkCreateComputePipelines vkDev0 vkPiCa 1 [vkCPCI]
 
     return ()

@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Pipelines (createVkPipelineShaderStageInfo, createVkPipelineCacheInfo, createVkPipelineLayoutCreateInfo, vkCreatePipelineCache, vkCreatePipelineLayout) where
+module Graphics.Vulkan.Pipelines (createVkPipelineShaderStageInfo, createVkPipelineCacheInfo, createVkPipelineLayoutCreateInfo, vkCreateComputePipelines, vkCreatePipelineCache, vkCreatePipelineLayout) where
 
 
 import Data.Maybe
@@ -18,9 +18,14 @@ import Graphics.Vulkan.Enumerations
 import Graphics.Vulkan.Types
 
 -- Type aliases.
+type CreateInfoCount        = Word32
 type Name                   = String
 type PushConstantRangeCount = Word32
 type SetLayoutCount         = Word32
+
+foreign import ccall unsafe "vkCreateComputePipelines"
+    c_vkCreateComputePipelines :: VkDevice -> VkPipelineCache -> Word32 -> Ptr VkComputePipelineCreateInfo ->
+        Ptr VkAllocationCallbacks -> Ptr VkPipeline -> IO VkResult
 
 foreign import ccall unsafe "vkCreatePipelineCache"
     c_vkCreatePipelineCache :: VkDevice -> Ptr VkPipelineCacheCreateInfo -> Ptr VkAllocationCallbacks ->
@@ -54,6 +59,15 @@ createVkPipelineShaderStageInfo v pSSCF sSF sM n mVKSI = do
     n' <- newCString n
     pInfo <- fromMaybeIO mVKSI
     return $ VkPipelineShaderStageCreateInfo structureTypePipelineShaderStageCreateInfo v pSSCF sSF sM n' pInfo
+
+vkCreateComputePipelines :: VkDevice -> VkPipelineCache -> CreateInfoCount -> [VkComputePipelineCreateInfo] -> IO [VkPipeline]
+vkCreateComputePipelines d pC cIC cPCI = allocaArray i $ \pCPCI ->
+    allocaArray i $ \pP -> do
+        pokeArray pCPCI cPCI
+        _ <- c_vkCreateComputePipelines d pC cIC pCPCI nullPtr pP
+        peekArray i pP
+        where
+            i = cast cIC
 
 vkCreatePipelineCache :: VkDevice -> VkPipelineCacheCreateInfo -> IO VkPipelineCache
 vkCreatePipelineCache d pCCI = alloca $ \pPCCI ->
