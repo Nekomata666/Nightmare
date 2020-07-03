@@ -30,6 +30,7 @@ newtype VkImageAspectFlags = VkImageAspectFlags { unVkImageAspectFlags :: VkFlag
 newtype VkImageCreateFlags = VkImageCreateFlags { unVkImageCreateFlags :: VkFlags }
 newtype VkImageUsageFlags = VkImageUsageFlags { unVkImageUsageFlags :: VkFlags }
 newtype VkMemoryMapFlags = VkMemoryMapFlags { unVkMemoryMapFlags :: VkFlags }
+newtype VkPipelineCacheCreateFlags = VkPipelineCacheCreateFlags { unVkPipelineCacheCreateFlags :: VkFlags }
 newtype VkPipelineCreateFlags = VkPipelineCreateFlags { unVkPipelineCreateFlags :: VkFlags }
 newtype VkPipelineLayoutCreateFlags = VkPipelineLayoutCreateFlags { unVkPipelineLayoutCreateFlags :: VkFlags }
 newtype VkPipelineShaderStageCreateFlags = VkPipelineShaderStageCreateFlags { unVkPipelineShaderStageCreateFlags :: VkFlags }
@@ -141,6 +142,14 @@ instance Storable VkMemoryMapFlags where
         v <- peekByteOff p 0
         return (VkMemoryMapFlags v)
     poke p (VkMemoryMapFlags v) = pokeByteOff p 0 v
+
+instance Storable VkPipelineCacheCreateFlags where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkPipelineCacheCreateFlags v)
+    poke p (VkPipelineCacheCreateFlags v) = pokeByteOff p 0 v
 
 instance Storable VkPipelineCreateFlags where
     sizeOf _ = 4

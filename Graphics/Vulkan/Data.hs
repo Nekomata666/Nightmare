@@ -210,6 +210,14 @@ data VkPhysicalDeviceFeatures = VkPhysicalDeviceFeatures{
     inheritedQueries :: VkBool
 }
 
+data VkPipelineCacheCreateInfo = VkPipelineCacheCreateInfo{
+    sType :: VkStructureType,
+    next :: Ptr Void,
+    flags :: VkPipelineCacheCreateFlags,
+    initialDataSize :: CSize,
+    pInitialData :: Ptr Void
+}
+
 data VkPipelineLayoutCreateInfo = VkPipelineLayoutCreateInfo{
     sType :: VkStructureType,
     next :: Ptr Void,
@@ -647,6 +655,23 @@ instance Storable VkPhysicalDeviceFeatures where
         pokeByteOff p 208 v53
         pokeByteOff p 212 v54
         pokeByteOff p 216 v55
+
+instance Storable VkPipelineCacheCreateInfo where
+    sizeOf _ = 40
+    alignment _ = 8
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 8
+        v3 <- peekByteOff p 16
+        v4 <- peekByteOff p 24
+        v5 <- peekByteOff p 32
+        return (VkPipelineCacheCreateInfo v1 v2 v3 v4 v5)
+    poke p (VkPipelineCacheCreateInfo v1 v2 v3 v4 v5) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 8 v2
+        pokeByteOff p 16 v3
+        pokeByteOff p 24 v4
+        pokeByteOff p 32 v5
 
 instance Storable VkPipelineLayoutCreateInfo where
     sizeOf _ = 48

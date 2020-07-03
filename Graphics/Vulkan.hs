@@ -58,12 +58,14 @@ initialize = do
     clearC  <- createClearColorValue [0,0,0,0]
     vkSMIn  <- createShaderModuleInfo nullPtr (VkShaderModuleCreateFlags 0) "Shaders/Simple.spv"
     vkSMod  <- vkCreateShaderModule vkDev0 vkSMIn
-    vkPSSI  <- createPipelineShaderStageInfo nullPtr (VkPipelineShaderStageCreateFlags 0) shaderStageComputeBit vkSMod "main" Nothing
+    vkPSSI  <- createVkPipelineShaderStageInfo nullPtr (VkPipelineShaderStageCreateFlags 0) shaderStageComputeBit vkSMod "main" Nothing
     vkDSLB  <- createVkDescriptorSetLayoutBinding 0 descriptorTypeStorageBuffer 1 [shaderStageComputeBit] Nothing
     vDSLCI  <- createVkDescriptorSetLayoutCreateInfo nullPtr (VkDescriptorSetLayoutCreateFlags 0) 1 (Just [vkDSLB])
     vkDSL0  <- vkCreateDescriptorSetLayout vkDev0 vDSLCI
     vkPLCI  <- createVkPipelineLayoutCreateInfo nullPtr (VkPipelineLayoutCreateFlags 0) 1 [vkDSL0] 0 Nothing
     vkPiLa  <- vkCreatePipelineLayout vkDev0 vkPLCI
+    vkPCCI  <- createVkPipelineCacheInfo nullPtr (VkPipelineCacheCreateFlags 0) ""
+
     let vkCPCI = VkComputePipelineCreateInfo structureTypeComputePipelineCreateInfo nullPtr
                (VkPipelineCreateFlags 0) vkPSSI vkPiLa (VkPipeline 0) 0
 
