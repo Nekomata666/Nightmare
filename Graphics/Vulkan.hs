@@ -71,5 +71,6 @@ initialize = do
     vkCoP0 <- vkCreateComputePipelines vkDev0 vkPiCa 1 [vkCPCI]
     let vkDPS0 = VkDescriptorPoolSize descriptorTypeStorageBuffer 1
     vkDPCI <- createVkDescriptorPoolCreateInfo nullPtr (VkDescriptorPoolCreateFlags 0) 1 1 [vkDPS0]
+    vkDeP0 <- vkCreateDescriptorPool vkDev0 vkDPCI
 
     return ()
