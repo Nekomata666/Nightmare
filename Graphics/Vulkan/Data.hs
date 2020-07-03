@@ -60,6 +60,18 @@ data VkComputePipelineCreateInfo = VkComputePipelineCreateInfo{
     basePipelineIndex :: Int32
 }
 
+data VkCopyDescriptorSet = VkCopyDescriptorSet{
+    sType :: VkStructureType,
+    next :: Ptr Void,
+    srcSet :: VkDescriptorSet,
+    srcBinding :: Word32,
+    srcArrayElement :: Word32,
+    dstSet :: VkDescriptorSet,
+    dstBinding :: Word32,
+    dstArrayElement :: Word32,
+    descriptorCount :: Word32
+}
+
 data VkDescriptorBufferInfo = VkDescriptorBufferInfo{
     buffer :: VkBuffer,
     offset :: VkDeviceSize,
@@ -412,6 +424,31 @@ instance Storable VkComputePipelineCreateInfo where
         pokeByteOff p 72 v5
         pokeByteOff p 80 v6
         pokeByteOff p 88 v7
+
+instance Storable VkCopyDescriptorSet where
+    sizeOf _ = 56
+    alignment _ = 8
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 8
+        v3 <- peekByteOff p 16
+        v4 <- peekByteOff p 24
+        v5 <- peekByteOff p 28
+        v6 <- peekByteOff p 32
+        v7 <- peekByteOff p 40
+        v8 <- peekByteOff p 44
+        v9 <- peekByteOff p 48
+        return (VkCopyDescriptorSet v1 v2 v3 v4 v5 v6 v7 v8 v9)
+    poke p (VkCopyDescriptorSet v1 v2 v3 v4 v5 v6 v7 v8 v9) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 8 v2
+        pokeByteOff p 16 v3
+        pokeByteOff p 24 v4
+        pokeByteOff p 28 v5
+        pokeByteOff p 32 v6
+        pokeByteOff p 40 v7
+        pokeByteOff p 44 v8
+        pokeByteOff p 48 v9
 
 instance Storable VkDescriptorBufferInfo where
     sizeOf _ = 24

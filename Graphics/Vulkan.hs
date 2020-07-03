@@ -76,5 +76,6 @@ initialize = do
     vkAlDS <- vkAllocateDescriptorSets vkDev0 vkDSAI
     let vkDBIn = VkDescriptorBufferInfo buffer (VkDeviceSize 0) wholeSize
     vkWDS0 <- createVkWriteDescriptorSet nullPtr (head vkAlDS) 0 0 1 descriptorTypeStorageBuffer Nothing (Just vkDBIn) Nothing
+    vkUpdateDescriptorSets vkDev0 1 (Just [vkWDS0]) 0 Nothing
 
     return ()

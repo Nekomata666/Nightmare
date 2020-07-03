@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Descriptor (createVkDescriptorPoolCreateInfo, createVkDescriptorSetAllocateInfo, createVkDescriptorSetLayoutBinding, createVkDescriptorSetLayoutCreateInfo, createVkWriteDescriptorSet, vkAllocateDescriptorSets, vkCreateDescriptorPool, vkCreateDescriptorSetLayout) where
+module Graphics.Vulkan.Descriptor (createVkDescriptorPoolCreateInfo, createVkDescriptorSetAllocateInfo, createVkDescriptorSetLayoutBinding, createVkDescriptorSetLayoutCreateInfo, createVkWriteDescriptorSet, vkAllocateDescriptorSets, vkCreateDescriptorPool, vkCreateDescriptorSetLayout, vkUpdateDescriptorSets) where
 
 
 import Data.Maybe
@@ -20,22 +20,26 @@ import Graphics.Vulkan.Types
 type ArrayElement           = Word32
 type Binding                = Word32
 type BindingCount           = Word32
+type DescriptorCopyCount    = Word32
 type DescriptorCount        = Word32
 type DescriptorSetCount     = Word32
+type DescriptorWriteCount   = Word32
 type MaxSets                = Word32
 type PoolSizeCount          = Word32
 
 foreign import ccall unsafe "vkAllocateDescriptorSets"
-    c_vkAllocateDescriptorSets :: VkDevice -> Ptr VkDescriptorSetAllocateInfo -> Ptr VkDescriptorSet
-        -> IO VkResult
+    c_vkAllocateDescriptorSets :: VkDevice -> Ptr VkDescriptorSetAllocateInfo -> Ptr VkDescriptorSet -> IO VkResult
 
 foreign import ccall unsafe "vkCreateDescriptorPool"
-    c_vkCreateDescriptorPool :: VkDevice -> Ptr VkDescriptorPoolCreateInfo -> Ptr
-        VkAllocationCallbacks -> Ptr VkDescriptorPool -> IO VkResult
+    c_vkCreateDescriptorPool :: VkDevice -> Ptr VkDescriptorPoolCreateInfo -> Ptr VkAllocationCallbacks ->
+        Ptr VkDescriptorPool -> IO VkResult
 
 foreign import ccall unsafe "vkCreateDescriptorSetLayout"
-    c_vkCreateDescriptorSetLayout :: VkDevice -> Ptr VkDescriptorSetLayoutCreateInfo -> Ptr
-        VkAllocationCallbacks -> Ptr VkDescriptorSetLayout -> IO VkResult
+    c_vkCreateDescriptorSetLayout :: VkDevice -> Ptr VkDescriptorSetLayoutCreateInfo -> Ptr VkAllocationCallbacks ->
+        Ptr VkDescriptorSetLayout -> IO VkResult
+
+foreign import ccall unsafe "vkUpdateDescriptorSets"
+    c_vkUpdateDescriptorSets :: VkDevice -> Word32 -> Ptr VkWriteDescriptorSet -> Word32 -> Ptr VkCopyDescriptorSet -> IO ()
 
 createVkDescriptorPoolCreateInfo :: Ptr Void -> VkDescriptorPoolCreateFlags -> MaxSets -> PoolSizeCount ->
     [VkDescriptorPoolSize] -> IO VkDescriptorPoolCreateInfo
@@ -97,3 +101,10 @@ vkCreateDescriptorSetLayout d dSLCI = alloca $ \pDSLCI ->
         poke pDSLCI dSLCI
         _ <- c_vkCreateDescriptorSetLayout d pDSLCI nullPtr pDSL
         peek pDSL
+
+vkUpdateDescriptorSets :: VkDevice -> DescriptorWriteCount -> Maybe [VkWriteDescriptorSet] -> DescriptorCopyCount ->
+    Maybe [VkCopyDescriptorSet] -> IO ()
+vkUpdateDescriptorSets d dWC wDS dCC cDS = do
+    pWDS <- fromMaybeListIO dWC wDS
+    pCDS <- fromMaybeListIO dCC cDS
+    c_vkUpdateDescriptorSets d dWC pWDS dCC pCDS
