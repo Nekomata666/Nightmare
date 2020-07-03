@@ -58,6 +58,14 @@ data VkDescriptorSetLayoutBinding = VkDescriptorSetLayoutBinding{
     pImmutableSamplers :: Ptr VkSampler
 }
 
+data VkDescriptorSetLayoutCreateInfo = VkDescriptorSetLayoutCreateInfo{
+    sType :: VkStructureType,
+    next :: Ptr Void,
+    flags :: VkDescriptorSetLayoutCreateFlags,
+    bindingCount :: Word32,
+    pBindings :: Ptr VkDescriptorSetLayoutBinding
+}
+
 data VkDeviceCreateInfo = VkDeviceCreateInfo{
     sType :: VkStructureType,
     next :: Ptr Void,
@@ -319,6 +327,23 @@ instance Storable VkDescriptorSetLayoutBinding where
         pokeByteOff p 8 v3
         pokeByteOff p 12 v4
         pokeByteOff p 16 v5
+
+instance Storable VkDescriptorSetLayoutCreateInfo where
+    sizeOf _ = 32
+    alignment _ = 8
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 8
+        v3 <- peekByteOff p 16
+        v4 <- peekByteOff p 20
+        v5 <- peekByteOff p 24
+        return (VkDescriptorSetLayoutCreateInfo v1 v2 v3 v4 v5)
+    poke p (VkDescriptorSetLayoutCreateInfo v1 v2 v3 v4 v5) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 8 v2
+        pokeByteOff p 16 v3
+        pokeByteOff p 20 v4
+        pokeByteOff p 24 v5
 
 instance Storable VkDeviceCreateInfo where
     sizeOf _ = 72
