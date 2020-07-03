@@ -65,7 +65,7 @@ initialize = do
     vkPLCI  <- createVkPipelineLayoutCreateInfo nullPtr (VkPipelineLayoutCreateFlags 0) 1 [vkDSL0] 0 Nothing
     vkPiLa  <- vkCreatePipelineLayout vkDev0 vkPLCI
     vkPCCI  <- createVkPipelineCacheInfo nullPtr (VkPipelineCacheCreateFlags 0) ""
-
+    vkPiCa  <- vkCreatePipelineCache vkDev0 vkPCCI
     let vkCPCI = VkComputePipelineCreateInfo structureTypeComputePipelineCreateInfo nullPtr
                (VkPipelineCreateFlags 0) vkPSSI vkPiLa (VkPipeline 0) 0
 
