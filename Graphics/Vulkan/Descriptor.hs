@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Descriptor (createVkDescriptorPoolCreateInfo, createVkDescriptorSetLayoutBinding, createVkDescriptorSetLayoutCreateInfo, vkCreateDescriptorSetLayout) where
+module Graphics.Vulkan.Descriptor (createVkDescriptorPoolCreateInfo, createVkDescriptorSetLayoutBinding, createVkDescriptorSetLayoutCreateInfo, vkCreateDescriptorPool, vkCreateDescriptorSetLayout) where
 
 
 import Data.Maybe
@@ -22,6 +22,10 @@ type BindingCount           = Word32
 type DescriptorCount        = Word32
 type MaxSets                = Word32
 type PoolSizeCount          = Word32
+
+foreign import ccall unsafe "vkCreateDescriptorPool"
+    c_vkCreateDescriptorPool :: VkDevice -> Ptr VkDescriptorPoolCreateInfo -> Ptr
+        VkAllocationCallbacks -> Ptr VkDescriptorPool -> IO VkResult
 
 foreign import ccall unsafe "vkCreateDescriptorSetLayout"
     c_vkCreateDescriptorSetLayout :: VkDevice -> Ptr VkDescriptorSetLayoutCreateInfo -> Ptr
@@ -48,6 +52,13 @@ createVkDescriptorSetLayoutCreateInfo :: Ptr Void -> VkDescriptorSetLayoutCreate
 createVkDescriptorSetLayoutCreateInfo v dSLCF bC dSLB = do
     p <- fromMaybeListIO bC dSLB
     return $ VkDescriptorSetLayoutCreateInfo structureTypeDescriptorSetLayoutCreateInfo v dSLCF bC p
+
+vkCreateDescriptorPool :: VkDevice -> VkDescriptorPoolCreateInfo -> IO VkDescriptorPool
+vkCreateDescriptorPool d dPCI = alloca $ \pDPCI ->
+    alloca $ \pDP -> do
+        poke pDPCI dPCI
+        _ <- c_vkCreateDescriptorPool d pDPCI nullPtr pDP
+        peek pDP
 
 vkCreateDescriptorSetLayout :: VkDevice -> VkDescriptorSetLayoutCreateInfo -> IO VkDescriptorSetLayout
 vkCreateDescriptorSetLayout d dSLCI = alloca $ \pDSLCI ->

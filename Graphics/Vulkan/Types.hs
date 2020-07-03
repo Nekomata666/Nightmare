@@ -41,6 +41,7 @@ newtype VkShaderStageFlags = VkShaderStageFlags { unVkShaderStageFlags :: VkFlag
 
 -- Vulkan Handles
 newtype VkBuffer = VkBuffer { unVkBuffer :: VkHandle }
+newtype VkDescriptorPool = VkDescriptorPool { unVkDescriptorPool :: VkHandle }
 newtype VkDescriptorSetLayout = VkDescriptorSetLayout { unVkDescriptorSetLayout :: VkHandle }
 newtype VkDevice = VkDevice { unVkDevice :: VkHandle }
 newtype VkDeviceMemory = VkDeviceMemory { unVkDeviceMemory :: VkHandle }
@@ -209,6 +210,14 @@ instance Storable VkBuffer where
         v <- peekByteOff p 0
         return (VkBuffer v)
     poke p (VkBuffer v) = pokeByteOff p 0 v
+
+instance Storable VkDescriptorPool where
+    sizeOf _ = 8
+    alignment _ = 8
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkDescriptorPool v)
+    poke p (VkDescriptorPool v) = pokeByteOff p 0 v
 
 instance Storable VkDescriptorSetLayout where
     sizeOf _ = 8
