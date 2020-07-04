@@ -67,6 +67,13 @@ data VkClearColorValue = VkClearColorValue{
     word32 :: Ptr Word32 -- [4]
 }
 
+data VkCommandPoolCreateInfo = VkCommandPoolCreateInfo{
+    sType :: VkStructureType,
+    next :: Ptr Void,
+    flags :: VkCommandPoolCreateFlags,
+    queueFamilyIndex :: Word32
+}
+
 data VkComputePipelineCreateInfo = VkComputePipelineCreateInfo{
     sType :: VkStructureType,
     next :: Ptr Void,
@@ -491,6 +498,21 @@ instance Storable VkClearColorValue where
         v <- peekByteOff p 0
         return (VkClearColorValue v)
     poke p (VkClearColorValue v) = pokeByteOff p 0 v
+
+instance Storable VkCommandPoolCreateInfo where
+    sizeOf _ = 24
+    alignment _ = 8
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 8
+        v3 <- peekByteOff p 16
+        v4 <- peekByteOff p 20
+        return (VkCommandPoolCreateInfo v1 v2 v3 v4)
+    poke p (VkCommandPoolCreateInfo v1 v2 v3 v4) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 8 v2
+        pokeByteOff p 16 v3
+        pokeByteOff p 20 v4
 
 instance Storable VkComputePipelineCreateInfo where
     sizeOf _ = 96
