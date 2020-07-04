@@ -61,6 +61,7 @@ newtype VkPhysicalDevice = VkPhysicalDevice { unVkPhysicalDevice :: VkHandle }
 newtype VkPipeline = VkPipeline { unVkPipeline :: VkHandle }
 newtype VkPipelineCache = VkPipelineCache { unVkPipelineCache :: VkHandle }
 newtype VkPipelineLayout = VkPipelineLayout { unVkPipelineLayout :: VkHandle }
+newtype VkRenderPass = VkRenderPass { unVkRenderPass :: VkHandle }
 newtype VkSampler = VkSampler { unVkSampler :: VkHandle }
 newtype VkShaderModule = VkShaderModule { unVkShaderModule :: VkHandle }
 newtype VkQueue = VkQueue { unVkQueue :: VkHandle }
@@ -380,6 +381,14 @@ instance Storable VkPipelineLayout where
         v <- peekByteOff p 0
         return (VkPipelineLayout v)
     poke p (VkPipelineLayout v) = pokeByteOff p 0 v
+
+instance Storable VkRenderPass where
+    sizeOf _ = 8
+    alignment _ = 8
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkRenderPass v)
+    poke p (VkRenderPass v) = pokeByteOff p 0 v
 
 instance Storable VkSampler where
     sizeOf _ = 8

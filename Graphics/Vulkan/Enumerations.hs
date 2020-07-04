@@ -45,6 +45,8 @@ newtype VkSharingMode = VkSharingMode { unVkSharingMode :: Word32 }
     deriving (Eq)
 newtype VkStructureType = VkStructureType { unVkStructureType :: Int32 }
     deriving (Eq)
+newtype VkSubpassDescriptionFlagBits = VkSubpassDescriptionFlagBits { unVkSubpassDescriptionFlagBits :: Word32}
+    deriving (Eq)
 newtype VkSystemAllocationScope = VkSystemAllocationScope { unVkSystemAllocationScope :: Word32 }
     deriving (Eq)
 
@@ -802,6 +804,16 @@ structureTypeExportMemoryAllocateInfoNV                       = VkStructureType 
 structureTypeValidationFlagsEXT                               :: VkStructureType
 structureTypeValidationFlagsEXT                               = VkStructureType 1000061000
 
+-- VkSubpassDescriptionFlagBits
+subpassDescriptionPerViewAttributesBitNVX       :: VkSubpassDescriptionFlagBits
+subpassDescriptionPerViewAttributesBitNVX       = VkSubpassDescriptionFlagBits 1
+subpassDescriptionPerViewPositionXOnlyBitNVX    :: VkSubpassDescriptionFlagBits
+subpassDescriptionPerViewPositionXOnlyBitNVX    = VkSubpassDescriptionFlagBits 2
+subpassDescriptionFragmentRegionBitQCOM         :: VkSubpassDescriptionFlagBits
+subpassDescriptionFragmentRegionBitQCOM         = VkSubpassDescriptionFlagBits 4
+subpassDescriptionShaderResolveBitQCOM          :: VkSubpassDescriptionFlagBits
+subpassDescriptionShaderResolveBitQCOM          = VkSubpassDescriptionFlagBits 8
+
 -- VkSystemAllocationScope
 systemAllocationScopeCommand     :: VkSystemAllocationScope
 systemAllocationScopeCommand     = VkSystemAllocationScope 0
@@ -817,7 +829,7 @@ systemAllocationScopeInstance    = VkSystemAllocationScope 4
 
 -- Storable instances
 instance Storable VkAttachmentLoadOp where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -825,7 +837,7 @@ instance Storable VkAttachmentLoadOp where
     poke p (VkAttachmentLoadOp v) = pokeByteOff p 0 v
 
 instance Storable VkAttachmentStoreOp where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -841,7 +853,7 @@ instance Storable VkBufferUsageFlagBits where
     poke p (VkBufferUsageFlagBits v) = pokeByteOff p 0 v
 
 instance Storable VkDescriptorType where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -849,7 +861,7 @@ instance Storable VkDescriptorType where
     poke p (VkDescriptorType v) = pokeByteOff p 0 v
 
 instance Storable VkFormat where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -857,7 +869,7 @@ instance Storable VkFormat where
     poke p (VkFormat v) = pokeByteOff p 0 v
 
 instance Storable VkImageAspectFlagBits where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -865,7 +877,7 @@ instance Storable VkImageAspectFlagBits where
     poke p (VkImageAspectFlagBits v) = pokeByteOff p 0 v
 
 instance Storable VkImageCreateFlagBits where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -873,7 +885,7 @@ instance Storable VkImageCreateFlagBits where
     poke p (VkImageCreateFlagBits v) = pokeByteOff p 0 v
 
 instance Storable VkImageLayout where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -881,7 +893,7 @@ instance Storable VkImageLayout where
     poke p (VkImageLayout v) = pokeByteOff p 0 v
 
 instance Storable VkImageTiling where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -889,7 +901,7 @@ instance Storable VkImageTiling where
     poke p (VkImageTiling v) = pokeByteOff p 0 v
 
 instance Storable VkImageType where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -897,7 +909,7 @@ instance Storable VkImageType where
     poke p (VkImageType v) = pokeByteOff p 0 v
 
 instance Storable VkImageUsageFlagBits where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -913,7 +925,7 @@ instance Storable VkInternalAllocationType where
     poke p (VkInternalAllocationType v) = pokeByteOff p 0 v
 
 instance Storable VkPipelineBindPoint where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -929,7 +941,7 @@ instance Storable VkResult where
     poke p (VkResult v) = pokeByteOff p 0 v
 
 instance Storable VkSampleCountFlagBits where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -937,7 +949,7 @@ instance Storable VkSampleCountFlagBits where
     poke p (VkSampleCountFlagBits v) = pokeByteOff p 0 v
 
 instance Storable VkShaderStageFlagBits where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -945,7 +957,7 @@ instance Storable VkShaderStageFlagBits where
     poke p (VkShaderStageFlagBits v) = pokeByteOff p 0 v
 
 instance Storable VkSharingMode where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -959,6 +971,14 @@ instance Storable VkStructureType where
         v <- peekByteOff p 0
         return (VkStructureType v)
     poke p (VkStructureType v) = pokeByteOff p 0 v
+
+instance Storable VkSubpassDescriptionFlagBits where
+    sizeOf _    = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkSubpassDescriptionFlagBits v)
+    poke p (VkSubpassDescriptionFlagBits v) = pokeByteOff p 0 v
 
 instance Storable VkSystemAllocationScope where
     sizeOf _    = 4
