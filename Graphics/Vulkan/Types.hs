@@ -49,6 +49,7 @@ newtype VkSubpassDescriptionFlags = VkSubpassDescriptionFlags { unVkSubpassDescr
 -- Vulkan Handles
 newtype VkBuffer = VkBuffer { unVkBuffer :: VkHandle }
 newtype VkBufferView = VkBufferView { unVkBufferView :: VkHandle }
+newtype VkCommandBuffer = VkCommandBuffer { unVkCommandBuffer :: VkHandle }
 newtype VkCommandPool = VkCommandPool { unVkCommandPool :: VkHandle }
 newtype VkDescriptorPool = VkDescriptorPool { unVkDescriptorPool :: VkHandle }
 newtype VkDescriptorSet = VkDescriptorSet { unVkDescriptorSet :: VkHandle }
@@ -287,6 +288,14 @@ instance Storable VkBufferView where
         v <- peekByteOff p 0
         return (VkBufferView v)
     poke p (VkBufferView v) = pokeByteOff p 0 v
+
+instance Storable VkCommandBuffer where
+    sizeOf _ = 8
+    alignment _ = 8
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkCommandBuffer v)
+    poke p (VkCommandBuffer v) = pokeByteOff p 0 v
 
 instance Storable VkCommandPool where
     sizeOf _ = 8
