@@ -581,10 +581,12 @@ internalAllocationTypeExecutable     :: VkInternalAllocationType
 internalAllocationTypeExecutable     = VkInternalAllocationType 0
 
 -- VkPipelineBindPoint
-pipelineBindPointGraphics    :: VkPipelineBindPoint
-pipelineBindPointGraphics    = VkPipelineBindPoint 0
-pipelineBindPointCompute     :: VkPipelineBindPoint
-pipelineBindPointCompute     = VkPipelineBindPoint 1
+pipelineBindPointGraphics       :: VkPipelineBindPoint
+pipelineBindPointGraphics       = VkPipelineBindPoint 0
+pipelineBindPointCompute        :: VkPipelineBindPoint
+pipelineBindPointCompute        = VkPipelineBindPoint 1
+pipelineBindPointRayTracingKHR  :: VkPipelineBindPoint
+pipelineBindPointRayTracingKHR  = VkPipelineBindPoint 1000165000
 
 -- VkResult
 success                      :: VkResult

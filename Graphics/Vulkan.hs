@@ -79,7 +79,8 @@ initialize = do
     vkWDS0 <- createVkWriteDescriptorSet nullPtr (head vkAlDS) 0 0 1 descriptorTypeStorageBuffer Nothing (Just vkDBIn) Nothing
     vkUpdateDescriptorSets vkDev0 1 (Just [vkWDS0]) 0 Nothing
     vkQue0 <- vkGetDeviceQueue vkDev0 0 0
-    vkSuD0 <- createVkSubpassDescription (VkSubpassDescriptionFlagBits 0) pipelineBindPointCompute 0 Nothing 0 Nothing Nothing Nothing 0 Nothing
+    vkSuD0 <- createVkSubpassDescription (VkSubpassDescriptionFlagBits 0) pipelineBindPointGraphics 0 Nothing 0 Nothing Nothing Nothing 0 Nothing
     vkRPCI <- createVkRenderPassCreateInfo nullPtr (VkRenderPassCreateFlags 0) 0 Nothing 1 (Just [vkSuD0]) 0 Nothing
+    vkRePa <- vkCreateRenderPass vkDev0 vkRPCI
 
     return ()

@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Renderpass (createVkRenderPassCreateInfo, createVkSubpassDescription) where
+module Graphics.Vulkan.Renderpass (createVkRenderPassCreateInfo, createVkSubpassDescription, vkCreateRenderPass) where
 
 
 import Data.Maybe (Maybe)
@@ -54,3 +54,10 @@ createVkSubpassDescription sDFB pBP iAC iA cAC cA rA dSA pAC pA = do
     return $ VkSubpassDescription f pBP iAC iA' cAC cA' rA' dSA' pAC pA'
         where
             f = VkSubpassDescriptionFlags $ unVkSubpassDescriptionFlagBits sDFB
+
+vkCreateRenderPass :: VkDevice -> VkRenderPassCreateInfo -> IO VkRenderPass
+vkCreateRenderPass d rPCI = alloca $ \pRPCI ->
+    alloca $ \pRP -> do
+        poke pRPCI rPCI
+        _ <- c_vkCreateRenderPass d pRPCI nullPtr pRP
+        peek pRP
