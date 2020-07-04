@@ -57,6 +57,7 @@ newtype VkPipelineCache = VkPipelineCache { unVkPipelineCache :: VkHandle }
 newtype VkPipelineLayout = VkPipelineLayout { unVkPipelineLayout :: VkHandle }
 newtype VkSampler = VkSampler { unVkSampler :: VkHandle }
 newtype VkShaderModule = VkShaderModule { unVkShaderModule :: VkHandle }
+newtype VkQueue = VkQueue { unVkQueue :: VkHandle }
 
 
 -- Vulkan function pointers.
@@ -341,3 +342,11 @@ instance Storable VkShaderModule where
         v <- peekByteOff p 0
         return (VkShaderModule v)
     poke p (VkShaderModule v) = pokeByteOff p 0 v
+
+instance Storable VkQueue where
+    sizeOf _ = 8
+    alignment _ = 8
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkQueue v)
+    poke p (VkQueue v) = pokeByteOff p 0 v

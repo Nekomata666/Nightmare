@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Devices (vkCreateDevice, vkCreateDeviceInfo, vkCreateDeviceQueueInfo, vkEnumeratePhysicalDevices, vkGetPhysicalDeviceFeatures) where
+module Graphics.Vulkan.Devices (vkCreateDevice, vkCreateDeviceInfo, vkCreateDeviceQueueInfo, vkEnumeratePhysicalDevices, vkGetDeviceQueue, vkGetPhysicalDeviceFeatures) where
 
 
 import Data.Void (Void)
@@ -21,6 +21,9 @@ foreign import ccall unsafe "vkCreateDevice"
 
 foreign import ccall unsafe "vkEnumeratePhysicalDevices"
     c_vkEnumeratePhysicalDevices :: VkInstance -> Ptr Word32 -> Ptr VkPhysicalDevice -> IO VkResult
+
+foreign import ccall unsafe "vkGetDeviceQueue"
+    c_vkGetDeviceQueue :: VkDevice -> Word32 -> Word32 -> Ptr VkQueue -> IO ()
 
 foreign import ccall unsafe "vkGetPhysicalDeviceFeatures"
     c_vkGetPhysicalDeviceFeatures :: VkPhysicalDevice -> Ptr VkPhysicalDeviceFeatures -> IO ()
@@ -68,6 +71,11 @@ vkEnumeratePhysicalDevices vkInst = do
                     peekArray i pPD
                     where
                         i = cast n
+
+vkGetDeviceQueue :: VkDevice -> Word32 -> Word32 -> IO VkQueue
+vkGetDeviceQueue d qFI qI = alloca $ \p -> do
+    c_vkGetDeviceQueue d qFI qI p
+    peek p
 
 vkGetPhysicalDeviceFeatures :: VkPhysicalDevice -> IO VkPhysicalDeviceFeatures
 vkGetPhysicalDeviceFeatures pD = alloca $ \pF -> do
