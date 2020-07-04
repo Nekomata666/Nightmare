@@ -83,5 +83,6 @@ initialize = do
     vkRPCI <- createVkRenderPassCreateInfo nullPtr (VkRenderPassCreateFlags 0) 0 Nothing 1 (Just [vkSuD0]) 0 Nothing
     vkRePa <- vkCreateRenderPass vkDev0 vkRPCI
     let vkCPIn = createVkCommandPoolInfo nullPtr (VkCommandPoolCreateFlags 0) 0
+    vkCPo0 <- vkCreateCommandPool vkDev0 vkCPIn
 
     return ()

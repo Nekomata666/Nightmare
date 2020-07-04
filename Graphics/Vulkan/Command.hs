@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Command (createVkClearColorValue, createVkCommandPoolInfo) where
+module Graphics.Vulkan.Command (createVkClearColorValue, createVkCommandPoolInfo, vkCreateCommandPool) where
 
 
 import Data.Maybe   (Maybe)
@@ -28,3 +28,10 @@ createVkClearColorValue v = allocaArray 4 $ \p -> do
 
 createVkCommandPoolInfo :: Ptr Void -> VkCommandPoolCreateFlags -> Word32 -> VkCommandPoolCreateInfo
 createVkCommandPoolInfo = VkCommandPoolCreateInfo structureTypeCommandPoolCreateInfo
+
+vkCreateCommandPool :: VkDevice -> VkCommandPoolCreateInfo -> IO VkCommandPool
+vkCreateCommandPool d info = alloca $ \pInfo ->
+    alloca $ \pPool -> do
+        poke pInfo info
+        _ <- c_vkCreateCommandPool d pInfo nullPtr pPool
+        peek pPool
