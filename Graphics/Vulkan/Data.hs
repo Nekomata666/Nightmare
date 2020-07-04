@@ -67,6 +67,14 @@ data VkClearColorValue = VkClearColorValue{
     word32 :: Ptr Word32 -- [4]
 }
 
+data VkCommandBufferAllocateInfo =VkCommandBufferAllocateInfo{
+    sType :: VkStructureType,
+    next :: Ptr Void,
+    commandPool :: VkCommandPool,
+    level :: VkCommandBufferLevel,
+    commandBufferCount :: Word32
+}
+
 data VkCommandPoolCreateInfo = VkCommandPoolCreateInfo{
     sType :: VkStructureType,
     next :: Ptr Void,
@@ -498,6 +506,23 @@ instance Storable VkClearColorValue where
         v <- peekByteOff p 0
         return (VkClearColorValue v)
     poke p (VkClearColorValue v) = pokeByteOff p 0 v
+
+instance Storable VkCommandBufferAllocateInfo where
+    sizeOf _ = 32
+    alignment _ = 8
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 8
+        v3 <- peekByteOff p 16
+        v4 <- peekByteOff p 24
+        v5 <- peekByteOff p 28
+        return (VkCommandBufferAllocateInfo v1 v2 v3 v4 v5)
+    poke p (VkCommandBufferAllocateInfo v1 v2 v3 v4 v5) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 8 v2
+        pokeByteOff p 16 v3
+        pokeByteOff p 24 v4
+        pokeByteOff p 28 v5
 
 instance Storable VkCommandPoolCreateInfo where
     sizeOf _ = 24
