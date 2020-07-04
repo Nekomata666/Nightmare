@@ -33,6 +33,23 @@ data VkApplicationInfo = VkApplicationInfo{
     apiVersion          :: Word32
 }
 
+data VkAttachmentDescription = VkAttachmentDescription{
+    flags :: VkAttachmentDescriptionFlags,
+    format :: VkFormat,
+    samples :: VkSampleCountFlagBits,
+    loadOp :: VkAttachmentLoadOp,
+    storeOp :: VkAttachmentStoreOp,
+    stencilLoadOp :: VkAttachmentLoadOp,
+    stencilStoreOp :: VkAttachmentStoreOp,
+    initialLayout :: VkImageLayout,
+    finalLayout :: VkImageLayout
+}
+
+data VkAttachmentReference = VkAttachmentReference{
+    attachment :: Word32,
+    layout :: VkImageLayout
+}
+
 data VkBufferCreateInfo = VkBufferCreateInfo{
     sType :: VkStructureType,
     next :: Ptr Void,
@@ -290,6 +307,18 @@ data VkPushConstantRange = VkPushConstantRange{
     size :: Word32
 }
 
+data VkRenderPassCreateInfo = VkRenderPassCreateInfo{
+    sType :: VkStructureType,
+    next :: Ptr Void,
+    flags :: VkRenderPassCreateFlags,
+    attachmentCount :: Word32,
+    pAttachments :: Ptr VkAttachmentDescription,
+    subpassCount :: Word32,
+    pSubpasses :: Ptr VkSubpassDescription,
+    dependencyCount :: Word32,
+    pDependencies :: Ptr VkSubpassDependency
+}
+
 data VkShaderModuleCreateInfo = VkShaderModuleCreateInfo{
     sType :: VkStructureType,
     next :: Ptr Void,
@@ -309,6 +338,29 @@ data VkSpecializationMapEntry = VkSpecializationMapEntry{
     constantID :: Word32,
     offset :: Word32,
     size :: CSize
+}
+
+data VkSubpassDependency = VkSubpassDependency{
+    srcSubpass :: Word32,
+    dstSubpass :: Word32,
+    srcStageMask :: VkPipelineStageFlags,
+    dstStageMask :: VkPipelineStageFlags,
+    srcAccessMask :: VkAccessFlags,
+    dstAccessMask :: VkAccessFlags,
+    dependencyFlags :: VkDependencyFlags
+}
+
+data VkSubpassDescription = VkSubpassDescription{
+    flags :: VkSubpassDescriptionFlags,
+    pipelineBindPoint :: VkPipelineBindPoint,
+    inputAttachmentCount :: Word32,
+    pInputAttachments :: Ptr VkAttachmentReference,
+    colorAttachmentCount :: Word32,
+    pColorAttachments :: Ptr VkAttachmentReference,
+    pResolveAttachments :: Ptr VkAttachmentReference,
+    pDepthStencilAttachment :: Ptr VkAttachmentReference,
+    preserveAttachmentCount :: Word32,
+    pPreserveAttachments :: Ptr Word32
 }
 
 data VkSubresourceLayout = VkSubresourceLayout{
@@ -372,6 +424,42 @@ instance Storable VkApplicationInfo where
         pokeByteOff p 32 v5
         pokeByteOff p 40 v6
         pokeByteOff p 44 v7
+
+instance Storable VkAttachmentDescription where
+    sizeOf _ = 36
+    alignment _ = 4
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 4
+        v3 <- peekByteOff p 8
+        v4 <- peekByteOff p 12
+        v5 <- peekByteOff p 16
+        v6 <- peekByteOff p 20
+        v7 <- peekByteOff p 24
+        v8 <- peekByteOff p 28
+        v9 <- peekByteOff p 32
+        return (VkAttachmentDescription v1 v2 v3 v4 v5 v6 v7 v8 v9)
+    poke p (VkAttachmentDescription v1 v2 v3 v4 v5 v6 v7 v8 v9) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 4 v2
+        pokeByteOff p 8 v3
+        pokeByteOff p 12 v4
+        pokeByteOff p 16 v5
+        pokeByteOff p 20 v6
+        pokeByteOff p 24 v7
+        pokeByteOff p 28 v8
+        pokeByteOff p 32 v9
+
+instance Storable VkAttachmentReference where
+    sizeOf _ = 8
+    alignment _ = 4
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 4
+        return (VkAttachmentReference v1 v2)
+    poke p (VkAttachmentReference v1 v2) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 4 v2
 
 instance Storable VkBufferCreateInfo where
     sizeOf _ = 56
@@ -906,6 +994,31 @@ instance Storable VkPushConstantRange where
         pokeByteOff p 4 v2
         pokeByteOff p 8 v3
 
+instance Storable VkRenderPassCreateInfo where
+    sizeOf _ = 64
+    alignment _ = 8
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 8
+        v3 <- peekByteOff p 16
+        v4 <- peekByteOff p 20
+        v5 <- peekByteOff p 24
+        v6 <- peekByteOff p 32
+        v7 <- peekByteOff p 40
+        v8 <- peekByteOff p 48
+        v9 <- peekByteOff p 56
+        return (VkRenderPassCreateInfo v1 v2 v3 v4 v5 v6 v7 v8 v9)
+    poke p (VkRenderPassCreateInfo v1 v2 v3 v4 v5 v6 v7 v8 v9) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 8 v2
+        pokeByteOff p 16 v3
+        pokeByteOff p 20 v4
+        pokeByteOff p 24 v5
+        pokeByteOff p 32 v6
+        pokeByteOff p 40 v7
+        pokeByteOff p 48 v8
+        pokeByteOff p 56 v9
+
 instance Storable VkShaderModuleCreateInfo where
     sizeOf _ = 40
     alignment _ = 8
@@ -950,6 +1063,54 @@ instance Storable VkSpecializationMapEntry where
         pokeByteOff p 0 v1
         pokeByteOff p 4 v2
         pokeByteOff p 8 v3
+
+instance Storable VkSubpassDependency where
+    sizeOf _ = 28
+    alignment _ = 4
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 4
+        v3 <- peekByteOff p 8
+        v4 <- peekByteOff p 12
+        v5 <- peekByteOff p 16
+        v6 <- peekByteOff p 20
+        v7 <- peekByteOff p 24
+        return (VkSubpassDependency v1 v2 v3 v4 v5 v6 v7)
+    poke p (VkSubpassDependency v1 v2 v3 v4 v5 v6 v7) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 4 v2
+        pokeByteOff p 8 v3
+        pokeByteOff p 12 v4
+        pokeByteOff p 16 v5
+        pokeByteOff p 20 v6
+        pokeByteOff p 24 v7
+
+instance Storable VkSubpassDescription where
+    sizeOf _ = 72
+    alignment _ = 8
+    peek p = do
+        v01 <- peekByteOff p 0
+        v02 <- peekByteOff p 4
+        v03 <- peekByteOff p 8
+        v04 <- peekByteOff p 16
+        v05 <- peekByteOff p 24
+        v06 <- peekByteOff p 32
+        v07 <- peekByteOff p 40
+        v08 <- peekByteOff p 48
+        v09 <- peekByteOff p 56
+        v10 <- peekByteOff p 64
+        return (VkSubpassDescription v01 v02 v03 v04 v05 v06 v07 v08 v09 v10)
+    poke p (VkSubpassDescription v01 v02 v03 v04 v05 v06 v07 v08 v09 v10) = do
+        pokeByteOff p 0 v01
+        pokeByteOff p 4 v02
+        pokeByteOff p 8 v03
+        pokeByteOff p 16 v04
+        pokeByteOff p 24 v05
+        pokeByteOff p 32 v06
+        pokeByteOff p 40 v07
+        pokeByteOff p 48 v08
+        pokeByteOff p 56 v09
+        pokeByteOff p 64 v10
 
 instance Storable VkSubresourceLayout where
     sizeOf _ = 40
