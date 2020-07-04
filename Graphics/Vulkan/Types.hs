@@ -21,8 +21,11 @@ type VkHandle   = Word64
 newtype VkBool  = VkBool { unVkBool :: Word32 }
 
 -- Vulkan Flags
+newtype VkAccessFlags = VkAccessFlags { unVkAccessFlags :: VkFlags }
+newtype VkAttachmentDescriptionFlags = VkAttachmentDescriptionFlags { unVkAttachmentDescriptionFlags :: VkFlags }
 newtype VkBufferCreateFlags = VkBufferCreateFlags { unVkBufferCreateFlags :: VkFlags }
 newtype VkBufferUsageFlags = VkBufferUsageFlags { unVkBufferUsageFlags :: VkFlags }
+newtype VkDependencyFlags = VkDependencyFlags { unVkDependencyFlags :: VkFlags }
 newtype VkDescriptorPoolCreateFlags = VkDescriptorPoolCreateFlags { unVkDescriptorPoolCreateFlags :: VkFlags }
 newtype VkDescriptorSetLayoutCreateFlags = VkDescriptorSetLayoutCreateFlags { unVkDescriptorSetLayoutCreateFlags :: VkFlags }
 newtype VkDeviceCreateFlags = VkDeviceCreateFlags { unVkDeviceCreateFlags :: VkFlags }
@@ -35,8 +38,11 @@ newtype VkPipelineCacheCreateFlags = VkPipelineCacheCreateFlags { unVkPipelineCa
 newtype VkPipelineCreateFlags = VkPipelineCreateFlags { unVkPipelineCreateFlags :: VkFlags }
 newtype VkPipelineLayoutCreateFlags = VkPipelineLayoutCreateFlags { unVkPipelineLayoutCreateFlags :: VkFlags }
 newtype VkPipelineShaderStageCreateFlags = VkPipelineShaderStageCreateFlags { unVkPipelineShaderStageCreateFlags :: VkFlags }
+newtype VkPipelineStageFlags = VkPipelineStageFlags { unVkPipelineStageFlags :: VkFlags }
+newtype VkRenderPassCreateFlags = VkRenderPassCreateFlags { unVkRenderPassCreateFlags :: VkFlags }
 newtype VkShaderModuleCreateFlags = VkShaderModuleCreateFlags { unVkShaderModuleCreateFlags :: VkFlags }
 newtype VkShaderStageFlags = VkShaderStageFlags { unVkShaderStageFlags :: VkFlags }
+newtype VkSubpassDescriptionFlags = VkSubpassDescriptionFlags { unVkSubpassDescriptionFlags :: VkFlags }
 
 
 -- Vulkan Handles
@@ -78,6 +84,22 @@ instance Storable VkBool where
     poke p (VkBool v) = pokeByteOff p 0 v
 
 -- Storable instances for Vulkan flags.
+instance Storable VkAccessFlags where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkAccessFlags v)
+    poke p (VkAccessFlags v) = pokeByteOff p 0 v
+
+instance Storable VkAttachmentDescriptionFlags where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkAttachmentDescriptionFlags v)
+    poke p (VkAttachmentDescriptionFlags v) = pokeByteOff p 0 v
+
 instance Storable VkBufferCreateFlags where
     sizeOf _ = 4
     alignment _ = 4
@@ -93,6 +115,14 @@ instance Storable VkBufferUsageFlags where
         v <- peekByteOff p 0
         return (VkBufferUsageFlags v)
     poke p (VkBufferUsageFlags v) = pokeByteOff p 0 v
+
+instance Storable VkDependencyFlags where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkDependencyFlags v)
+    poke p (VkDependencyFlags v) = pokeByteOff p 0 v
 
 instance Storable VkDescriptorPoolCreateFlags where
     sizeOf _ = 4
@@ -190,6 +220,22 @@ instance Storable VkPipelineShaderStageCreateFlags where
         return (VkPipelineShaderStageCreateFlags v)
     poke p (VkPipelineShaderStageCreateFlags v) = pokeByteOff p 0 v
 
+instance Storable VkPipelineStageFlags where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkPipelineStageFlags v)
+    poke p (VkPipelineStageFlags v) = pokeByteOff p 0 v
+
+instance Storable VkRenderPassCreateFlags where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkRenderPassCreateFlags v)
+    poke p (VkRenderPassCreateFlags v) = pokeByteOff p 0 v
+
 instance Storable VkShaderModuleCreateFlags where
     sizeOf _ = 4
     alignment _ = 4
@@ -205,6 +251,14 @@ instance Storable VkShaderStageFlags where
         v <- peekByteOff p 0
         return (VkShaderStageFlags v)
     poke p (VkShaderStageFlags v) = pokeByteOff p 0 v
+
+instance Storable VkSubpassDescriptionFlags where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkSubpassDescriptionFlags v)
+    poke p (VkSubpassDescriptionFlags v) = pokeByteOff p 0 v
 
 -- Storable instances for Vulkan handles.
 instance Storable VkBuffer where

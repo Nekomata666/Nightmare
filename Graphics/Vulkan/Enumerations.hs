@@ -9,6 +9,10 @@ import Foreign
 
 
 -- Vulkan newtypes
+newtype VkAttachmentLoadOp = VkAttachmentLoadOp { unVkAttachmentLoadOp :: Word32 }
+    deriving (Eq)
+newtype VkAttachmentStoreOp = VkAttachmentStoreOp { unVkAttachmentStoreOp :: Word32 }
+    deriving (Eq)
 newtype VkBufferUsageFlagBits = VkBufferUsageFlagBits { unVkBufferUsageFlagBits :: Word32 }
     deriving (Eq)
 newtype VkDescriptorType = VkDescriptorType { unVkDescriptorType :: Word32 }
@@ -29,6 +33,8 @@ newtype VkImageUsageFlagBits = VkImageUsageFlagBits { unVkImageUsageFlagBits :: 
     deriving (Eq)
 newtype VkInternalAllocationType = VkInternalAllocationType { unVkInternalAllocationType :: Word32 }
     deriving (Eq)
+newtype VkPipelineBindPoint = VkPipelineBindPoint { unVkPipelineBindPoint :: Word32 }
+    deriving (Eq)
 newtype VkResult = VkResult { unVkResult :: Int32 }
     deriving (Eq)
 newtype VkSampleCountFlagBits = VkSampleCountFlagBits { unVkSampleCountFlagBits :: Word32 }
@@ -44,6 +50,20 @@ newtype VkSystemAllocationScope = VkSystemAllocationScope { unVkSystemAllocation
 
 
 -- Vulkan enumerations
+-- VkAttachmentLoadOp
+attachmentLoadOpLoad         :: VkAttachmentLoadOp
+attachmentLoadOpLoad         = VkAttachmentLoadOp 0
+attachmentLoadOpClear        :: VkAttachmentLoadOp
+attachmentLoadOpClear        = VkAttachmentLoadOp 1
+attachmentLoadOpDontCare     :: VkAttachmentLoadOp
+attachmentLoadOpDontCare     = VkAttachmentLoadOp 2
+
+-- VkAttachmentStoreOp
+attachmentStoreOpStore       :: VkAttachmentStoreOp
+attachmentStoreOpStore       = VkAttachmentStoreOp 0
+attachmentStoreOpDontCare    :: VkAttachmentStoreOp
+attachmentStoreOpDontCare    = VkAttachmentStoreOp 1
+
 -- VkBufferUsageFlagBits
 bufferUsageTransferSRCBit            :: VkBufferUsageFlagBits
 bufferUsageTransferSRCBit            = VkBufferUsageFlagBits 1
@@ -558,6 +578,12 @@ imageUsageInputAttachmentBit         = VkImageUsageFlagBits 128
 internalAllocationTypeExecutable     :: VkInternalAllocationType
 internalAllocationTypeExecutable     = VkInternalAllocationType 0
 
+-- VkPipelineBindPoint
+pipelineBindPointGraphics    :: VkPipelineBindPoint
+pipelineBindPointGraphics    = VkPipelineBindPoint 0
+pipelineBindPointCompute     :: VkPipelineBindPoint
+pipelineBindPointCompute     = VkPipelineBindPoint 1
+
 -- VkResult
 success                      :: VkResult
 success                      = VkResult 0
@@ -789,6 +815,23 @@ systemAllocationScopeInstance    :: VkSystemAllocationScope
 systemAllocationScopeInstance    = VkSystemAllocationScope 4
 
 
+-- Storable instances
+instance Storable VkAttachmentLoadOp where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkAttachmentLoadOp v)
+    poke p (VkAttachmentLoadOp v) = pokeByteOff p 0 v
+
+instance Storable VkAttachmentStoreOp where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkAttachmentStoreOp v)
+    poke p (VkAttachmentStoreOp v) = pokeByteOff p 0 v
+
 instance Storable VkBufferUsageFlagBits where
     sizeOf _    = 4
     alignment _ = 4
@@ -868,6 +911,14 @@ instance Storable VkInternalAllocationType where
         v <- peekByteOff p 0
         return (VkInternalAllocationType v)
     poke p (VkInternalAllocationType v) = pokeByteOff p 0 v
+
+instance Storable VkPipelineBindPoint where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkPipelineBindPoint v)
+    poke p (VkPipelineBindPoint v) = pokeByteOff p 0 v
 
 instance Storable VkResult where
     sizeOf _    = 4

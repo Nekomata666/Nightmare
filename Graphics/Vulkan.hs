@@ -18,6 +18,7 @@ import Graphics.Vulkan.Images
 import Graphics.Vulkan.Instance
 import Graphics.Vulkan.Memory
 import Graphics.Vulkan.Pipelines
+import Graphics.Vulkan.Renderpass
 import Graphics.Vulkan.Shaders
 import Graphics.Vulkan.Types
 
@@ -78,5 +79,6 @@ initialize = do
     vkWDS0 <- createVkWriteDescriptorSet nullPtr (head vkAlDS) 0 0 1 descriptorTypeStorageBuffer Nothing (Just vkDBIn) Nothing
     vkUpdateDescriptorSets vkDev0 1 (Just [vkWDS0]) 0 Nothing
     vkQue0 <- vkGetDeviceQueue vkDev0 0 0
+    vkRPCI <- createVkRenderPassCreateInfo nullPtr (VkRenderPassCreateFlags 0) 0 Nothing 0 Nothing 0 Nothing
 
     return ()
