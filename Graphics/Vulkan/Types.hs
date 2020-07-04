@@ -25,6 +25,7 @@ newtype VkAccessFlags = VkAccessFlags { unVkAccessFlags :: VkFlags }
 newtype VkAttachmentDescriptionFlags = VkAttachmentDescriptionFlags { unVkAttachmentDescriptionFlags :: VkFlags }
 newtype VkBufferCreateFlags = VkBufferCreateFlags { unVkBufferCreateFlags :: VkFlags }
 newtype VkBufferUsageFlags = VkBufferUsageFlags { unVkBufferUsageFlags :: VkFlags }
+newtype VkCommandPoolCreateFlags = VkCommandPoolCreateFlags { unVkCommandPoolCreateFlags :: VkFlags }
 newtype VkDependencyFlags = VkDependencyFlags { unVkDependencyFlags :: VkFlags }
 newtype VkDescriptorPoolCreateFlags = VkDescriptorPoolCreateFlags { unVkDescriptorPoolCreateFlags :: VkFlags }
 newtype VkDescriptorSetLayoutCreateFlags = VkDescriptorSetLayoutCreateFlags { unVkDescriptorSetLayoutCreateFlags :: VkFlags }
@@ -48,6 +49,7 @@ newtype VkSubpassDescriptionFlags = VkSubpassDescriptionFlags { unVkSubpassDescr
 -- Vulkan Handles
 newtype VkBuffer = VkBuffer { unVkBuffer :: VkHandle }
 newtype VkBufferView = VkBufferView { unVkBufferView :: VkHandle }
+newtype VkCommandPool = VkCommandPool { unVkCommandPool :: VkHandle }
 newtype VkDescriptorPool = VkDescriptorPool { unVkDescriptorPool :: VkHandle }
 newtype VkDescriptorSet = VkDescriptorSet { unVkDescriptorSet :: VkHandle }
 newtype VkDescriptorSetLayout = VkDescriptorSetLayout { unVkDescriptorSetLayout :: VkHandle }
@@ -116,6 +118,14 @@ instance Storable VkBufferUsageFlags where
         v <- peekByteOff p 0
         return (VkBufferUsageFlags v)
     poke p (VkBufferUsageFlags v) = pokeByteOff p 0 v
+
+instance Storable VkCommandPoolCreateFlags where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkCommandPoolCreateFlags v)
+    poke p (VkCommandPoolCreateFlags v) = pokeByteOff p 0 v
 
 instance Storable VkDependencyFlags where
     sizeOf _ = 4
@@ -277,6 +287,14 @@ instance Storable VkBufferView where
         v <- peekByteOff p 0
         return (VkBufferView v)
     poke p (VkBufferView v) = pokeByteOff p 0 v
+
+instance Storable VkCommandPool where
+    sizeOf _ = 8
+    alignment _ = 8
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkCommandPool v)
+    poke p (VkCommandPool v) = pokeByteOff p 0 v
 
 instance Storable VkDescriptorPool where
     sizeOf _ = 8

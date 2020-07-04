@@ -56,7 +56,7 @@ initialize = do
     imagMB  <- vkBindImageMemory vkDev0 vkIma0 imagMe (alignment imagMR)
     imagSu  <- vkCreateImageSubresource [imageAspectColorBit] 4 0
     imagSL  <- vkGetImageSubresourceLayout vkDev0 vkIma0 imagSu
-    clearC  <- createClearColorValue [0,0,0,0]
+    vkCCVa  <- createVkClearColorValue [0,0,0,0]
     vkSMIn  <- createShaderModuleInfo nullPtr (VkShaderModuleCreateFlags 0) "Shaders/Simple.spv"
     vkSMod  <- vkCreateShaderModule vkDev0 vkSMIn
     vkPSSI  <- createVkPipelineShaderStageInfo nullPtr (VkPipelineShaderStageCreateFlags 0) shaderStageComputeBit vkSMod "main" Nothing
@@ -82,5 +82,6 @@ initialize = do
     vkSuD0 <- createVkSubpassDescription (VkSubpassDescriptionFlagBits 0) pipelineBindPointGraphics 0 Nothing 0 Nothing Nothing Nothing 0 Nothing
     vkRPCI <- createVkRenderPassCreateInfo nullPtr (VkRenderPassCreateFlags 0) 0 Nothing 1 (Just [vkSuD0]) 0 Nothing
     vkRePa <- vkCreateRenderPass vkDev0 vkRPCI
+    let vkCPIn = createVkCommandPoolInfo nullPtr (VkCommandPoolCreateFlags 0) 0
 
     return ()
