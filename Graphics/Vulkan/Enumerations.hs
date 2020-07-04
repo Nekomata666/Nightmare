@@ -15,6 +15,8 @@ newtype VkAttachmentStoreOp = VkAttachmentStoreOp { unVkAttachmentStoreOp :: Wor
     deriving (Eq)
 newtype VkBufferUsageFlagBits = VkBufferUsageFlagBits { unVkBufferUsageFlagBits :: Word32 }
     deriving (Eq)
+newtype VkCommandBufferLevel = VkCommandBufferLevel { unVkCommandBufferLevel :: Word32 }
+    deriving (Eq)
 newtype VkDescriptorType = VkDescriptorType { unVkDescriptorType :: Word32 }
     deriving (Eq)
 newtype VkFormat = VkFormat { unVkFormat :: Word32 }
@@ -85,6 +87,12 @@ bufferUsageVertexBufferBit           :: VkBufferUsageFlagBits
 bufferUsageVertexBufferBit           = VkBufferUsageFlagBits 128
 bufferUsageIndirectBufferBit         :: VkBufferUsageFlagBits
 bufferUsageIndirectBufferBit         = VkBufferUsageFlagBits 256
+
+-- VkCommandBufferLevel
+commandBufferLevelPrimary        :: VkCommandBufferLevel
+commandBufferLevelPrimary        = VkCommandBufferLevel 0
+commandBufferLevelSecondary      :: VkCommandBufferLevel
+commandBufferLevelSecondary      = VkCommandBufferLevel 1
 
 -- VkDescriptorType
 descriptorTypeSampler                :: VkDescriptorType
@@ -853,6 +861,14 @@ instance Storable VkBufferUsageFlagBits where
         v <- peekByteOff p 0
         return (VkBufferUsageFlagBits v)
     poke p (VkBufferUsageFlagBits v) = pokeByteOff p 0 v
+
+instance Storable VkCommandBufferLevel where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkCommandBufferLevel v)
+    poke p (VkCommandBufferLevel v) = pokeByteOff p 0 v
 
 instance Storable VkDescriptorType where
     sizeOf _    = 4

@@ -67,8 +67,7 @@ initialize = do
     vkPiLa  <- vkCreatePipelineLayout vkDev0 vkPLCI
     vkPCCI  <- createVkPipelineCacheInfo nullPtr (VkPipelineCacheCreateFlags 0) ""
     vkPiCa  <- vkCreatePipelineCache vkDev0 vkPCCI
-    let vkCPCI = VkComputePipelineCreateInfo structureTypeComputePipelineCreateInfo nullPtr
-               (VkPipelineCreateFlags 0) vkPSSI vkPiLa (VkPipeline 0) 0
+    let vkCPCI = VkComputePipelineCreateInfo structureTypeComputePipelineCreateInfo nullPtr (VkPipelineCreateFlags 0) vkPSSI vkPiLa (VkPipeline 0) 0
     vkCoP0 <- vkCreateComputePipelines vkDev0 vkPiCa 1 [vkCPCI]
     let vkDPS0 = VkDescriptorPoolSize descriptorTypeStorageBuffer 1
     vkDPCI <- createVkDescriptorPoolCreateInfo nullPtr (VkDescriptorPoolCreateFlags 0) 1 1 [vkDPS0]
@@ -84,5 +83,6 @@ initialize = do
     vkRePa <- vkCreateRenderPass vkDev0 vkRPCI
     let vkCPIn = createVkCommandPoolInfo nullPtr (VkCommandPoolCreateFlags 0) 0
     vkCPo0 <- vkCreateCommandPool vkDev0 vkCPIn
+    let vkCBAI = createVkCommandBufferAllocateInfo nullPtr vkCPo0 commandBufferLevelPrimary 1
 
     return ()
