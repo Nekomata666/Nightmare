@@ -85,5 +85,6 @@ initialize = do
     vkCPo0 <- vkCreateCommandPool vkDev0 vkCPIn
     let vkCBAI = createVkCommandBufferAllocateInfo nullPtr vkCPo0 commandBufferLevelPrimary 1
     vkCoBu <- vkAllocateCommandBuffers vkDev0 vkCBAI
+    vkCBBI <- createVkCommandBufferBeginInfo nullPtr (VkCommandBufferUsageFlags 0) Nothing
 
     return ()

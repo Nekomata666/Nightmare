@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Command (createVkClearColorValue, createVkCommandBufferAllocateInfo, createVkCommandPoolInfo, vkAllocateCommandBuffers, vkCreateCommandPool) where
+module Graphics.Vulkan.Command (createVkClearColorValue, createVkCommandBufferAllocateInfo, createVkCommandBufferBeginInfo, createVkCommandPoolInfo, vkAllocateCommandBuffers, vkCreateCommandPool) where
 
 
 import Data.Maybe   (Maybe)
@@ -31,6 +31,11 @@ createVkClearColorValue v = allocaArray 4 $ \p -> do
 
 createVkCommandBufferAllocateInfo :: Ptr Void -> VkCommandPool -> VkCommandBufferLevel -> Word32 -> VkCommandBufferAllocateInfo
 createVkCommandBufferAllocateInfo = VkCommandBufferAllocateInfo structureTypeCommandBufferAllocateInfo
+
+createVkCommandBufferBeginInfo :: Ptr Void -> VkCommandBufferUsageFlags -> Maybe VkCommandBufferInheritanceInfo -> IO VkCommandBufferBeginInfo
+createVkCommandBufferBeginInfo v f i = do
+    p <- fromMaybeIO i
+    return $ VkCommandBufferBeginInfo structureTypeCommandBufferBeginInfo v f p
 
 createVkCommandPoolInfo :: Ptr Void -> VkCommandPoolCreateFlags -> Word32 -> VkCommandPoolCreateInfo
 createVkCommandPoolInfo = VkCommandPoolCreateInfo structureTypeCommandPoolCreateInfo
