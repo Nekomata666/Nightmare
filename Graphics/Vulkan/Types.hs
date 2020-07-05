@@ -25,6 +25,7 @@ newtype VkAccessFlags = VkAccessFlags { unVkAccessFlags :: VkFlags }
 newtype VkAttachmentDescriptionFlags = VkAttachmentDescriptionFlags { unVkAttachmentDescriptionFlags :: VkFlags }
 newtype VkBufferCreateFlags = VkBufferCreateFlags { unVkBufferCreateFlags :: VkFlags }
 newtype VkBufferUsageFlags = VkBufferUsageFlags { unVkBufferUsageFlags :: VkFlags }
+newtype VkCommandBufferUsageFlags = VkCommandBufferUsageFlags { unVkCommandBufferUsageFlags :: VkFlags }
 newtype VkCommandPoolCreateFlags = VkCommandPoolCreateFlags { unVkCommandPoolCreateFlags :: VkFlags }
 newtype VkDependencyFlags = VkDependencyFlags { unVkDependencyFlags :: VkFlags }
 newtype VkDescriptorPoolCreateFlags = VkDescriptorPoolCreateFlags { unVkDescriptorPoolCreateFlags :: VkFlags }
@@ -40,6 +41,8 @@ newtype VkPipelineCreateFlags = VkPipelineCreateFlags { unVkPipelineCreateFlags 
 newtype VkPipelineLayoutCreateFlags = VkPipelineLayoutCreateFlags { unVkPipelineLayoutCreateFlags :: VkFlags }
 newtype VkPipelineShaderStageCreateFlags = VkPipelineShaderStageCreateFlags { unVkPipelineShaderStageCreateFlags :: VkFlags }
 newtype VkPipelineStageFlags = VkPipelineStageFlags { unVkPipelineStageFlags :: VkFlags }
+newtype VkQueryControlFlags = VkQueryControlFlags { unVkQueryControlFlags :: VkFlags }
+newtype VkQueryPipelineStatisticFlags = VkQueryPipelineStatisticFlags { unVkQueryPipelineStatisticFlags :: VkFlags }
 newtype VkRenderPassCreateFlags = VkRenderPassCreateFlags { unVkRenderPassCreateFlags :: VkFlags }
 newtype VkShaderModuleCreateFlags = VkShaderModuleCreateFlags { unVkShaderModuleCreateFlags :: VkFlags }
 newtype VkShaderStageFlags = VkShaderStageFlags { unVkShaderStageFlags :: VkFlags }
@@ -57,6 +60,7 @@ newtype VkDescriptorSetLayout = VkDescriptorSetLayout { unVkDescriptorSetLayout 
 newtype VkDevice = VkDevice { unVkDevice :: VkHandle }
 newtype VkDeviceMemory = VkDeviceMemory { unVkDeviceMemory :: VkHandle }
 newtype VkDeviceSize = VkDeviceSize { unVkDeviceSize :: VkHandle }
+newtype VkFramebuffer = VkFramebuffer { unVkFramebuffer :: VkHandle }
 newtype VkImage = VkImage { unVkImage :: VkHandle }
 newtype VkImageView = VkImageView { unVkImageView :: VkHandle }
 newtype VkInstance = VkInstance { unVkInstance :: VkHandle }
@@ -119,6 +123,14 @@ instance Storable VkBufferUsageFlags where
         v <- peekByteOff p 0
         return (VkBufferUsageFlags v)
     poke p (VkBufferUsageFlags v) = pokeByteOff p 0 v
+
+instance Storable VkCommandBufferUsageFlags where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkCommandBufferUsageFlags v)
+    poke p (VkCommandBufferUsageFlags v) = pokeByteOff p 0 v
 
 instance Storable VkCommandPoolCreateFlags where
     sizeOf _ = 4
@@ -240,6 +252,22 @@ instance Storable VkPipelineStageFlags where
         return (VkPipelineStageFlags v)
     poke p (VkPipelineStageFlags v) = pokeByteOff p 0 v
 
+instance Storable VkQueryControlFlags where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkQueryControlFlags v)
+    poke p (VkQueryControlFlags v) = pokeByteOff p 0 v
+
+instance Storable VkQueryPipelineStatisticFlags where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkQueryPipelineStatisticFlags v)
+    poke p (VkQueryPipelineStatisticFlags v) = pokeByteOff p 0 v
+
 instance Storable VkRenderPassCreateFlags where
     sizeOf _ = 4
     alignment _ = 4
@@ -352,6 +380,14 @@ instance Storable VkDeviceSize where
         v <- peekByteOff p 0
         return (VkDeviceSize v)
     poke p (VkDeviceSize v) = pokeByteOff p 0 v
+
+instance Storable VkFramebuffer where
+    sizeOf _ = 8
+    alignment _ = 8
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkFramebuffer v)
+    poke p (VkFramebuffer v) = pokeByteOff p 0 v
 
 instance Storable VkImage where
     sizeOf _ = 8
