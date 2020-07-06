@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Command (createVkClearColorValue, createVkCommandBufferAllocateInfo, createVkCommandBufferBeginInfo, createVkCommandPoolInfo, vkAllocateCommandBuffers, vkBeginCommandBuffer, vkCreateCommandPool) where
+module Graphics.Vulkan.Command (createVkClearColorValue, createVkCommandBufferAllocateInfo, createVkCommandBufferBeginInfo, createVkCommandPoolInfo, vkAllocateCommandBuffers, vkBeginCommandBuffer, vkCmdFillBuffer, vkCreateCommandPool) where
 
 
 import Data.Maybe   (Maybe)
@@ -16,11 +16,19 @@ import Graphics.Vulkan.Enumerations
 import Graphics.Vulkan.Types
 
 
+-- Type aliases.
+type Data                       = Word32
+type Offset                     = VkDeviceSize
+type Size                       = VkDeviceSize
+
 foreign import ccall unsafe "vkAllocateCommandBuffers"
     c_vkAllocateCommandBuffers :: VkDevice -> Ptr VkCommandBufferAllocateInfo -> Ptr VkCommandBuffer -> IO VkResult
 
 foreign import ccall unsafe "vkBeginCommandBuffer"
     c_vkBeginCommandBuffer :: VkCommandBuffer -> Ptr VkCommandBufferBeginInfo -> IO VkResult
+
+foreign import ccall unsafe "vkCmdFillBuffer"
+    c_vkCmdFillBuffer :: VkCommandBuffer -> VkBuffer -> VkDeviceSize -> VkDeviceSize -> Word32 -> IO ()
 
 foreign import ccall unsafe "vkCreateCommandPool"
     c_vkCreateCommandPool :: VkDevice -> Ptr VkCommandPoolCreateInfo -> Ptr VkAllocationCallbacks -> Ptr VkCommandPool ->
@@ -56,6 +64,10 @@ vkBeginCommandBuffer :: VkCommandBuffer -> VkCommandBufferBeginInfo -> IO VkResu
 vkBeginCommandBuffer b i = alloca $ \p -> do
     poke p i
     c_vkBeginCommandBuffer b p
+
+-- Note: Offset and Size need to be in multiples of 4.
+vkCmdFillBuffer :: VkCommandBuffer -> VkBuffer -> Offset -> Size -> Data -> IO ()
+vkCmdFillBuffer = c_vkCmdFillBuffer
 
 vkCreateCommandPool :: VkDevice -> VkCommandPoolCreateInfo -> IO VkCommandPool
 vkCreateCommandPool d info = alloca $ \pInfo ->
