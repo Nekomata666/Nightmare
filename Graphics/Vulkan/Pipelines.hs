@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Pipelines (createVkPipelineShaderStageInfo, createVkPipelineCacheInfo, createVkPipelineLayoutCreateInfo, vkCreateComputePipelines, vkCreatePipelineCache, vkCreatePipelineLayout) where
+module Graphics.Vulkan.Pipelines (createVkPipelineShaderStageInfo, createVkPipelineCacheInfo, createVkPipelineLayoutCreateInfo, vkCreateComputePipelines, vkCreatePipelineCache, vkCreatePipelineLayout, vkDestroyPipelineCache) where
 
 
 import Data.Maybe
@@ -34,6 +34,9 @@ foreign import ccall unsafe "vkCreatePipelineCache"
 foreign import ccall unsafe "vkCreatePipelineLayout"
     c_vkCreatePipelineLayout :: VkDevice -> Ptr VkPipelineLayoutCreateInfo -> Ptr VkAllocationCallbacks ->
         Ptr VkPipelineLayout -> IO VkResult
+
+foreign import ccall unsafe "vkDestroyPipelineCache"
+    c_vkDestroyPipelineCache :: VkDevice -> VkPipelineCache -> Ptr VkAllocationCallbacks -> IO ()
 
 createVkPipelineCacheInfo :: Ptr Void -> VkPipelineCacheCreateFlags -> FilePath -> IO VkPipelineCacheCreateInfo
 createVkPipelineCacheInfo v pCCF fP
@@ -82,3 +85,6 @@ vkCreatePipelineLayout d pLCI = alloca $ \pPLCI ->
         poke pPLCI pLCI
         _ <- c_vkCreatePipelineLayout d pPLCI nullPtr pPL
         peek pPL
+
+vkDestroyPipelineCache :: VkDevice -> VkPipelineCache -> IO ()
+vkDestroyPipelineCache d pC = c_vkDestroyPipelineCache d pC nullPtr
