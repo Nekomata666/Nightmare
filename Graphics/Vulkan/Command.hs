@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Command (createVkClearColorValue, createVkCommandBufferAllocateInfo, createVkCommandBufferBeginInfo, createVkCommandPoolInfo, createVkImageSubresourceRange, vkAllocateCommandBuffers, vkBeginCommandBuffer, vkCmdClearColorImage, vkCmdFillBuffer, vkCreateCommandPool) where
+module Graphics.Vulkan.Command (createVkClearColorValue, createVkCommandBufferAllocateInfo, createVkCommandBufferBeginInfo, createVkCommandPoolInfo, createVkImageSubresourceRange, vkAllocateCommandBuffers, vkBeginCommandBuffer, vkCmdBindPipeline, vkCmdClearColorImage, vkCmdFillBuffer, vkCreateCommandPool) where
 
 
 import Data.Maybe   (Maybe)
@@ -31,6 +31,9 @@ foreign import ccall unsafe "vkAllocateCommandBuffers"
 
 foreign import ccall unsafe "vkBeginCommandBuffer"
     c_vkBeginCommandBuffer :: VkCommandBuffer -> Ptr VkCommandBufferBeginInfo -> IO VkResult
+
+foreign import ccall unsafe "vkCmdBindPipeline"
+    c_vkCmdBindPipeline :: VkCommandBuffer -> VkPipelineBindPoint -> VkPipeline -> IO ()
 
 foreign import ccall unsafe "vkCmdClearColorImage"
     c_vkCmdClearColorImage :: VkCommandBuffer -> VkImage -> VkImageLayout -> Ptr VkClearColorValue -> Word32 ->
@@ -80,6 +83,9 @@ vkBeginCommandBuffer :: VkCommandBuffer -> VkCommandBufferBeginInfo -> IO VkResu
 vkBeginCommandBuffer b i = alloca $ \p -> do
     poke p i
     c_vkBeginCommandBuffer b p
+
+vkCmdBindPipeline :: VkCommandBuffer -> VkPipelineBindPoint -> VkPipeline -> IO ()
+vkCmdBindPipeline = c_vkCmdBindPipeline
 
 vkCmdClearColorImage :: VkCommandBuffer -> VkImage -> VkImageLayout -> VkClearColorValue -> RangeCount ->
     [VkImageSubresourceRange] -> IO ()

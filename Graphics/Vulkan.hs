@@ -68,7 +68,7 @@ initialize = do
     vkPCCI  <- createVkPipelineCacheInfo nullPtr (VkPipelineCacheCreateFlags 0) ""
     vkPiCa  <- vkCreatePipelineCache vkDev0 vkPCCI
     let vkCPCI = VkComputePipelineCreateInfo structureTypeComputePipelineCreateInfo nullPtr (VkPipelineCreateFlags 0) vkPSSI vkPiLa (VkPipeline 0) 0
-    vkCoP0 <- vkCreateComputePipelines vkDev0 vkPiCa 1 [vkCPCI]
+    vkCoPi <- vkCreateComputePipelines vkDev0 vkPiCa 1 [vkCPCI]
     let vkDPS0 = VkDescriptorPoolSize descriptorTypeStorageBuffer 1
     vkDPCI <- createVkDescriptorPoolCreateInfo nullPtr (VkDescriptorPoolCreateFlags 0) 1 1 [vkDPS0]
     vkDeP0 <- vkCreateDescriptorPool vkDev0 vkDPCI
@@ -90,6 +90,8 @@ initialize = do
     _ <- vkBeginCommandBuffer vkCoB0 vkCBBI
     vkCmdFillBuffer vkCoB0 buffer (VkDeviceSize 0) wholeSize 0
     vkCmdClearColorImage vkCoB0 vkIma0 imageLayoutGeneral vkCCVa 1 [vkISR0]
+    let vkCoP0 = head vkCoPi
+    vkCmdBindPipeline vkCoB0 pipelineBindPointCompute vkCoP0
 
     return ()
     where
