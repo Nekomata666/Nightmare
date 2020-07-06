@@ -92,6 +92,7 @@ initialize = do
     vkCmdClearColorImage vkCoB0 vkIma0 imageLayoutGeneral vkCCVa 1 [vkISR0]
     let vkCoP0 = head vkCoPi
     vkCmdBindPipeline vkCoB0 pipelineBindPointCompute vkCoP0
+    vkCmdBindDescriptorSets vkCoB0 pipelineBindPointCompute vkPiLa 0 1 vkAlDS 0 Nothing
 
     return ()
     where

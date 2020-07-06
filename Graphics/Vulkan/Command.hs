@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Command (createVkClearColorValue, createVkCommandBufferAllocateInfo, createVkCommandBufferBeginInfo, createVkCommandPoolInfo, createVkImageSubresourceRange, vkAllocateCommandBuffers, vkBeginCommandBuffer, vkCmdBindPipeline, vkCmdClearColorImage, vkCmdFillBuffer, vkCreateCommandPool) where
+module Graphics.Vulkan.Command (createVkClearColorValue, createVkCommandBufferAllocateInfo, createVkCommandBufferBeginInfo, createVkCommandPoolInfo, createVkImageSubresourceRange, vkAllocateCommandBuffers, vkBeginCommandBuffer, vkCmdBindDescriptorSets, vkCmdBindPipeline, vkCmdClearColorImage, vkCmdFillBuffer, vkCreateCommandPool) where
 
 
 import Data.Maybe   (Maybe)
@@ -20,6 +20,10 @@ import Graphics.Vulkan.Types
 type BaseArrayLayer             = Word32
 type BaseMipLevel               = Word32
 type Data                       = Word32
+type DescriptorSetCount         = Word32
+type DynamicOffsetCount         = Word32
+type DynamicOffsets             = Word32
+type FirstSet                   = Word32
 type LayerCount                 = Word32
 type LevelCount                 = Word32
 type Offset                     = VkDeviceSize
@@ -31,6 +35,10 @@ foreign import ccall unsafe "vkAllocateCommandBuffers"
 
 foreign import ccall unsafe "vkBeginCommandBuffer"
     c_vkBeginCommandBuffer :: VkCommandBuffer -> Ptr VkCommandBufferBeginInfo -> IO VkResult
+
+foreign import ccall unsafe "vkCmdBindDescriptorSets"
+    c_vkCmdBindDescriptorSets :: VkCommandBuffer -> VkPipelineBindPoint -> VkPipelineLayout -> Word32 -> Word32 ->
+        Ptr VkDescriptorSet -> Word32 -> Ptr Word32 -> IO ()
 
 foreign import ccall unsafe "vkCmdBindPipeline"
     c_vkCmdBindPipeline :: VkCommandBuffer -> VkPipelineBindPoint -> VkPipeline -> IO ()
@@ -83,6 +91,15 @@ vkBeginCommandBuffer :: VkCommandBuffer -> VkCommandBufferBeginInfo -> IO VkResu
 vkBeginCommandBuffer b i = alloca $ \p -> do
     poke p i
     c_vkBeginCommandBuffer b p
+
+vkCmdBindDescriptorSets :: VkCommandBuffer -> VkPipelineBindPoint -> VkPipelineLayout -> FirstSet -> DescriptorSetCount ->
+    [VkDescriptorSet] -> DynamicOffsetCount -> Maybe [DynamicOffsets] -> IO ()
+vkCmdBindDescriptorSets cB pBP pL fS dSC dS dOC dO = allocaArray i $ \pDS -> do
+    pDO <- fromMaybeListIO dOC dO
+    pokeArray pDS dS
+    c_vkCmdBindDescriptorSets cB pBP pL fS dSC pDS dOC pDO
+    where
+        i = cast dSC
 
 vkCmdBindPipeline :: VkCommandBuffer -> VkPipelineBindPoint -> VkPipeline -> IO ()
 vkCmdBindPipeline = c_vkCmdBindPipeline
