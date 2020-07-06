@@ -102,6 +102,7 @@ initialize = do
     _ <- vkDeviceWaitIdle vkDev0
     vkDestroyRenderPass vkDev0 vkRePa
     vkDestroyDescriptorPool vkDev0 vkDeP0
+    vkDestroyPipelineCache vkDev0 vkPiCa
 
     return ()
     where
