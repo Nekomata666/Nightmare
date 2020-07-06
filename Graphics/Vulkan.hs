@@ -101,6 +101,7 @@ initialize = do
     _ <- vkQueueWaitIdle vkQue0
     _ <- vkDeviceWaitIdle vkDev0
     vkDestroyRenderPass vkDev0 vkRePa
+    vkDestroyDescriptorPool vkDev0 vkDeP0
 
     return ()
     where

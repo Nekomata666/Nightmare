@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Descriptor (createVkDescriptorPoolCreateInfo, createVkDescriptorSetAllocateInfo, createVkDescriptorSetLayoutBinding, createVkDescriptorSetLayoutCreateInfo, createVkWriteDescriptorSet, vkAllocateDescriptorSets, vkCreateDescriptorPool, vkCreateDescriptorSetLayout, vkUpdateDescriptorSets) where
+module Graphics.Vulkan.Descriptor (createVkDescriptorPoolCreateInfo, createVkDescriptorSetAllocateInfo, createVkDescriptorSetLayoutBinding, createVkDescriptorSetLayoutCreateInfo, createVkWriteDescriptorSet, vkAllocateDescriptorSets, vkCreateDescriptorPool, vkCreateDescriptorSetLayout, vkDestroyDescriptorPool, vkUpdateDescriptorSets) where
 
 
 import Data.Maybe
@@ -37,6 +37,9 @@ foreign import ccall unsafe "vkCreateDescriptorPool"
 foreign import ccall unsafe "vkCreateDescriptorSetLayout"
     c_vkCreateDescriptorSetLayout :: VkDevice -> Ptr VkDescriptorSetLayoutCreateInfo -> Ptr VkAllocationCallbacks ->
         Ptr VkDescriptorSetLayout -> IO VkResult
+
+foreign import ccall unsafe "vkDestroyDescriptorPool"
+    c_vkDestroyDescriptorPool :: VkDevice -> VkDescriptorPool -> Ptr VkAllocationCallbacks -> IO ()
 
 foreign import ccall unsafe "vkUpdateDescriptorSets"
     c_vkUpdateDescriptorSets :: VkDevice -> Word32 -> Ptr VkWriteDescriptorSet -> Word32 -> Ptr VkCopyDescriptorSet -> IO ()
@@ -101,6 +104,9 @@ vkCreateDescriptorSetLayout d dSLCI = alloca $ \pDSLCI ->
         poke pDSLCI dSLCI
         _ <- c_vkCreateDescriptorSetLayout d pDSLCI nullPtr pDSL
         peek pDSL
+
+vkDestroyDescriptorPool :: VkDevice -> VkDescriptorPool -> IO ()
+vkDestroyDescriptorPool d dP = c_vkDestroyDescriptorPool d dP nullPtr
 
 vkUpdateDescriptorSets :: VkDevice -> DescriptorWriteCount -> Maybe [VkWriteDescriptorSet] -> DescriptorCopyCount ->
     Maybe [VkCopyDescriptorSet] -> IO ()
