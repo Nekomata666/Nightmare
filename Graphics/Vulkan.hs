@@ -94,11 +94,12 @@ initialize = do
     let vkCoP0 = head vkCoPi
     vkCmdBindPipeline vkCoB0 pipelineBindPointCompute vkCoP0
     vkCmdBindDescriptorSets vkCoB0 pipelineBindPointCompute vkPiLa 0 1 vkAlDS 0 Nothing
-    -- vkCmdPushConstants vkCoB0 vkPiLa [shaderStageComputeBit] 0 4 (0 :: Word)
+    vkCmdPushConstants vkCoB0 vkPiLa [shaderStageComputeBit] 0 4 (0 :: Word)
     _ <- vkEndCommandBuffer vkCoB0
     vkSuIn <- createVkSubmitInfo nullPtr 0 Nothing Nothing 1 vkCoBu 0 Nothing
     _ <- vkQueueSubmit vkQue0 1 [vkSuIn] (VkFence nullHandle)
     _ <- vkQueueWaitIdle vkQue0
+    _ <- vkDeviceWaitIdle vkDev0
 
     return ()
     where
