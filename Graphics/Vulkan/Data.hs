@@ -224,6 +224,14 @@ data VkImageSubresource = VkImageSubresource{
     arrayLayer :: Word32
 }
 
+data VkImageSubresourceRange = VkImageSubresourceRange{
+    aspectMask :: VkImageAspectFlags,
+    baseMipLevel :: Word32,
+    levelCount :: Word32,
+    baseArrayLayer :: Word32,
+    layerCount :: Word32
+}
+
 data VkInstanceCreateInfo = VkInstanceCreateInfo{
     sType                   :: VkStructureType,
     next                    :: Ptr Void,
@@ -856,6 +864,23 @@ instance Storable VkImageSubresource where
         pokeByteOff p 0 v1
         pokeByteOff p 4 v2
         pokeByteOff p 8 v3
+
+instance Storable VkImageSubresourceRange where
+    sizeOf _ = 20
+    alignment _ = 4
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 4
+        v3 <- peekByteOff p 8
+        v4 <- peekByteOff p 12
+        v5 <- peekByteOff p 16
+        return (VkImageSubresourceRange v1 v2 v3 v4 v5)
+    poke p (VkImageSubresourceRange v1 v2 v3 v4 v5) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 4 v2
+        pokeByteOff p 8 v3
+        pokeByteOff p 12 v4
+        pokeByteOff p 16 v5
 
 instance Storable VkInstanceCreateInfo where
     sizeOf _ = 64
