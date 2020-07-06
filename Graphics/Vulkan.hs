@@ -18,6 +18,7 @@ import Graphics.Vulkan.Images
 import Graphics.Vulkan.Instance
 import Graphics.Vulkan.Memory
 import Graphics.Vulkan.Pipelines
+import Graphics.Vulkan.Queue
 import Graphics.Vulkan.Renderpass
 import Graphics.Vulkan.Shaders
 import Graphics.Vulkan.Types
@@ -95,6 +96,7 @@ initialize = do
     vkCmdBindDescriptorSets vkCoB0 pipelineBindPointCompute vkPiLa 0 1 vkAlDS 0 Nothing
     -- vkCmdPushConstants vkCoB0 vkPiLa [shaderStageComputeBit] 0 4 (0 :: Word)
     _ <- vkEndCommandBuffer vkCoB0
+    vkSuIn <- createVkSubmitInfo nullPtr 0 Nothing Nothing 1 vkCoBu 0 Nothing
 
     return ()
     where
