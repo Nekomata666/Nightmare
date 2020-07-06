@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Command (createVkClearColorValue, createVkCommandBufferAllocateInfo, createVkCommandBufferBeginInfo, createVkCommandPoolInfo, createVkImageSubresourceRange, vkAllocateCommandBuffers, vkBeginCommandBuffer, vkCmdBindDescriptorSets, vkCmdBindPipeline, vkCmdClearColorImage, vkCmdFillBuffer, vkCreateCommandPool) where
+module Graphics.Vulkan.Command (createVkClearColorValue, createVkCommandBufferAllocateInfo, createVkCommandBufferBeginInfo, createVkCommandPoolInfo, createVkImageSubresourceRange, vkAllocateCommandBuffers, vkBeginCommandBuffer, vkCmdBindDescriptorSets, vkCmdBindPipeline, vkCmdClearColorImage, vkCmdFillBuffer, vkCmdPushConstants, vkCreateCommandPool) where
 
 
 import Data.Maybe   (Maybe)
@@ -27,6 +27,8 @@ type FirstSet                   = Word32
 type LayerCount                 = Word32
 type LevelCount                 = Word32
 type Offset                     = VkDeviceSize
+type PushOffset                 = Word32
+type PushSize                   = Word32
 type RangeCount                 = Word32
 type Size                       = VkDeviceSize
 
@@ -49,6 +51,9 @@ foreign import ccall unsafe "vkCmdClearColorImage"
 
 foreign import ccall unsafe "vkCmdFillBuffer"
     c_vkCmdFillBuffer :: VkCommandBuffer -> VkBuffer -> VkDeviceSize -> VkDeviceSize -> Word32 -> IO ()
+
+foreign import ccall unsafe "vkCmdPushConstants"
+    c_vkCmdPushConstants :: VkCommandBuffer -> VkPipelineLayout -> VkShaderStageFlags -> Word32 -> Word32 -> Ptr Void -> IO ()
 
 foreign import ccall unsafe "vkCreateCommandPool"
     c_vkCreateCommandPool :: VkDevice -> Ptr VkCommandPoolCreateInfo -> Ptr VkAllocationCallbacks -> Ptr VkCommandPool ->
@@ -117,6 +122,14 @@ vkCmdClearColorImage cB vkI iL cCV rC iSR = alloca $ \pCCV ->
 -- Note: Offset and Size need to be in multiples of 4.
 vkCmdFillBuffer :: VkCommandBuffer -> VkBuffer -> Offset -> Size -> Data -> IO ()
 vkCmdFillBuffer = c_vkCmdFillBuffer
+
+vkCmdPushConstants :: Storable a => VkCommandBuffer -> VkPipelineLayout -> [VkShaderStageFlagBits] -> PushOffset -> PushSize ->
+    a -> IO ()
+vkCmdPushConstants cB pL sSFB o s v = alloca $ \p -> do
+    poke p v
+    c_vkCmdPushConstants cB pL sSF o s (castPtr p)
+    where
+        sSF = VkShaderStageFlags $ vkBits unVkShaderStageFlagBits sSFB
 
 vkCreateCommandPool :: VkDevice -> VkCommandPoolCreateInfo -> IO VkCommandPool
 vkCreateCommandPool d info = alloca $ \pInfo ->
