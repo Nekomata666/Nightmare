@@ -86,6 +86,8 @@ initialize = do
     let vkCBAI = createVkCommandBufferAllocateInfo nullPtr vkCPo0 commandBufferLevelPrimary 1
     vkCoBu <- vkAllocateCommandBuffers vkDev0 vkCBAI
     vkCBBI <- createVkCommandBufferBeginInfo nullPtr (VkCommandBufferUsageFlags 0) Nothing
-    _ <- vkBeginCommandBuffer (head vkCoBu) vkCBBI
+    let vkCoB0 = head vkCoBu
+    _ <- vkBeginCommandBuffer vkCoB0 vkCBBI
+    vkCmdFillBuffer vkCoB0 buffer (VkDeviceSize 0) wholeSize 0
 
     return ()
