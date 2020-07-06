@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Devices (vkCreateDevice, vkCreateDeviceInfo, vkCreateDeviceQueueInfo, vkEnumeratePhysicalDevices, vkGetDeviceQueue, vkGetPhysicalDeviceFeatures) where
+module Graphics.Vulkan.Devices (vkCreateDevice, vkCreateDeviceInfo, vkCreateDeviceQueueInfo, vkDeviceWaitIdle, vkEnumeratePhysicalDevices, vkGetDeviceQueue, vkGetPhysicalDeviceFeatures) where
 
 
 import Data.Void (Void)
@@ -18,6 +18,9 @@ import Graphics.Vulkan.Types
 
 foreign import ccall unsafe "vkCreateDevice"
     c_vkCreateDevice :: VkPhysicalDevice -> Ptr VkDeviceCreateInfo -> Ptr VkAllocationCallbacks -> Ptr VkDevice -> IO VkResult
+
+foreign import ccall unsafe "vkDeviceWaitIdle"
+    c_vkDeviceWaitIdle :: VkDevice -> IO VkResult
 
 foreign import ccall unsafe "vkEnumeratePhysicalDevices"
     c_vkEnumeratePhysicalDevices :: VkInstance -> Ptr Word32 -> Ptr VkPhysicalDevice -> IO VkResult
@@ -55,6 +58,9 @@ vkCreateDeviceQueueInfo v f fI c p = allocaArray i $ \pP -> do
     return $ VkDeviceQueueCreateInfo structureTypeDeviceQueueCreateInfo v f fI c pP
     where
         i = cast c
+
+vkDeviceWaitIdle :: VkDevice -> IO VkResult
+vkDeviceWaitIdle = c_vkDeviceWaitIdle
 
 vkEnumeratePhysicalDevices :: VkInstance -> IO [VkPhysicalDevice]
 vkEnumeratePhysicalDevices vkInst = do
