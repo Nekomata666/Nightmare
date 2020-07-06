@@ -70,6 +70,7 @@ newtype VkPipelineCache = VkPipelineCache { unVkPipelineCache :: VkHandle }
 newtype VkPipelineLayout = VkPipelineLayout { unVkPipelineLayout :: VkHandle }
 newtype VkRenderPass = VkRenderPass { unVkRenderPass :: VkHandle }
 newtype VkSampler = VkSampler { unVkSampler :: VkHandle }
+newtype VkSemaphore = VkSemaphore { unVkSemaphore :: VkHandle }
 newtype VkShaderModule = VkShaderModule { unVkShaderModule :: VkHandle }
 newtype VkQueue = VkQueue { unVkQueue :: VkHandle }
 
@@ -275,6 +276,14 @@ instance Storable VkRenderPassCreateFlags where
         v <- peekByteOff p 0
         return (VkRenderPassCreateFlags v)
     poke p (VkRenderPassCreateFlags v) = pokeByteOff p 0 v
+
+instance Storable VkSemaphore where
+    sizeOf _ = 8
+    alignment _ = 8
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkSemaphore v)
+    poke p (VkSemaphore v) = pokeByteOff p 0 v
 
 instance Storable VkShaderModuleCreateFlags where
     sizeOf _ = 4
