@@ -89,5 +89,8 @@ initialize = do
     let vkCoB0 = head vkCoBu
     _ <- vkBeginCommandBuffer vkCoB0 vkCBBI
     vkCmdFillBuffer vkCoB0 buffer (VkDeviceSize 0) wholeSize 0
+    vkCmdClearColorImage vkCoB0 vkIma0 imageLayoutGeneral vkCCVa 1 [vkISR0]
 
     return ()
+    where
+        vkISR0 = createVkImageSubresourceRange [imageAspectColorBit] 0 1 0 1
