@@ -98,6 +98,7 @@ initialize = do
     _ <- vkEndCommandBuffer vkCoB0
     vkSuIn <- createVkSubmitInfo nullPtr 0 Nothing Nothing 1 vkCoBu 0 Nothing
     _ <- vkQueueSubmit vkQue0 1 [vkSuIn] (VkFence nullHandle)
+    _ <- vkQueueWaitIdle vkQue0
 
     return ()
     where

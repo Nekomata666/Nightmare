@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Queue (createVkSubmitInfo, vkQueueSubmit) where
+module Graphics.Vulkan.Queue (createVkSubmitInfo, vkQueueSubmit, vkQueueWaitIdle) where
 
 
 import Control.DeepSeq
@@ -25,6 +25,9 @@ type SubmitCount        = Word32
 foreign import ccall unsafe "vkQueueSubmit"
     c_vkQueueSubmit :: VkQueue -> Word32 -> Ptr VkSubmitInfo -> VkFence -> IO VkResult
 
+foreign import ccall unsafe "vkQueueWaitIdle"
+    c_vkQueueWaitIdle :: VkQueue -> IO VkResult
+
 createVkSubmitInfo :: Ptr Void -> Word32 -> Maybe [VkSemaphore] -> Maybe [VkPipelineStageFlags] -> Word32 -> [VkCommandBuffer] ->
     Word32 -> Maybe [VkSemaphore] -> IO VkSubmitInfo
 createVkSubmitInfo v wSC wS f cBC cB sSC sS = allocaArray cBI $ \pCB -> do
@@ -42,3 +45,6 @@ vkQueueSubmit q c info f = allocaArray i $ \p -> do
     c_vkQueueSubmit q c p f
     where
         i = cast c
+
+vkQueueWaitIdle :: VkQueue -> IO VkResult
+vkQueueWaitIdle = c_vkQueueWaitIdle
