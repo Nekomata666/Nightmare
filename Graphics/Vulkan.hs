@@ -94,6 +94,7 @@ initialize = do
     vkCmdBindPipeline vkCoB0 pipelineBindPointCompute vkCoP0
     vkCmdBindDescriptorSets vkCoB0 pipelineBindPointCompute vkPiLa 0 1 vkAlDS 0 Nothing
     -- vkCmdPushConstants vkCoB0 vkPiLa [shaderStageComputeBit] 0 4 (0 :: Word)
+    _ <- vkEndCommandBuffer vkCoB0
 
     return ()
     where

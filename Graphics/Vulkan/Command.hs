@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Command (createVkClearColorValue, createVkCommandBufferAllocateInfo, createVkCommandBufferBeginInfo, createVkCommandPoolInfo, createVkImageSubresourceRange, vkAllocateCommandBuffers, vkBeginCommandBuffer, vkCmdBindDescriptorSets, vkCmdBindPipeline, vkCmdClearColorImage, vkCmdFillBuffer, vkCmdPushConstants, vkCreateCommandPool) where
+module Graphics.Vulkan.Command (createVkClearColorValue, createVkCommandBufferAllocateInfo, createVkCommandBufferBeginInfo, createVkCommandPoolInfo, createVkImageSubresourceRange, vkAllocateCommandBuffers, vkBeginCommandBuffer, vkCmdBindDescriptorSets, vkCmdBindPipeline, vkCmdClearColorImage, vkCmdFillBuffer, vkCmdPushConstants, vkCreateCommandPool, vkEndCommandBuffer) where
 
 
 import Data.Maybe   (Maybe)
@@ -58,6 +58,9 @@ foreign import ccall unsafe "vkCmdPushConstants"
 foreign import ccall unsafe "vkCreateCommandPool"
     c_vkCreateCommandPool :: VkDevice -> Ptr VkCommandPoolCreateInfo -> Ptr VkAllocationCallbacks -> Ptr VkCommandPool ->
         IO VkResult
+
+foreign import ccall unsafe "vkEndCommandBuffer"
+    c_vkEndCommandBuffer :: VkCommandBuffer -> IO VkResult
 
 
 createVkClearColorValue :: [Word32] -> IO VkClearColorValue
@@ -137,3 +140,6 @@ vkCreateCommandPool d info = alloca $ \pInfo ->
         poke pInfo info
         _ <- c_vkCreateCommandPool d pInfo nullPtr pPool
         peek pPool
+
+vkEndCommandBuffer :: VkCommandBuffer -> IO VkResult
+vkEndCommandBuffer = c_vkEndCommandBuffer
