@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Queue (createVkSubmitInfo) where
+module Graphics.Vulkan.Queue (createVkSubmitInfo, vkQueueSubmit) where
 
 
 import Control.DeepSeq
@@ -19,6 +19,12 @@ import Graphics.Vulkan.Enumerations
 import Graphics.Vulkan.Types
 
 
+-- Type aliases.
+type SubmitCount        = Word32
+
+foreign import ccall unsafe "vkQueueSubmit"
+    c_vkQueueSubmit :: VkQueue -> Word32 -> Ptr VkSubmitInfo -> VkFence -> IO VkResult
+
 createVkSubmitInfo :: Ptr Void -> Word32 -> Maybe [VkSemaphore] -> Maybe [VkPipelineStageFlags] -> Word32 -> [VkCommandBuffer] ->
     Word32 -> Maybe [VkSemaphore] -> IO VkSubmitInfo
 createVkSubmitInfo v wSC wS f cBC cB sSC sS = allocaArray cBI $ \pCB -> do
@@ -29,3 +35,10 @@ createVkSubmitInfo v wSC wS f cBC cB sSC sS = allocaArray cBI $ \pCB -> do
     return $ VkSubmitInfo structureTypeSubmitInfo v wSC pWS pF cBC pCB sSC pSS
     where
         cBI = cast cBC
+
+vkQueueSubmit :: VkQueue -> SubmitCount -> [VkSubmitInfo] -> VkFence -> IO VkResult
+vkQueueSubmit q c info f = allocaArray i $ \p -> do
+    pokeArray p info
+    c_vkQueueSubmit q c p f
+    where
+        i = cast c
