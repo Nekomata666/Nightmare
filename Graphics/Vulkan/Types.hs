@@ -17,6 +17,10 @@ import Graphics.Vulkan.Enumerations (VkInternalAllocationType, VkSystemAllocatio
 type VkFlags    = Word32
 type VkHandle   = Word64
 
+-- Vulkan pre-defines
+nullHandle :: VkHandle
+nullHandle = 0
+
 -- Vulkan Types
 newtype VkBool  = VkBool { unVkBool :: Word32 }
 
@@ -60,6 +64,7 @@ newtype VkDescriptorSetLayout = VkDescriptorSetLayout { unVkDescriptorSetLayout 
 newtype VkDevice = VkDevice { unVkDevice :: VkHandle }
 newtype VkDeviceMemory = VkDeviceMemory { unVkDeviceMemory :: VkHandle }
 newtype VkDeviceSize = VkDeviceSize { unVkDeviceSize :: VkHandle }
+newtype VkFence = VkFence { unVkFence :: VkHandle }
 newtype VkFramebuffer = VkFramebuffer { unVkFramebuffer :: VkHandle }
 newtype VkImage = VkImage { unVkImage :: VkHandle }
 newtype VkImageView = VkImageView { unVkImageView :: VkHandle }
@@ -277,14 +282,6 @@ instance Storable VkRenderPassCreateFlags where
         return (VkRenderPassCreateFlags v)
     poke p (VkRenderPassCreateFlags v) = pokeByteOff p 0 v
 
-instance Storable VkSemaphore where
-    sizeOf _ = 8
-    alignment _ = 8
-    peek p = do
-        v <- peekByteOff p 0
-        return (VkSemaphore v)
-    poke p (VkSemaphore v) = pokeByteOff p 0 v
-
 instance Storable VkShaderModuleCreateFlags where
     sizeOf _ = 4
     alignment _ = 4
@@ -390,6 +387,14 @@ instance Storable VkDeviceSize where
         return (VkDeviceSize v)
     poke p (VkDeviceSize v) = pokeByteOff p 0 v
 
+instance Storable VkFence where
+    sizeOf _ = 8
+    alignment _ = 8
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkFence v)
+    poke p (VkFence v) = pokeByteOff p 0 v
+
 instance Storable VkFramebuffer where
     sizeOf _ = 8
     alignment _ = 8
@@ -469,6 +474,14 @@ instance Storable VkSampler where
         v <- peekByteOff p 0
         return (VkSampler v)
     poke p (VkSampler v) = pokeByteOff p 0 v
+
+instance Storable VkSemaphore where
+    sizeOf _ = 8
+    alignment _ = 8
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkSemaphore v)
+    poke p (VkSemaphore v) = pokeByteOff p 0 v
 
 instance Storable VkShaderModule where
     sizeOf _ = 8
