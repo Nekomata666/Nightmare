@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Renderpass (createVkRenderPassCreateInfo, createVkSubpassDescription, vkCreateRenderPass) where
+module Graphics.Vulkan.Renderpass (createVkRenderPassCreateInfo, createVkSubpassDescription, vkCreateRenderPass, vkDestroyRenderPass) where
 
 
 import Data.Maybe (Maybe)
@@ -34,6 +34,9 @@ foreign import ccall unsafe "vkCreateRenderPass"
     c_vkCreateRenderPass :: VkDevice -> Ptr VkRenderPassCreateInfo -> Ptr VkAllocationCallbacks -> Ptr VkRenderPass ->
         IO VkResult
 
+foreign import ccall unsafe "vkDestroyRenderPass"
+    c_vkDestroyRenderPass :: VkDevice -> VkRenderPass -> Ptr VkAllocationCallbacks -> IO ()
+
 createVkRenderPassCreateInfo :: Ptr Void -> VkRenderPassCreateFlags -> AttachmentCount -> Maybe [VkAttachmentDescription] ->
     SubpassCount -> Maybe [VkSubpassDescription] -> DependencyCount -> Maybe [VkSubpassDependency] -> IO VkRenderPassCreateInfo
 createVkRenderPassCreateInfo v rPCF aC aD sC sDes dC sDep = do
@@ -61,3 +64,6 @@ vkCreateRenderPass d rPCI = alloca $ \pRPCI ->
         poke pRPCI rPCI
         _ <- c_vkCreateRenderPass d pRPCI nullPtr pRP
         peek pRP
+
+vkDestroyRenderPass :: VkDevice -> VkRenderPass -> IO ()
+vkDestroyRenderPass d rP = c_vkDestroyRenderPass d rP nullPtr

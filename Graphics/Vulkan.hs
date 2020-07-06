@@ -100,6 +100,7 @@ initialize = do
     _ <- vkQueueSubmit vkQue0 1 [vkSuIn] (VkFence nullHandle)
     _ <- vkQueueWaitIdle vkQue0
     _ <- vkDeviceWaitIdle vkDev0
+    vkDestroyRenderPass vkDev0 vkRePa
 
     return ()
     where
