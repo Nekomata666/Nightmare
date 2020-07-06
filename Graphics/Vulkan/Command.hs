@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Command (createVkClearColorValue, createVkCommandBufferAllocateInfo, createVkCommandBufferBeginInfo, createVkCommandPoolInfo, vkAllocateCommandBuffers, vkCreateCommandPool) where
+module Graphics.Vulkan.Command (createVkClearColorValue, createVkCommandBufferAllocateInfo, createVkCommandBufferBeginInfo, createVkCommandPoolInfo, vkAllocateCommandBuffers, vkBeginCommandBuffer, vkCreateCommandPool) where
 
 
 import Data.Maybe   (Maybe)
@@ -16,12 +16,15 @@ import Graphics.Vulkan.Enumerations
 import Graphics.Vulkan.Types
 
 
+foreign import ccall unsafe "vkAllocateCommandBuffers"
+    c_vkAllocateCommandBuffers :: VkDevice -> Ptr VkCommandBufferAllocateInfo -> Ptr VkCommandBuffer -> IO VkResult
+
+foreign import ccall unsafe "vkBeginCommandBuffer"
+    c_vkBeginCommandBuffer :: VkCommandBuffer -> Ptr VkCommandBufferBeginInfo -> IO VkResult
+
 foreign import ccall unsafe "vkCreateCommandPool"
     c_vkCreateCommandPool :: VkDevice -> Ptr VkCommandPoolCreateInfo -> Ptr VkAllocationCallbacks -> Ptr VkCommandPool ->
         IO VkResult
-
-foreign import ccall unsafe "vkAllocateCommandBuffers"
-    c_vkAllocateCommandBuffers :: VkDevice -> Ptr VkCommandBufferAllocateInfo -> Ptr VkCommandBuffer -> IO VkResult
 
 
 createVkClearColorValue :: [Word32] -> IO VkClearColorValue
@@ -48,6 +51,11 @@ vkAllocateCommandBuffers d info@(VkCommandBufferAllocateInfo _ _ _ _ c) = alloca
         peekArray i pBuffy
         where
             i = cast c
+
+vkBeginCommandBuffer :: VkCommandBuffer -> VkCommandBufferBeginInfo -> IO VkResult
+vkBeginCommandBuffer b i = alloca $ \p -> do
+    poke p i
+    c_vkBeginCommandBuffer b p
 
 vkCreateCommandPool :: VkDevice -> VkCommandPoolCreateInfo -> IO VkCommandPool
 vkCreateCommandPool d info = alloca $ \pInfo ->
