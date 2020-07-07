@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Images (vkBindImageMemory, vkCreateImage, vkCreateImageInfo, vkCreateImageSubresource, vkGetImageMemoryRequirements, vkGetImageSubresourceLayout) where
+module Graphics.Vulkan.Images (vkBindImageMemory, vkCreateImage, vkCreateImageInfo, vkCreateImageSubresource, vkDestroyImage, vkGetImageMemoryRequirements, vkGetImageSubresourceLayout) where
 
 
 import Data.Void (Void)
@@ -20,6 +20,9 @@ foreign import ccall unsafe "vkBindImageMemory"
 
 foreign import ccall unsafe "vkCreateImage"
     c_vkCreateImage :: VkDevice -> Ptr VkImageCreateInfo -> Ptr VkAllocationCallbacks -> Ptr VkImage -> IO VkResult
+
+foreign import ccall unsafe "vkDestroyImage"
+    c_vkDestroyImage :: VkDevice -> VkImage -> Ptr VkAllocationCallbacks -> IO ()
 
 foreign import ccall unsafe "vkGetImageMemoryRequirements"
     c_vkGetImageMemoryRequirements :: VkDevice -> VkImage -> Ptr VkMemoryRequirements -> IO ()
@@ -53,6 +56,9 @@ vkCreateImageInfo v cFlags t f e m a s ti uFlags mo iC indices l = allocaArray i
             i = cast iC
             c = VkImageCreateFlags $ vkBits unVkImageCreateFlagBits cFlags
             u = VkImageUsageFlags $ vkBits unVkImageUsageFlagBits uFlags
+
+vkDestroyImage :: VkDevice -> VkImage -> IO ()
+vkDestroyImage d i = c_vkDestroyImage d i nullPtr
 
 vkGetImageMemoryRequirements :: VkDevice -> VkImage -> IO VkMemoryRequirements
 vkGetImageMemoryRequirements d i = alloca $ \p -> do
