@@ -110,6 +110,7 @@ initialize = do
     vkDestroyCommandPool vkDev0 vkCPo0
     vkUnmapMemory vkDev0 imagMe
     vkFreeMemory vkDev0 imagMe
+    vkDestroyImage vkDev0 vkIma0
 
     return ()
     where
