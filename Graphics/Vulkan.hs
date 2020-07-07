@@ -104,6 +104,7 @@ initialize = do
     vkDestroyDescriptorPool vkDev0 vkDeP0
     vkDestroyPipelineCache vkDev0 vkPiCa
     vkDestroyPipelineLayout vkDev0 vkPiLa
+    vkDestroyDescriptorSetLayout vkDev0 vkDSL0
 
     return ()
     where
