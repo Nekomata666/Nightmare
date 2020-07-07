@@ -109,6 +109,7 @@ initialize = do
     vkDestroyShaderModule vkDev0 vkSMod
     vkDestroyCommandPool vkDev0 vkCPo0
     vkUnmapMemory vkDev0 imagMe
+    vkFreeMemory vkDev0 imagMe
 
     return ()
     where
