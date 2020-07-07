@@ -103,6 +103,7 @@ initialize = do
     vkDestroyRenderPass vkDev0 vkRePa
     vkDestroyDescriptorPool vkDev0 vkDeP0
     vkDestroyPipelineCache vkDev0 vkPiCa
+    vkDestroyPipelineLayout vkDev0 vkPiLa
 
     return ()
     where
