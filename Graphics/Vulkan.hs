@@ -111,6 +111,9 @@ initialize = do
     vkUnmapMemory vkDev0 imagMe
     vkFreeMemory vkDev0 imagMe
     vkDestroyImage vkDev0 vkIma0
+    vkUnmapMemory vkDev0 buffMe
+    vkFreeMemory vkDev0 buffMe
+    vkDestroyBuffer vkDev0 buffer
 
     return ()
     where

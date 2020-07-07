@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Buffers (vkBindBufferMemory, vkCreateBuffer, vkCreateBufferInfo, vkGetBufferMemoryRequirements) where
+module Graphics.Vulkan.Buffers (vkBindBufferMemory, vkCreateBuffer, vkCreateBufferInfo, vkDestroyBuffer, vkGetBufferMemoryRequirements) where
 
 
 import Data.Void (Void)
@@ -20,6 +20,9 @@ foreign import ccall unsafe "vkBindBufferMemory"
 
 foreign import ccall unsafe "vkCreateBuffer"
     c_vkCreateBuffer :: VkDevice -> Ptr VkBufferCreateInfo -> Ptr VkAllocationCallbacks -> Ptr VkBuffer -> IO VkResult
+
+foreign import ccall unsafe "vkDestroyBuffer"
+    c_vkDestroyBuffer :: VkDevice -> VkBuffer -> Ptr VkAllocationCallbacks -> IO ()
 
 foreign import ccall unsafe "vkGetBufferMemoryRequirements"
     c_vkGetBufferMemoryRequirements :: VkDevice -> VkBuffer -> Ptr VkMemoryRequirements -> IO ()
@@ -42,6 +45,9 @@ vkCreateBufferInfo v bCF dS bUFB sM iC ind = allocaArray i $ \p -> do
         where
             i = cast iC
             u = VkBufferUsageFlags $ vkBits unVkBufferUsageFlagBits bUFB
+
+vkDestroyBuffer :: VkDevice -> VkBuffer -> IO ()
+vkDestroyBuffer d b = c_vkDestroyBuffer d b nullPtr
 
 vkGetBufferMemoryRequirements :: VkDevice -> VkBuffer -> IO VkMemoryRequirements
 vkGetBufferMemoryRequirements d b = alloca $ \p -> do
