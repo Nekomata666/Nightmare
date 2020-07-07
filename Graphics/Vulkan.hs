@@ -32,7 +32,7 @@ initialize = do
         (Just ["VK_LAYER_KHRONOS_validation"]) 2
         (Just ["VK_EXT_debug_report", "VK_KHR_surface"])
     vkInst  <- vkCreateInstance vkInfo
-    physDe  <- vkEnumeratePhysicalDevices $ fst vkInst
+    physDe  <- vkEnumeratePhysicalDevices vkInst
     let d0  = head physDe
     physFe  <- vkGetPhysicalDeviceFeatures d0
     queuIn  <- vkCreateDeviceQueueInfo nullPtr (VkDeviceQueueCreateFlags 0) 0 1 [1.0]
@@ -115,6 +115,7 @@ initialize = do
     vkFreeMemory vkDev0 buffMe
     vkDestroyBuffer vkDev0 buffer
     vkDestroyDevice vkDev0
+    vkDestroyInstance vkInst
 
     return ()
     where
