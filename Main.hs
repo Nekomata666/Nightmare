@@ -23,7 +23,8 @@ main = do
     -- Vulkan
     --
     ----------------------------------------------------------------------------------------------------------------------------
-    initialize vkInst vkSurf
+    vkDev0 <- createDevice vkInst
+    initialize vkInst vkSurf vkDev0
 
     threadDelay 9000000
 
