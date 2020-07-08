@@ -29,8 +29,8 @@ createInstance :: IO VkInstance
 createInstance = do
     let api = makeAPI 1 2 141
     vkApIn  <- createVkApplicationInfo nullPtr "Nightmare" 0 "Nightmare" 0 api
-    vkInCI  <- createVkInstanceCreateInfo nullPtr 0 (Just vkApIn) 1 (Just ["VK_LAYER_KHRONOS_validation"]) 2
-        (Just ["VK_EXT_debug_report", "VK_KHR_surface"])
+    vkInCI  <- createVkInstanceCreateInfo nullPtr 0 (Just vkApIn) 1 (Just ["VK_LAYER_KHRONOS_validation"]) 3
+        (Just ["VK_EXT_debug_report", "VK_KHR_surface", "VK_KHR_xlib_surface"])
     vkCreateInstance vkInCI
 
 createDevice :: VkInstance -> IO VkDevice
@@ -46,7 +46,8 @@ initialize :: VkInstance -> VkSurfaceKHR -> VkDevice -> IO ()
 initialize vkInst vkSurf vkDev0 = do
     vkSCCI <- createVkSwapchainCreateInfo nullPtr (VkSwapchainCreateFlagsKHR 0) vkSurf 3 formatB8G8R8A8SRGB colorSpaceSRGBNonlinearKHR
                     (VkExtent2D 1600 900) 1 imageUsageColorAttachmentBit sharingModeExclusive 1 [0] surfaceTransformIdentityBitKHR
-                    compositeAlphaOpaqueBitKHR presentModeFIFOKHR (VkBool 1) (VkSwapchainKHR 0)
+                    compositeAlphaOpaqueBitKHR presentModeFIFOKHR (VkBool 1) (VkSwapchainKHR nullHandle)
+    vkSC    <- vkCreateSwapchainKHR vkDev0 vkSCCI
     vkBCI   <- vkCreateBufferInfo nullPtr (VkBufferCreateFlags 0) (VkDeviceSize 2136746240)
         [bufferUsageStorageBufferBit, bufferUsageTransferDSTBit] sharingModeExclusive 3 [0]
     vkBuff  <- vkCreateBuffer vkDev0 vkBCI

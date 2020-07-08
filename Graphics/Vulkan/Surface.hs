@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Surface (createVkSwapchainCreateInfo) where
+module Graphics.Vulkan.Surface (createVkSwapchainCreateInfo, vkCreateSwapchainKHR) where
 
 
 import Data.Void (Void)
@@ -22,6 +22,11 @@ type MinImageCount          = Word32
 type QueueFamilyIndexCount  = Word32
 type QueueFamilyIndices     = Word32
 
+
+foreign import ccall unsafe "vkCreateSwapchainKHR"
+    c_vkCreateSwapchainKHR :: VkDevice -> Ptr VkSwapchainCreateInfoKHR -> Ptr VkAllocationCallbacks -> Ptr VkSwapchainKHR ->
+        IO VkResult
+
 createVkSwapchainCreateInfo :: Next -> VkSwapchainCreateFlagsKHR -> VkSurfaceKHR -> MinImageCount -> VkFormat ->
     VkColorSpaceKHR -> VkExtent2D -> ImageArrayLayers -> VkImageUsageFlagBits -> VkSharingMode -> QueueFamilyIndexCount ->
     [QueueFamilyIndices] -> VkSurfaceTransformFlagBitsKHR -> VkCompositeAlphaFlagBitsKHR -> VkPresentModeKHR -> Clipped ->
@@ -33,3 +38,10 @@ createVkSwapchainCreateInfo v sCF s mIC f cS e iAL iUFB sM qFIC qFI sTF cAF pM b
         where
             i = cast qFIC
             u = VkImageUsageFlags $ unVkImageUsageFlagBits iUFB
+
+vkCreateSwapchainKHR :: VkDevice -> VkSwapchainCreateInfoKHR -> IO VkSwapchainKHR
+vkCreateSwapchainKHR d sCI = alloca $ \pSCI ->
+    alloca $ \pS -> do
+        poke pSCI sCI
+        _ <- c_vkCreateSwapchainKHR d pSCI nullPtr pS
+        peek pS
