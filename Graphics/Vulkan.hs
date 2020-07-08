@@ -24,28 +24,30 @@ import Graphics.Vulkan.Shaders
 import Graphics.Vulkan.Types
 
 
-initialize :: IO ()
-initialize = do
+createInstance :: IO VkInstance
+createInstance = do
     let api = makeAPI 1 2 141
-    appInf  <- createVkApplicationInfo nullPtr "Nightmare" 0 "Nightmare" 0 api
-    vkInfo  <- createVkInstanceCreateInfo nullPtr 0 (Just appInf) 1
-        (Just ["VK_LAYER_KHRONOS_validation"]) 2
+    vkApIn  <- createVkApplicationInfo nullPtr "Nightmare" 0 "Nightmare" 0 api
+    vkInCI  <- createVkInstanceCreateInfo nullPtr 0 (Just vkApIn) 1 (Just ["VK_LAYER_KHRONOS_validation"]) 2
         (Just ["VK_EXT_debug_report", "VK_KHR_surface"])
-    vkInst  <- vkCreateInstance vkInfo
-    physDe  <- vkEnumeratePhysicalDevices vkInst
-    let d0  = head physDe
-    physFe  <- vkGetPhysicalDeviceFeatures d0
-    queuIn  <- vkCreateDeviceQueueInfo nullPtr (VkDeviceQueueCreateFlags 0) 0 1 [1.0]
-    devInf  <- vkCreateDeviceInfo nullPtr (VkDeviceCreateFlags 0) 1 queuIn 1 ["VK_KHR_swapchain"] physFe
-    vkDev0  <- vkCreateDevice d0 devInf
-    buInfo  <- vkCreateBufferInfo nullPtr (VkBufferCreateFlags 0) (VkDeviceSize 2136746240)
+    vkCreateInstance vkInCI
+
+initialize :: VkInstance -> IO ()
+initialize vkInst = do
+    vkPDs   <- vkEnumeratePhysicalDevices vkInst
+    let vkPD0  = head vkPDs
+    vkPDF   <- vkGetPhysicalDeviceFeatures vkPD0
+    vkDQCI  <- createVkDeviceQueueCreateInfo nullPtr (VkDeviceQueueCreateFlags 0) 0 1 [1.0]
+    vkDCI   <- vkCreateDeviceInfo nullPtr (VkDeviceCreateFlags 0) 1 vkDQCI 1 ["VK_KHR_swapchain"] vkPDF
+    vkDev0  <- vkCreateDevice vkPD0 vkDCI
+    vkBCI   <- vkCreateBufferInfo nullPtr (VkBufferCreateFlags 0) (VkDeviceSize 2136746240)
         [bufferUsageStorageBufferBit, bufferUsageTransferDSTBit] sharingModeExclusive 3 [0]
-    buffer  <- vkCreateBuffer vkDev0 buInfo
-    buffMR  <- vkGetBufferMemoryRequirements vkDev0 buffer
-    let buffMI = vkCreateMemoryAllocateInfo nullPtr (VkDeviceSize $ 2136746240 + 16) 1
-    buffMe  <- vkAllocateMemory vkDev0 buffMI
-    buffMa  <- vkMapMemory vkDev0 buffMe (VkDeviceSize 0) wholeSize (VkMemoryMapFlags 0)
-    buffMB  <- vkBindBufferMemory vkDev0 buffer buffMe (alignment buffMR)
+    vkBuff  <- vkCreateBuffer vkDev0 vkBCI
+    vkBuMR  <- vkGetBufferMemoryRequirements vkDev0 vkBuff
+    let vkMAI = vkCreateMemoryAllocateInfo nullPtr (VkDeviceSize $ 2136746240 + 16) 1
+    vkDeMe  <- vkAllocateMemory vkDev0 vkMAI
+    buffMa  <- vkMapMemory vkDev0 vkDeMe (VkDeviceSize 0) wholeSize (VkMemoryMapFlags 0)
+    buffMB  <- vkBindBufferMemory vkDev0 vkBuff vkDeMe (alignment vkBuMR)
     imInfo  <- vkCreateImageInfo nullPtr [imageCreateMutableFormatBit] imageType2D formatR16G16B16A16UNorm
                 (VkExtent3D 256 256 1) 8 1 sampleCount1Bit imageTilingLinear
                 [imageUsageColorAttachmentBit, imageUsageTransferDSTBit] sharingModeExclusive 1 [0] imageLayoutUndefined
@@ -75,7 +77,7 @@ initialize = do
     vkDeP0 <- vkCreateDescriptorPool vkDev0 vkDPCI
     vkDSAI <- createVkDescriptorSetAllocateInfo nullPtr vkDeP0 1 [vkDSL0]
     vkAlDS <- vkAllocateDescriptorSets vkDev0 vkDSAI
-    let vkDBIn = VkDescriptorBufferInfo buffer (VkDeviceSize 0) wholeSize
+    let vkDBIn = VkDescriptorBufferInfo vkBuff (VkDeviceSize 0) wholeSize
     vkWDS0 <- createVkWriteDescriptorSet nullPtr (head vkAlDS) 0 0 1 descriptorTypeStorageBuffer Nothing (Just vkDBIn) Nothing
     vkUpdateDescriptorSets vkDev0 1 (Just [vkWDS0]) 0 Nothing
     vkQue0 <- vkGetDeviceQueue vkDev0 0 0
@@ -89,7 +91,7 @@ initialize = do
     vkCBBI <- createVkCommandBufferBeginInfo nullPtr (VkCommandBufferUsageFlags 0) Nothing
     let vkCoB0 = head vkCoBu
     _ <- vkBeginCommandBuffer vkCoB0 vkCBBI
-    vkCmdFillBuffer vkCoB0 buffer (VkDeviceSize 0) wholeSize 0
+    vkCmdFillBuffer vkCoB0 vkBuff (VkDeviceSize 0) wholeSize 0
     vkCmdClearColorImage vkCoB0 vkIma0 imageLayoutGeneral vkCCVa 1 [vkISR0]
     let vkCoP0 = head vkCoPi
     vkCmdBindPipeline vkCoB0 pipelineBindPointCompute vkCoP0
@@ -98,6 +100,13 @@ initialize = do
     _ <- vkEndCommandBuffer vkCoB0
     vkSuIn <- createVkSubmitInfo nullPtr 0 Nothing Nothing 1 vkCoBu 0 Nothing
     _ <- vkQueueSubmit vkQue0 1 [vkSuIn] (VkFence nullHandle)
+
+
+    ----------------------------------------------------------------------------------------------------------------------------
+    --
+    -- Shutdown
+    --
+    ----------------------------------------------------------------------------------------------------------------------------
     _ <- vkQueueWaitIdle vkQue0
     _ <- vkDeviceWaitIdle vkDev0
     vkDestroyRenderPass vkDev0 vkRePa
@@ -111,9 +120,9 @@ initialize = do
     vkUnmapMemory vkDev0 imagMe
     vkFreeMemory vkDev0 imagMe
     vkDestroyImage vkDev0 vkIma0
-    vkUnmapMemory vkDev0 buffMe
-    vkFreeMemory vkDev0 buffMe
-    vkDestroyBuffer vkDev0 buffer
+    vkUnmapMemory vkDev0 vkDeMe
+    vkFreeMemory vkDev0 vkDeMe
+    vkDestroyBuffer vkDev0 vkBuff
     vkDestroyDevice vkDev0
     vkDestroyInstance vkInst
 

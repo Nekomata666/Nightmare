@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Devices (vkCreateDevice, vkCreateDeviceInfo, vkCreateDeviceQueueInfo, vkDestroyDevice, vkDeviceWaitIdle, vkEnumeratePhysicalDevices, vkGetDeviceQueue, vkGetPhysicalDeviceFeatures) where
+module Graphics.Vulkan.Devices (createVkDeviceQueueCreateInfo, vkCreateDevice, vkCreateDeviceInfo, vkDestroyDevice, vkDeviceWaitIdle, vkEnumeratePhysicalDevices, vkGetDeviceQueue, vkGetPhysicalDeviceFeatures) where
 
 
 import Data.Void (Void)
@@ -14,6 +14,15 @@ import Graphics.Utilities
 import Graphics.Vulkan.Data
 import Graphics.Vulkan.Enumerations
 import Graphics.Vulkan.Types
+
+
+-- Type aliases.
+type Next               = Ptr Void
+type QueueCount         = Word32
+type QueueFamily        = Word32
+type QueueFamilyIndex   = Word32
+type QueueIndex         = Word32
+type QueuePriorities    = [Float]
 
 
 foreign import ccall unsafe "vkCreateDevice"
@@ -34,6 +43,14 @@ foreign import ccall unsafe "vkGetDeviceQueue"
 foreign import ccall unsafe "vkGetPhysicalDeviceFeatures"
     c_vkGetPhysicalDeviceFeatures :: VkPhysicalDevice -> Ptr VkPhysicalDeviceFeatures -> IO ()
 
+createVkDeviceQueueCreateInfo :: Next -> VkDeviceQueueCreateFlags -> QueueFamilyIndex -> QueueCount -> QueuePriorities ->
+    IO VkDeviceQueueCreateInfo
+createVkDeviceQueueCreateInfo v f fI c p = allocaArray i $ \pP -> do
+    pokeArray pP p
+    return $ VkDeviceQueueCreateInfo structureTypeDeviceQueueCreateInfo v f fI c pP
+    where
+        i = cast c
+
 vkCreateDevice :: VkPhysicalDevice -> VkDeviceCreateInfo -> IO VkDevice
 vkCreateDevice physical dCI = alloca $ \pDCI ->
     alloca $ \pPD -> do
@@ -41,7 +58,7 @@ vkCreateDevice physical dCI = alloca $ \pDCI ->
         _ <- c_vkCreateDevice physical pDCI nullPtr pPD
         peek pPD
 
-vkCreateDeviceInfo :: Ptr Void -> VkDeviceCreateFlags -> Word32 -> VkDeviceQueueCreateInfo -> Word32 -> [String] ->
+vkCreateDeviceInfo :: Next -> VkDeviceCreateFlags -> Word32 -> VkDeviceQueueCreateInfo -> Word32 -> [String] ->
     VkPhysicalDeviceFeatures -> IO VkDeviceCreateInfo
 vkCreateDeviceInfo v fl qC dQCI eC e fe =
     alloca $ \pQ ->
@@ -54,13 +71,6 @@ vkCreateDeviceInfo v fl qC dQCI eC e fe =
                 return $ VkDeviceCreateInfo structureTypeDeviceCreateInfo v fl qC pQ 0 nullPtr eC pE pF
                 where
                     i = cast eC
-
-vkCreateDeviceQueueInfo :: Ptr Void -> VkDeviceQueueCreateFlags -> Word32 -> Word32 -> [Float] -> IO VkDeviceQueueCreateInfo
-vkCreateDeviceQueueInfo v f fI c p = allocaArray i $ \pP -> do
-    pokeArray pP p
-    return $ VkDeviceQueueCreateInfo structureTypeDeviceQueueCreateInfo v f fI c pP
-    where
-        i = cast c
 
 vkDestroyDevice :: VkDevice -> IO ()
 vkDestroyDevice d = c_vkDestroyDevice d nullPtr
@@ -84,7 +94,7 @@ vkEnumeratePhysicalDevices vkInst = do
                     where
                         i = cast n
 
-vkGetDeviceQueue :: VkDevice -> Word32 -> Word32 -> IO VkQueue
+vkGetDeviceQueue :: VkDevice -> QueueFamily -> QueueIndex -> IO VkQueue
 vkGetDeviceQueue d qFI qI = alloca $ \p -> do
     c_vkGetDeviceQueue d qFI qI p
     peek p
