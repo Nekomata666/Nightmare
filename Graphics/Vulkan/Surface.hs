@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Surface (createVkSwapchainCreateInfo, vkCreateSwapchainKHR, vkDestroySurfaceKHR) where
+module Graphics.Vulkan.Surface (createVkSwapchainCreateInfo, vkCreateSwapchainKHR, vkDestroySurfaceKHR, vkDestroySwapchainKHR) where
 
 
 import Data.Void (Void)
@@ -30,6 +30,9 @@ foreign import ccall unsafe "vkCreateSwapchainKHR"
 foreign import ccall unsafe "vkDestroySurfaceKHR"
     c_vkDestroySurfaceKHR :: VkInstance -> VkSurfaceKHR -> Ptr VkAllocationCallbacks -> IO ()
 
+foreign import ccall unsafe "vkDestroySwapchainKHR"
+    c_vkDestroySwapchainKHR :: VkDevice -> VkSwapchainKHR -> Ptr VkAllocationCallbacks -> IO ()
+
 createVkSwapchainCreateInfo :: Next -> VkSwapchainCreateFlagsKHR -> VkSurfaceKHR -> MinImageCount -> VkFormat ->
     VkColorSpaceKHR -> VkExtent2D -> ImageArrayLayers -> VkImageUsageFlagBits -> VkSharingMode -> QueueFamilyIndexCount ->
     [QueueFamilyIndices] -> VkSurfaceTransformFlagBitsKHR -> VkCompositeAlphaFlagBitsKHR -> VkPresentModeKHR -> Clipped ->
@@ -50,4 +53,7 @@ vkCreateSwapchainKHR d sCI = alloca $ \pSCI ->
         peek pS
 
 vkDestroySurfaceKHR :: VkInstance -> VkSurfaceKHR -> IO ()
-vkDestroySurfaceKHR vkI vkS = c_vkDestroySurfaceKHR vkI vkS nullPtr
+vkDestroySurfaceKHR i s = c_vkDestroySurfaceKHR i s nullPtr
+
+vkDestroySwapchainKHR :: VkDevice -> VkSwapchainKHR -> IO ()
+vkDestroySwapchainKHR d s = c_vkDestroySwapchainKHR d s nullPtr

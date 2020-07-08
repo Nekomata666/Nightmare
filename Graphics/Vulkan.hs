@@ -132,6 +132,7 @@ initialize vkInst vkSurf vkDev0 = do
     vkUnmapMemory vkDev0 vkDeMe
     vkFreeMemory vkDev0 vkDeMe
     vkDestroyBuffer vkDev0 vkBuff
+    vkDestroySwapchainKHR vkDev0 vkSC
     vkDestroyDevice vkDev0
     vkDestroySurfaceKHR vkInst vkSurf
     vkDestroyInstance vkInst
