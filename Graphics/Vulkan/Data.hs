@@ -194,6 +194,11 @@ data VkDeviceQueueCreateInfo = VkDeviceQueueCreateInfo{
     queuePriorities :: Ptr Float
 }
 
+data VkExtent2D = VkExtent2D{
+    width :: Word32,
+    height :: Word32
+}
+
 data VkExtent3D = VkExtent3D{
     width :: Word32,
     height :: Word32,
@@ -422,6 +427,27 @@ data VkSubresourceLayout = VkSubresourceLayout{
     rowPitch :: VkDeviceSize,
     arrayPitch :: VkDeviceSize,
     depthPitch :: VkDeviceSize
+}
+
+data VkSwapchainCreateInfoKHR = VkSwapchainCreateInfoKHR{
+    sType :: VkStructureType,
+    next :: Ptr Void,
+    flags :: VkSwapchainCreateFlagsKHR,
+    surface :: VkSurfaceKHR,
+    minImageCount :: Word32,
+    imageFormat :: VkFormat,
+    imageColorSpace :: VkColorSpaceKHR,
+    imageExtent :: VkExtent2D,
+    imageArrayLayers :: Word32,
+    imageUsage :: VkImageUsageFlags,
+    imageSharingMode :: VkSharingMode,
+    queueFamilyIndexCount :: Word32,
+    queueFamilyIndices :: Ptr Word32,
+    preTransform :: VkSurfaceTransformFlagBitsKHR,
+    compositeAlpha :: VkCompositeAlphaFlagBitsKHR,
+    presentMode :: VkPresentModeKHR,
+    clipped :: VkBool,
+    oldSwapchain :: VkSwapchainKHR
 }
 
 data VkWriteDescriptorSet = VkWriteDescriptorSet{
@@ -813,6 +839,17 @@ instance Storable VkDeviceQueueCreateInfo where
         pokeByteOff p 20 v4
         pokeByteOff p 24 v5
         pokeByteOff p 32 v6
+
+instance Storable VkExtent2D where
+    sizeOf _ = 8
+    alignment _ = 4
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 4
+        return (VkExtent2D v1 v2)
+    poke p (VkExtent2D v1 v2) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 4 v2
 
 instance Storable VkExtent3D where
     sizeOf _ = 12
@@ -1293,6 +1330,49 @@ instance Storable VkSubresourceLayout where
         pokeByteOff p 16 v3
         pokeByteOff p 24 v4
         pokeByteOff p 32 v5
+
+instance Storable VkSwapchainCreateInfoKHR where
+    sizeOf _ = 104
+    alignment _ = 8
+    peek p = do
+        v01 <- peekByteOff p 0
+        v02 <- peekByteOff p 8
+        v03 <- peekByteOff p 16
+        v04 <- peekByteOff p 24
+        v05 <- peekByteOff p 32
+        v06 <- peekByteOff p 36
+        v07 <- peekByteOff p 40
+        v08 <- peekByteOff p 44
+        v09 <- peekByteOff p 52
+        v10 <- peekByteOff p 56
+        v11 <- peekByteOff p 60
+        v12 <- peekByteOff p 64
+        v13 <- peekByteOff p 72
+        v14 <- peekByteOff p 80
+        v15 <- peekByteOff p 84
+        v16 <- peekByteOff p 88
+        v17 <- peekByteOff p 92
+        v18 <- peekByteOff p 96
+        return (VkSwapchainCreateInfoKHR v01 v02 v03 v04 v05 v06 v07 v08 v09 v10 v11 v12 v13 v14 v15 v16 v17 v18)
+    poke p (VkSwapchainCreateInfoKHR v01 v02 v03 v04 v05 v06 v07 v08 v09 v10 v11 v12 v13 v14 v15 v16 v17 v18) = do
+        pokeByteOff p 0 v01
+        pokeByteOff p 8 v02
+        pokeByteOff p 16 v03
+        pokeByteOff p 24 v04
+        pokeByteOff p 32 v05
+        pokeByteOff p 36 v06
+        pokeByteOff p 40 v07
+        pokeByteOff p 44 v08
+        pokeByteOff p 52 v09
+        pokeByteOff p 56 v10
+        pokeByteOff p 60 v11
+        pokeByteOff p 64 v12
+        pokeByteOff p 72 v13
+        pokeByteOff p 80 v14
+        pokeByteOff p 84 v15
+        pokeByteOff p 88 v16
+        pokeByteOff p 92 v17
+        pokeByteOff p 96 v18
 
 instance Storable VkWriteDescriptorSet where
     sizeOf _ = 64

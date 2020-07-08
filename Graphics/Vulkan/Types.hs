@@ -14,6 +14,7 @@ import Graphics.Vulkan.Enumerations (VkInternalAllocationType, VkSystemAllocatio
 
 
 -- Vulkan Type aliases.
+type Next       = Ptr Void
 type VkFlags    = Word32
 type VkHandle   = Word64
 
@@ -51,6 +52,7 @@ newtype VkRenderPassCreateFlags = VkRenderPassCreateFlags { unVkRenderPassCreate
 newtype VkShaderModuleCreateFlags = VkShaderModuleCreateFlags { unVkShaderModuleCreateFlags :: VkFlags }
 newtype VkShaderStageFlags = VkShaderStageFlags { unVkShaderStageFlags :: VkFlags }
 newtype VkSubpassDescriptionFlags = VkSubpassDescriptionFlags { unVkSubpassDescriptionFlags :: VkFlags }
+newtype VkSwapchainCreateFlagsKHR = VkSwapchainCreateFlagsKHR { unVkSwapchainCreateFlagsKHR :: VkFlags }
 
 
 -- Vulkan Handles
@@ -78,6 +80,7 @@ newtype VkSampler = VkSampler { unVkSampler :: VkHandle }
 newtype VkSemaphore = VkSemaphore { unVkSemaphore :: VkHandle }
 newtype VkShaderModule = VkShaderModule { unVkShaderModule :: VkHandle }
 newtype VkSurfaceKHR = VkSurfaceKHR { unVkSurfaceKHR :: VkHandle }
+newtype VkSwapchainKHR = VkSwapchainKHR { unVkSwapchainKHR :: VkHandle }
 newtype VkQueue = VkQueue { unVkQueue :: VkHandle }
 
 
@@ -89,7 +92,12 @@ type PFN_vkFreeFunction = FunPtr (Ptr Void -> Ptr Void -> IO ())
 type PFN_vkInternalAllocationNotification = FunPtr (Ptr Void -> CSize -> VkInternalAllocationType -> VkSystemAllocationScope -> IO ())
 type PFN_vkInternalFreeNotification = FunPtr (Ptr Void -> CSize -> VkInternalAllocationType -> VkSystemAllocationScope -> IO ())
 
+
+--------------------------------------------------------------------------------------------------------------------------------
+--
 -- Storable instances for Vulkan types.
+--
+--------------------------------------------------------------------------------------------------------------------------------
 instance Storable VkBool where
     sizeOf _ = 4
     alignment _ = 4
@@ -98,7 +106,12 @@ instance Storable VkBool where
         return (VkBool v)
     poke p (VkBool v) = pokeByteOff p 0 v
 
+
+--------------------------------------------------------------------------------------------------------------------------------
+--
 -- Storable instances for Vulkan flags.
+--
+--------------------------------------------------------------------------------------------------------------------------------
 instance Storable VkAccessFlags where
     sizeOf _ = 4
     alignment _ = 4
@@ -307,7 +320,20 @@ instance Storable VkSubpassDescriptionFlags where
         return (VkSubpassDescriptionFlags v)
     poke p (VkSubpassDescriptionFlags v) = pokeByteOff p 0 v
 
+instance Storable VkSwapchainCreateFlagsKHR where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkSwapchainCreateFlagsKHR v)
+    poke p (VkSwapchainCreateFlagsKHR v) = pokeByteOff p 0 v
+
+
+--------------------------------------------------------------------------------------------------------------------------------
+--
 -- Storable instances for Vulkan handles.
+--
+--------------------------------------------------------------------------------------------------------------------------------
 instance Storable VkBuffer where
     sizeOf _ = 8
     alignment _ = 8
@@ -499,6 +525,14 @@ instance Storable VkSurfaceKHR where
         v <- peekByteOff p 0
         return (VkSurfaceKHR v)
     poke p (VkSurfaceKHR v) = pokeByteOff p 0 v
+
+instance Storable VkSwapchainKHR where
+    sizeOf _ = 8
+    alignment _ = 8
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkSwapchainKHR v)
+    poke p (VkSwapchainKHR v) = pokeByteOff p 0 v
 
 instance Storable VkQueue where
     sizeOf _ = 8

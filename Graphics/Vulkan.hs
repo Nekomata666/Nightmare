@@ -10,7 +10,7 @@ import Graphics.Utilities
 import Graphics.Vulkan.Buffers
 import Graphics.Vulkan.Command
 import Graphics.Vulkan.Constants
-import Graphics.Vulkan.Data (VkComputePipelineCreateInfo(..), VkDescriptorBufferInfo(..), VkDescriptorPoolSize(..), VkExtent3D(..), VkMemoryRequirements(..))
+import Graphics.Vulkan.Data (VkComputePipelineCreateInfo(..), VkDescriptorBufferInfo(..), VkDescriptorPoolSize(..), VkExtent2D(..), VkExtent3D(..), VkMemoryRequirements(..))
 import Graphics.Vulkan.Descriptor
 import Graphics.Vulkan.Devices
 import Graphics.Vulkan.Enumerations
@@ -21,6 +21,7 @@ import Graphics.Vulkan.Pipelines
 import Graphics.Vulkan.Queue
 import Graphics.Vulkan.Renderpass
 import Graphics.Vulkan.Shaders
+import Graphics.Vulkan.Surface
 import Graphics.Vulkan.Types
 
 
@@ -32,14 +33,18 @@ createInstance = do
         (Just ["VK_EXT_debug_report", "VK_KHR_surface"])
     vkCreateInstance vkInCI
 
-initialize :: VkInstance -> IO ()
-initialize vkInst = do
+initialize :: VkInstance -> VkSurfaceKHR -> IO ()
+initialize vkInst vkSurf = do
     vkPDs   <- vkEnumeratePhysicalDevices vkInst
     let vkPD0  = head vkPDs
     vkPDF   <- vkGetPhysicalDeviceFeatures vkPD0
     vkDQCI  <- createVkDeviceQueueCreateInfo nullPtr (VkDeviceQueueCreateFlags 0) 0 1 [1.0]
-    vkDCI   <- vkCreateDeviceInfo nullPtr (VkDeviceCreateFlags 0) 1 vkDQCI 1 ["VK_KHR_swapchain"] vkPDF
+    vkDCI   <- createVkDeviceCreateInfo nullPtr (VkDeviceCreateFlags 0) 1 vkDQCI 1 ["VK_KHR_swapchain"] vkPDF
     vkDev0  <- vkCreateDevice vkPD0 vkDCI
+
+    vkSCCI  <- createVkSwapchainCreateInfo nullPtr (VkSwapchainCreateFlagsKHR 0) vkSurf 3 formatB8G8R8A8SRGB colorSpaceSRGBNonlinearKHR
+                    (VkExtent2D 1600 900) 1 imageUsageColorAttachmentBit sharingModeExclusive 1 [0] surfaceTransformIdentityBitKHR
+                    compositeAlphaOpaqueBitKHR presentModeFIFOKHR (VkBool 1) (VkSwapchainKHR 0)
     vkBCI   <- vkCreateBufferInfo nullPtr (VkBufferCreateFlags 0) (VkDeviceSize 2136746240)
         [bufferUsageStorageBufferBit, bufferUsageTransferDSTBit] sharingModeExclusive 3 [0]
     vkBuff  <- vkCreateBuffer vkDev0 vkBCI
@@ -48,7 +53,7 @@ initialize vkInst = do
     vkDeMe  <- vkAllocateMemory vkDev0 vkMAI
     buffMa  <- vkMapMemory vkDev0 vkDeMe (VkDeviceSize 0) wholeSize (VkMemoryMapFlags 0)
     buffMB  <- vkBindBufferMemory vkDev0 vkBuff vkDeMe (alignment vkBuMR)
-    imInfo  <- vkCreateImageInfo nullPtr [imageCreateMutableFormatBit] imageType2D formatR16G16B16A16UNorm
+    imInfo  <- vkCreateImageInfo nullPtr [imageCreateMutableFormatBit] imageType2D formatR16G16B16A16UInt
                 (VkExtent3D 256 256 1) 8 1 sampleCount1Bit imageTilingLinear
                 [imageUsageColorAttachmentBit, imageUsageTransferDSTBit] sharingModeExclusive 1 [0] imageLayoutUndefined
     vkIma0  <- vkCreateImage vkDev0 imInfo

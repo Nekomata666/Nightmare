@@ -15,7 +15,11 @@ newtype VkAttachmentStoreOp = VkAttachmentStoreOp { unVkAttachmentStoreOp :: Wor
     deriving (Eq)
 newtype VkBufferUsageFlagBits = VkBufferUsageFlagBits { unVkBufferUsageFlagBits :: Word32 }
     deriving (Eq)
+newtype VkColorSpaceKHR = VkColorSpaceKHR { unVkColorSpaceKHR :: Word32 }
+    deriving (Eq)
 newtype VkCommandBufferLevel = VkCommandBufferLevel { unVkCommandBufferLevel :: Word32 }
+    deriving (Eq)
+newtype VkCompositeAlphaFlagBitsKHR = VkCompositeAlphaFlagBitsKHR { unVkCompositeAlphaFlagBitsKHR :: Word32 }
     deriving (Eq)
 newtype VkDescriptorType = VkDescriptorType { unVkDescriptorType :: Word32 }
     deriving (Eq)
@@ -37,6 +41,8 @@ newtype VkInternalAllocationType = VkInternalAllocationType { unVkInternalAlloca
     deriving (Eq)
 newtype VkPipelineBindPoint = VkPipelineBindPoint { unVkPipelineBindPoint :: Word32 }
     deriving (Eq)
+newtype VkPresentModeKHR = VkPresentModeKHR { unVkPresentModeKHR :: Word32 }
+    deriving (Eq)
 newtype VkResult = VkResult { unVkResult :: Int32 }
     deriving (Eq)
 newtype VkSampleCountFlagBits = VkSampleCountFlagBits { unVkSampleCountFlagBits :: Word32 }
@@ -48,6 +54,8 @@ newtype VkSharingMode = VkSharingMode { unVkSharingMode :: Word32 }
 newtype VkStructureType = VkStructureType { unVkStructureType :: Int32 }
     deriving (Eq)
 newtype VkSubpassDescriptionFlagBits = VkSubpassDescriptionFlagBits { unVkSubpassDescriptionFlagBits :: Word32}
+    deriving (Eq)
+newtype VkSurfaceTransformFlagBitsKHR = VkSurfaceTransformFlagBitsKHR { unVkSurfaceTransformFlagBitsKHR :: Word32 }
     deriving (Eq)
 newtype VkSystemAllocationScope = VkSystemAllocationScope { unVkSystemAllocationScope :: Word32 }
     deriving (Eq)
@@ -88,11 +96,53 @@ bufferUsageVertexBufferBit           = VkBufferUsageFlagBits 128
 bufferUsageIndirectBufferBit         :: VkBufferUsageFlagBits
 bufferUsageIndirectBufferBit         = VkBufferUsageFlagBits 256
 
+-- Note: Hope another "better" color space gets added.
+-- Todo: Remove SRGB A.S.A.P.
+-- VkColorSpaceKHR
+colorSpaceSRGBNonlinearKHR      :: VkColorSpaceKHR
+colorSpaceSRGBNonlinearKHR      = VkColorSpaceKHR 0
+colorSpaceDisplayP3NonLinearEXT :: VkColorSpaceKHR
+colorSpaceDisplayP3NonLinearEXT = VkColorSpaceKHR 1000104001
+colorSpaceExtendedSRGBLinearEXT :: VkColorSpaceKHR
+colorSpaceExtendedSRGBLinearEXT = VkColorSpaceKHR 1000104002
+colorSpaceDCIP3LinearEXT        :: VkColorSpaceKHR
+colorSpaceDCIP3LinearEXT        = VkColorSpaceKHR 1000104003
+colorSpaceDCIP3NonLinearEXT     :: VkColorSpaceKHR
+colorSpaceDCIP3NonLinearEXT     = VkColorSpaceKHR 1000104004
+colorSpaceBT709LinearEXT        :: VkColorSpaceKHR
+colorSpaceBT709LinearEXT        = VkColorSpaceKHR 1000104005
+colorSpaceBT709NonLinearEXT     :: VkColorSpaceKHR
+colorSpaceBT709NonLinearEXT     = VkColorSpaceKHR 1000104006
+colorSpaceBT2020LinearEXT       :: VkColorSpaceKHR
+colorSpaceBT2020LinearEXT       = VkColorSpaceKHR 1000104007
+colorSpaceHDR10ST2084EXT        :: VkColorSpaceKHR
+colorSpaceHDR10ST2084EXT        = VkColorSpaceKHR 1000104008
+colorSpaceDolbyVisionEXT        :: VkColorSpaceKHR
+colorSpaceDolbyVisionEXT        = VkColorSpaceKHR 1000104009
+colorSpaceHDR10HLGEXT           :: VkColorSpaceKHR
+colorSpaceHDR10HLGEXT           = VkColorSpaceKHR 1000104010
+colorSpaceAdobeRGBLinearEXT     :: VkColorSpaceKHR
+colorSpaceAdobeRGBLinearEXT     = VkColorSpaceKHR 1000104011
+colorSpaceAdobeRGBNonLinearEXT  :: VkColorSpaceKHR
+colorSpaceAdobeRGBNonLinearEXT  = VkColorSpaceKHR 1000104012
+colorSpacePassThroughEXT        :: VkColorSpaceKHR
+colorSpacePassThroughEXT        = VkColorSpaceKHR 1000104013
+
 -- VkCommandBufferLevel
 commandBufferLevelPrimary        :: VkCommandBufferLevel
 commandBufferLevelPrimary        = VkCommandBufferLevel 0
 commandBufferLevelSecondary      :: VkCommandBufferLevel
 commandBufferLevelSecondary      = VkCommandBufferLevel 1
+
+-- VkCompositeAlphaFlagBitsKHR
+compositeAlphaOpaqueBitKHR           :: VkCompositeAlphaFlagBitsKHR
+compositeAlphaOpaqueBitKHR           = VkCompositeAlphaFlagBitsKHR 1
+compositeAlphaPreMultipliedBitKHR    :: VkCompositeAlphaFlagBitsKHR
+compositeAlphaPreMultipliedBitKHR    = VkCompositeAlphaFlagBitsKHR 2
+compositeAlphaPostMultipliedBitKHR   :: VkCompositeAlphaFlagBitsKHR
+compositeAlphaPostMultipliedBitKHR   = VkCompositeAlphaFlagBitsKHR 4
+compositeAlphaInheritBitKHR          :: VkCompositeAlphaFlagBitsKHR
+compositeAlphaInheritBitKHR          = VkCompositeAlphaFlagBitsKHR 8
 
 -- VkDescriptorType
 descriptorTypeSampler                :: VkDescriptorType
@@ -119,7 +169,7 @@ descriptorTypeInputAttachment        :: VkDescriptorType
 descriptorTypeInputAttachment        = VkDescriptorType 10
 
 -- VkFormat
--- Todo: Remove unwanted formats, like: SRGB, SFloat, UFloat
+-- Todo: Remove unwanted formats, like: SRGB, SFloat, UFloat, UNorm
 -- Todo: Remove lossy compressed formats, like: BC1-7, ETC2, EAC, ASTC
 formatUndefined                  :: VkFormat
 formatUndefined                  = VkFormat 0
@@ -596,6 +646,16 @@ pipelineBindPointCompute        = VkPipelineBindPoint 1
 pipelineBindPointRayTracingKHR  :: VkPipelineBindPoint
 pipelineBindPointRayTracingKHR  = VkPipelineBindPoint 1000165000
 
+-- VkPresentModeKHR
+presentModeImmediateKHR      :: VkPresentModeKHR
+presentModeImmediateKHR      = VkPresentModeKHR 0
+presentModeMailboxKHR        :: VkPresentModeKHR
+presentModeMailboxKHR        = VkPresentModeKHR 1
+presentModeFIFOKHR           :: VkPresentModeKHR
+presentModeFIFOKHR           = VkPresentModeKHR 2
+presentModeFIFORelaxedKHR    :: VkPresentModeKHR
+presentModeFIFORelaxedKHR    = VkPresentModeKHR 3
+
 -- VkResult
 success                      :: VkResult
 success                      = VkResult 0
@@ -824,6 +884,26 @@ subpassDescriptionFragmentRegionBitQCOM         = VkSubpassDescriptionFlagBits 4
 subpassDescriptionShaderResolveBitQCOM          :: VkSubpassDescriptionFlagBits
 subpassDescriptionShaderResolveBitQCOM          = VkSubpassDescriptionFlagBits 8
 
+-- VkSurfaceTransformFlagBitsKHR
+surfaceTransformIdentityBitKHR                   :: VkSurfaceTransformFlagBitsKHR
+surfaceTransformIdentityBitKHR                   = VkSurfaceTransformFlagBitsKHR 1
+surfaceTransformRotate90BitKHR                   :: VkSurfaceTransformFlagBitsKHR
+surfaceTransformRotate90BitKHR                   = VkSurfaceTransformFlagBitsKHR 2
+surfaceTransformRotate180BitKHR                  :: VkSurfaceTransformFlagBitsKHR
+surfaceTransformRotate180BitKHR                  = VkSurfaceTransformFlagBitsKHR 4
+surfaceTransformRotate270BitKHR                  :: VkSurfaceTransformFlagBitsKHR
+surfaceTransformRotate270BitKHR                  = VkSurfaceTransformFlagBitsKHR 8
+surfaceTransformHorizontalMirrorBitKHR           :: VkSurfaceTransformFlagBitsKHR
+surfaceTransformHorizontalMirrorBitKHR           = VkSurfaceTransformFlagBitsKHR 16
+surfaceTransformHorizontalMirrorRotate90BitKHR   :: VkSurfaceTransformFlagBitsKHR
+surfaceTransformHorizontalMirrorRotate90BitKHR   = VkSurfaceTransformFlagBitsKHR 32
+surfaceTransformHorizontalMirrorRotate180BitKHR  :: VkSurfaceTransformFlagBitsKHR
+surfaceTransformHorizontalMirrorRotate180BitKHR  = VkSurfaceTransformFlagBitsKHR 64
+surfaceTransformHorizontalMirrorRotate270BitKHR  :: VkSurfaceTransformFlagBitsKHR
+surfaceTransformHorizontalMirrorRotate270BitKHR  = VkSurfaceTransformFlagBitsKHR 128
+surfaceTransformInheritBitKHR                    :: VkSurfaceTransformFlagBitsKHR
+surfaceTransformInheritBitKHR                    = VkSurfaceTransformFlagBitsKHR 256
+
 -- VkSystemAllocationScope
 systemAllocationScopeCommand     :: VkSystemAllocationScope
 systemAllocationScopeCommand     = VkSystemAllocationScope 0
@@ -862,6 +942,14 @@ instance Storable VkBufferUsageFlagBits where
         return (VkBufferUsageFlagBits v)
     poke p (VkBufferUsageFlagBits v) = pokeByteOff p 0 v
 
+instance Storable VkColorSpaceKHR where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkColorSpaceKHR v)
+    poke p (VkColorSpaceKHR v) = pokeByteOff p 0 v
+
 instance Storable VkCommandBufferLevel where
     sizeOf _ = 4
     alignment _ = 4
@@ -869,6 +957,14 @@ instance Storable VkCommandBufferLevel where
         v <- peekByteOff p 0
         return (VkCommandBufferLevel v)
     poke p (VkCommandBufferLevel v) = pokeByteOff p 0 v
+
+instance Storable VkCompositeAlphaFlagBitsKHR where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkCompositeAlphaFlagBitsKHR v)
+    poke p (VkCompositeAlphaFlagBitsKHR v) = pokeByteOff p 0 v
 
 instance Storable VkDescriptorType where
     sizeOf _    = 4
@@ -950,6 +1046,14 @@ instance Storable VkPipelineBindPoint where
         return (VkPipelineBindPoint v)
     poke p (VkPipelineBindPoint v) = pokeByteOff p 0 v
 
+instance Storable VkPresentModeKHR where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkPresentModeKHR v)
+    poke p (VkPresentModeKHR v) = pokeByteOff p 0 v
+
 instance Storable VkResult where
     sizeOf _    = 4
     alignment _ = 4
@@ -997,6 +1101,14 @@ instance Storable VkSubpassDescriptionFlagBits where
         v <- peekByteOff p 0
         return (VkSubpassDescriptionFlagBits v)
     poke p (VkSubpassDescriptionFlagBits v) = pokeByteOff p 0 v
+
+instance Storable VkSurfaceTransformFlagBitsKHR where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkSurfaceTransformFlagBitsKHR v)
+    poke p (VkSurfaceTransformFlagBitsKHR v) = pokeByteOff p 0 v
 
 instance Storable VkSystemAllocationScope where
     sizeOf _    = 4
