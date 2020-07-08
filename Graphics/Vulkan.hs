@@ -133,6 +133,7 @@ initialize vkInst vkSurf vkDev0 = do
     vkFreeMemory vkDev0 vkDeMe
     vkDestroyBuffer vkDev0 vkBuff
     vkDestroyDevice vkDev0
+    vkDestroySurfaceKHR vkInst vkSurf
     vkDestroyInstance vkInst
 
     return ()
