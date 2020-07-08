@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Devices (createVkDeviceCreateInfo, createVkDeviceQueueCreateInfo, vkCreateDevice, vkDestroyDevice, vkDeviceWaitIdle, vkEnumeratePhysicalDevices, vkGetDeviceQueue, vkGetPhysicalDeviceFeatures) where
+module Graphics.Vulkan.Devices (createVkDeviceCreateInfo, createVkDeviceQueueCreateInfo, vkCreateDevice, vkDestroyDevice, vkDeviceWaitIdle, vkEnumeratePhysicalDevices, vkGetDeviceQueue, vkGetPhysicalDeviceFeatures, vkGetPhysicalDeviceSurfaceSupport) where
 
 
 import Data.Void (Void)
@@ -41,6 +41,9 @@ foreign import ccall unsafe "vkGetDeviceQueue"
 
 foreign import ccall unsafe "vkGetPhysicalDeviceFeatures"
     c_vkGetPhysicalDeviceFeatures :: VkPhysicalDevice -> Ptr VkPhysicalDeviceFeatures -> IO ()
+
+foreign import ccall unsafe "vkGetPhysicalDeviceSurfaceSupportKHR"
+    c_vkGetPhysicalDeviceSurfaceSupportKHR :: VkPhysicalDevice -> Word32 -> VkSurfaceKHR -> Ptr VkBool -> IO VkResult
 
 createVkDeviceQueueCreateInfo :: Next -> VkDeviceQueueCreateFlags -> QueueFamilyIndex -> QueueCount -> QueuePriorities ->
     IO VkDeviceQueueCreateInfo
@@ -102,3 +105,8 @@ vkGetPhysicalDeviceFeatures :: VkPhysicalDevice -> IO VkPhysicalDeviceFeatures
 vkGetPhysicalDeviceFeatures pD = alloca $ \pF -> do
     c_vkGetPhysicalDeviceFeatures pD pF
     peek pF
+
+vkGetPhysicalDeviceSurfaceSupport :: VkPhysicalDevice -> Word32 -> VkSurfaceKHR -> IO VkBool
+vkGetPhysicalDeviceSurfaceSupport pD qIndex s = alloca $ \p -> do
+    _ <- c_vkGetPhysicalDeviceSurfaceSupportKHR pD qIndex s p
+    peek p

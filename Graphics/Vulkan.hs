@@ -33,11 +33,12 @@ createInstance = do
         (Just ["VK_EXT_debug_report", "VK_KHR_surface", "VK_KHR_xlib_surface"])
     vkCreateInstance vkInCI
 
-createDevice :: VkInstance -> IO VkDevice
-createDevice vkInst = do
+createDevice :: VkInstance -> VkSurfaceKHR -> IO VkDevice
+createDevice vkInst vkSurf = do
     vkPDs   <- vkEnumeratePhysicalDevices vkInst
     let vkPD0  = head vkPDs
     vkPDF   <- vkGetPhysicalDeviceFeatures vkPD0
+    _       <- vkGetPhysicalDeviceSurfaceSupport vkPD0 0 vkSurf
     vkDQCI  <- createVkDeviceQueueCreateInfo nullPtr (VkDeviceQueueCreateFlags 0) 0 1 [1.0]
     vkDCI   <- createVkDeviceCreateInfo nullPtr (VkDeviceCreateFlags 0) 1 vkDQCI 1 ["VK_KHR_swapchain"] vkPDF
     vkCreateDevice vkPD0 vkDCI
