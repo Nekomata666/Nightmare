@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Devices (createVkDeviceQueueCreateInfo, vkCreateDevice, vkCreateDeviceInfo, vkDestroyDevice, vkDeviceWaitIdle, vkEnumeratePhysicalDevices, vkGetDeviceQueue, vkGetPhysicalDeviceFeatures) where
+module Graphics.Vulkan.Devices (createVkDeviceCreateInfo, createVkDeviceQueueCreateInfo, vkCreateDevice, vkDestroyDevice, vkDeviceWaitIdle, vkEnumeratePhysicalDevices, vkGetDeviceQueue, vkGetPhysicalDeviceFeatures) where
 
 
 import Data.Void (Void)
@@ -17,7 +17,6 @@ import Graphics.Vulkan.Types
 
 
 -- Type aliases.
-type Next               = Ptr Void
 type QueueCount         = Word32
 type QueueFamily        = Word32
 type QueueFamilyIndex   = Word32
@@ -58,9 +57,9 @@ vkCreateDevice physical dCI = alloca $ \pDCI ->
         _ <- c_vkCreateDevice physical pDCI nullPtr pPD
         peek pPD
 
-vkCreateDeviceInfo :: Next -> VkDeviceCreateFlags -> Word32 -> VkDeviceQueueCreateInfo -> Word32 -> [String] ->
+createVkDeviceCreateInfo :: Next -> VkDeviceCreateFlags -> Word32 -> VkDeviceQueueCreateInfo -> Word32 -> [String] ->
     VkPhysicalDeviceFeatures -> IO VkDeviceCreateInfo
-vkCreateDeviceInfo v fl qC dQCI eC e fe =
+createVkDeviceCreateInfo v fl qC dQCI eC e fe =
     alloca $ \pQ ->
         alloca $ \pF ->
             allocaArray i $ \pE -> do
