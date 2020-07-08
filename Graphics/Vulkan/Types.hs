@@ -77,6 +77,7 @@ newtype VkRenderPass = VkRenderPass { unVkRenderPass :: VkHandle }
 newtype VkSampler = VkSampler { unVkSampler :: VkHandle }
 newtype VkSemaphore = VkSemaphore { unVkSemaphore :: VkHandle }
 newtype VkShaderModule = VkShaderModule { unVkShaderModule :: VkHandle }
+newtype VkSurfaceKHR = VkSurfaceKHR { unVkSurfaceKHR :: VkHandle }
 newtype VkQueue = VkQueue { unVkQueue :: VkHandle }
 
 
@@ -490,6 +491,14 @@ instance Storable VkShaderModule where
         v <- peekByteOff p 0
         return (VkShaderModule v)
     poke p (VkShaderModule v) = pokeByteOff p 0 v
+
+instance Storable VkSurfaceKHR where
+    sizeOf _ = 8
+    alignment _ = 8
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkSurfaceKHR v)
+    poke p (VkSurfaceKHR v) = pokeByteOff p 0 v
 
 instance Storable VkQueue where
     sizeOf _ = 8
