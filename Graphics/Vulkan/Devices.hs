@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Devices (createVkDeviceCreateInfo, createVkDeviceQueueCreateInfo, vkCreateDevice, vkDestroyDevice, vkDeviceWaitIdle, vkEnumeratePhysicalDevices, vkGetDeviceQueue, vkGetPhysicalDeviceFeatures, vkGetPhysicalDeviceSurfaceSupport) where
+module Graphics.Vulkan.Devices (createVkDevice, createVkDeviceCreateInfo, createVkDeviceQueueCreateInfo, vkDestroyDevice, vkDeviceWaitIdle, vkEnumeratePhysicalDevices, vkGetDeviceQueue, vkGetPhysicalDeviceFeatures, vkGetPhysicalDeviceSurfaceSupport) where
 
 
 import Data.Void (Void)
@@ -53,8 +53,8 @@ createVkDeviceQueueCreateInfo v f fI c p = allocaArray i $ \pP -> do
     where
         i = cast c
 
-vkCreateDevice :: VkPhysicalDevice -> VkDeviceCreateInfo -> IO VkDevice
-vkCreateDevice physical dCI = alloca $ \pDCI ->
+createVkDevice :: VkPhysicalDevice -> VkDeviceCreateInfo -> IO VkDevice
+createVkDevice physical dCI = alloca $ \pDCI ->
     alloca $ \pPD -> do
         poke pDCI dCI
         _ <- c_vkCreateDevice physical pDCI nullPtr pPD
@@ -82,19 +82,19 @@ vkDeviceWaitIdle = c_vkDeviceWaitIdle
 
 vkEnumeratePhysicalDevices :: VkInstance -> IO [VkPhysicalDevice]
 vkEnumeratePhysicalDevices vkInst = do
-        n <- firstPass
-        secondPass n
-        where
-            firstPass = alloca $ \p -> do
-                _ <- c_vkEnumeratePhysicalDevices vkInst p nullPtr
-                peek p
-            secondPass n = alloca $ \pN ->
-                allocaArray i $ \pPD -> do
-                    poke pN n
-                    _ <- c_vkEnumeratePhysicalDevices vkInst pN pPD
-                    peekArray i pPD
-                    where
-                        i = cast n
+    n <- firstPass
+    secondPass n
+    where
+        firstPass = alloca $ \p -> do
+            _ <- c_vkEnumeratePhysicalDevices vkInst p nullPtr
+            peek p
+        secondPass n = alloca $ \pN ->
+            allocaArray i $ \pPD -> do
+                poke pN n
+                _ <- c_vkEnumeratePhysicalDevices vkInst pN pPD
+                peekArray i pPD
+                where
+                    i = cast n
 
 vkGetDeviceQueue :: VkDevice -> QueueFamily -> QueueIndex -> IO VkQueue
 vkGetDeviceQueue d qFI qI = alloca $ \p -> do
