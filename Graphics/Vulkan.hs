@@ -41,7 +41,7 @@ createDevice vkInst vkSurf = do
     _       <- vkGetPhysicalDeviceSurfaceSupport vkPD0 0 vkSurf
     vkDQCI  <- createVkDeviceQueueCreateInfo nullPtr (VkDeviceQueueCreateFlags 0) 0 1 [1.0]
     vkDCI   <- createVkDeviceCreateInfo nullPtr (VkDeviceCreateFlags 0) 1 vkDQCI 1 ["VK_KHR_swapchain"] vkPDF
-    vkCreateDevice vkPD0 vkDCI
+    createVkDevice vkPD0 vkDCI
 
 initialize :: VkInstance -> VkSurfaceKHR -> VkDevice -> IO ()
 initialize vkInst vkSurf vkDev0 = do
@@ -49,6 +49,8 @@ initialize vkInst vkSurf vkDev0 = do
                     (VkExtent2D 1600 900) 1 imageUsageColorAttachmentBit sharingModeExclusive 1 [0] surfaceTransformIdentityBitKHR
                     compositeAlphaOpaqueBitKHR presentModeFIFOKHR (VkBool 1) (VkSwapchainKHR nullHandle)
     vkSC    <- vkCreateSwapchainKHR vkDev0 vkSCCI
+    vkSCIs  <- vkGetSwapchainImagesKHR vkDev0 vkSC
+
     vkBCI   <- vkCreateBufferInfo nullPtr (VkBufferCreateFlags 0) (VkDeviceSize 2136746240)
         [bufferUsageStorageBufferBit, bufferUsageTransferDSTBit] sharingModeExclusive 3 [0]
     vkBuff  <- vkCreateBuffer vkDev0 vkBCI
