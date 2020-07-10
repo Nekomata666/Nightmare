@@ -100,6 +100,13 @@ data VkCommandPoolCreateInfo = VkCommandPoolCreateInfo{
     queueFamilyIndex :: Word32
 }
 
+data VkComponentMapping = VkComponentMapping{
+    red :: VkComponentSwizzle,
+    green :: VkComponentSwizzle,
+    blue :: VkComponentSwizzle,
+    alpha :: VkComponentSwizzle
+}
+
 data VkComputePipelineCreateInfo = VkComputePipelineCreateInfo{
     sType :: VkStructureType,
     next :: Ptr Void,
@@ -235,6 +242,17 @@ data VkImageSubresourceRange = VkImageSubresourceRange{
     levelCount :: Word32,
     baseArrayLayer :: Word32,
     layerCount :: Word32
+}
+
+data VkImageViewCreateInfo = VkImageViewCreateInfo{
+    sType               :: VkStructureType,
+    next                :: Ptr Void,
+    flags               :: VkImageViewCreateFlags,
+    image               :: VkImage,
+    viewType            :: VkImageViewType,
+    format              :: VkFormat,
+    components          :: VkComponentMapping,
+    subresourceRange    :: VkImageSubresourceRange
 }
 
 data VkInstanceCreateInfo = VkInstanceCreateInfo{
@@ -641,6 +659,21 @@ instance Storable VkCommandPoolCreateInfo where
         pokeByteOff p 16 v3
         pokeByteOff p 20 v4
 
+instance Storable VkComponentMapping where
+    sizeOf _ = 16
+    alignment _ = 4
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 4
+        v3 <- peekByteOff p 8
+        v4 <- peekByteOff p 12
+        return (VkComponentMapping v1 v2 v3 v4)
+    poke p (VkComponentMapping v1 v2 v3 v4) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 4 v2
+        pokeByteOff p 8 v3
+        pokeByteOff p 12 v4
+
 instance Storable VkComputePipelineCreateInfo where
     sizeOf _ = 96
     alignment _ = 8
@@ -930,6 +963,29 @@ instance Storable VkImageSubresourceRange where
         pokeByteOff p 8 v3
         pokeByteOff p 12 v4
         pokeByteOff p 16 v5
+
+instance Storable VkImageViewCreateInfo where
+    sizeOf _ = 80
+    alignment _ = 8
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 8
+        v3 <- peekByteOff p 16
+        v4 <- peekByteOff p 24
+        v5 <- peekByteOff p 32
+        v6 <- peekByteOff p 36
+        v7 <- peekByteOff p 40
+        v8 <- peekByteOff p 56
+        return (VkImageViewCreateInfo v1 v2 v3 v4 v5 v6 v7 v8)
+    poke p (VkImageViewCreateInfo v1 v2 v3 v4 v5 v6 v7 v8) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 8 v2
+        pokeByteOff p 16 v3
+        pokeByteOff p 24 v4
+        pokeByteOff p 32 v5
+        pokeByteOff p 36 v6
+        pokeByteOff p 40 v7
+        pokeByteOff p 56 v8
 
 instance Storable VkInstanceCreateInfo where
     sizeOf _ = 64

@@ -40,6 +40,7 @@ newtype VkDeviceQueueCreateFlags = VkDeviceQueueCreateFlags { unVkDeviceQueueCre
 newtype VkImageAspectFlags = VkImageAspectFlags { unVkImageAspectFlags :: VkFlags }
 newtype VkImageCreateFlags = VkImageCreateFlags { unVkImageCreateFlags :: VkFlags }
 newtype VkImageUsageFlags = VkImageUsageFlags { unVkImageUsageFlags :: VkFlags }
+newtype VkImageViewCreateFlags = VkImageViewCreateFlags { unVkImageViewCreateFlags :: VkFlags }
 newtype VkMemoryMapFlags = VkMemoryMapFlags { unVkMemoryMapFlags :: VkFlags }
 newtype VkPipelineCacheCreateFlags = VkPipelineCacheCreateFlags { unVkPipelineCacheCreateFlags :: VkFlags }
 newtype VkPipelineCreateFlags = VkPipelineCreateFlags { unVkPipelineCreateFlags :: VkFlags }
@@ -223,6 +224,14 @@ instance Storable VkImageUsageFlags where
         v <- peekByteOff p 0
         return (VkImageUsageFlags v)
     poke p (VkImageUsageFlags v) = pokeByteOff p 0 v
+
+instance Storable VkImageViewCreateFlags where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkImageViewCreateFlags v)
+    poke p (VkImageViewCreateFlags v) = pokeByteOff p 0 v
 
 instance Storable VkMemoryMapFlags where
     sizeOf _ = 4
