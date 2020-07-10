@@ -19,6 +19,8 @@ newtype VkColorSpaceKHR = VkColorSpaceKHR { unVkColorSpaceKHR :: Word32 }
     deriving (Eq)
 newtype VkCommandBufferLevel = VkCommandBufferLevel { unVkCommandBufferLevel :: Word32 }
     deriving (Eq)
+newtype VkComponentSwizzle = VkComponentSwizzle { unVkComponentSwizzle :: Word32 }
+    deriving (Eq)
 newtype VkCompositeAlphaFlagBitsKHR = VkCompositeAlphaFlagBitsKHR { unVkCompositeAlphaFlagBitsKHR :: Word32 }
     deriving (Eq)
 newtype VkDescriptorType = VkDescriptorType { unVkDescriptorType :: Word32 }
@@ -36,6 +38,10 @@ newtype VkImageTiling = VkImageTiling { unVkImageTiling :: Word32 }
 newtype VkImageType = VkImageType { unVkImageType :: Word32 }
     deriving (Eq)
 newtype VkImageUsageFlagBits = VkImageUsageFlagBits { unVkImageUsageFlagBits :: Word32 }
+    deriving (Eq)
+newtype VkImageViewCreateFlagBits = VkImageViewCreateFlagBits { unVkImageViewCreateFlagBits :: Word32 }
+    deriving (Eq)
+newtype VkImageViewType = VkImageViewType { unVkImageViewType :: Word32 }
     deriving (Eq)
 newtype VkInternalAllocationType = VkInternalAllocationType { unVkInternalAllocationType :: Word32 }
     deriving (Eq)
@@ -133,6 +139,22 @@ commandBufferLevelPrimary        :: VkCommandBufferLevel
 commandBufferLevelPrimary        = VkCommandBufferLevel 0
 commandBufferLevelSecondary      :: VkCommandBufferLevel
 commandBufferLevelSecondary      = VkCommandBufferLevel 1
+
+-- VkComponentSwizzle
+componentSwizzleIdentity     :: VkComponentSwizzle
+componentSwizzleIdentity     = VkComponentSwizzle 0
+componentSwizzleZero         :: VkComponentSwizzle
+componentSwizzleZero         = VkComponentSwizzle 1
+componentSwizzleOne          :: VkComponentSwizzle
+componentSwizzleOne          = VkComponentSwizzle 2
+componentSwizzleR            :: VkComponentSwizzle
+componentSwizzleR            = VkComponentSwizzle 3
+componentSwizzleG            :: VkComponentSwizzle
+componentSwizzleG            = VkComponentSwizzle 4
+componentSwizzleB            :: VkComponentSwizzle
+componentSwizzleB            = VkComponentSwizzle 5
+componentSwizzleA            :: VkComponentSwizzle
+componentSwizzleA            = VkComponentSwizzle 6
 
 -- VkCompositeAlphaFlagBitsKHR
 compositeAlphaOpaqueBitKHR           :: VkCompositeAlphaFlagBitsKHR
@@ -634,6 +656,28 @@ imageUsageTransientAttachmentBit     = VkImageUsageFlagBits 64
 imageUsageInputAttachmentBit         :: VkImageUsageFlagBits
 imageUsageInputAttachmentBit         = VkImageUsageFlagBits 128
 
+-- VkImageViewCreateFlagBits
+imageViewCreateFragmentDensityMapDynamticBitExt :: VkImageViewCreateFlagBits
+imageViewCreateFragmentDensityMapDynamticBitExt = VkImageViewCreateFlagBits 1
+imageViewCreateFragmentDensityMapDeferredBitExt :: VkImageViewCreateFlagBits
+imageViewCreateFragmentDensityMapDeferredBitExt = VkImageViewCreateFlagBits 2
+
+-- VkImageViewType
+imageViewType1D          :: VkImageViewType
+imageViewType1D          = VkImageViewType 0
+imageViewType2D          :: VkImageViewType
+imageViewType2D          = VkImageViewType 1
+imageViewType3D          :: VkImageViewType
+imageViewType3D          = VkImageViewType 2
+imageViewTypeCube        :: VkImageViewType
+imageViewTypeCube        = VkImageViewType 3
+imageViewType1DArray     :: VkImageViewType
+imageViewType1DArray     = VkImageViewType 4
+imageViewType2DArray     :: VkImageViewType
+imageViewType2DArray     = VkImageViewType 5
+imageViewTypeCubeArray   :: VkImageViewType
+imageViewTypeCubeArray   = VkImageViewType 6
+
 -- VkInternalAllocationType
 internalAllocationTypeExecutable     :: VkInternalAllocationType
 internalAllocationTypeExecutable     = VkInternalAllocationType 0
@@ -943,7 +987,7 @@ instance Storable VkBufferUsageFlagBits where
     poke p (VkBufferUsageFlagBits v) = pokeByteOff p 0 v
 
 instance Storable VkColorSpaceKHR where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -951,15 +995,23 @@ instance Storable VkColorSpaceKHR where
     poke p (VkColorSpaceKHR v) = pokeByteOff p 0 v
 
 instance Storable VkCommandBufferLevel where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
         return (VkCommandBufferLevel v)
     poke p (VkCommandBufferLevel v) = pokeByteOff p 0 v
 
-instance Storable VkCompositeAlphaFlagBitsKHR where
+instance Storable VkComponentSwizzle where
     sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkComponentSwizzle v)
+    poke p (VkComponentSwizzle v) = pokeByteOff p 0 v
+
+instance Storable VkCompositeAlphaFlagBitsKHR where
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -1030,6 +1082,22 @@ instance Storable VkImageUsageFlagBits where
         return (VkImageUsageFlagBits v)
     poke p (VkImageUsageFlagBits v) = pokeByteOff p 0 v
 
+instance Storable VkImageViewCreateFlagBits where
+    sizeOf _    = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkImageViewCreateFlagBits v)
+    poke p (VkImageViewCreateFlagBits v) = pokeByteOff p 0 v
+
+instance Storable VkImageViewType where
+    sizeOf _    = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkImageViewType v)
+    poke p (VkImageViewType v) = pokeByteOff p 0 v
+
 instance Storable VkInternalAllocationType where
     sizeOf _    = 4
     alignment _ = 4
@@ -1047,7 +1115,7 @@ instance Storable VkPipelineBindPoint where
     poke p (VkPipelineBindPoint v) = pokeByteOff p 0 v
 
 instance Storable VkPresentModeKHR where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -1103,7 +1171,7 @@ instance Storable VkSubpassDescriptionFlagBits where
     poke p (VkSubpassDescriptionFlagBits v) = pokeByteOff p 0 v
 
 instance Storable VkSurfaceTransformFlagBitsKHR where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0

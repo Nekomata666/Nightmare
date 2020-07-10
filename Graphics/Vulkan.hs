@@ -10,7 +10,7 @@ import Graphics.Utilities
 import Graphics.Vulkan.Buffers
 import Graphics.Vulkan.Command
 import Graphics.Vulkan.Constants
-import Graphics.Vulkan.Data (VkComputePipelineCreateInfo(..), VkDescriptorBufferInfo(..), VkDescriptorPoolSize(..), VkExtent2D(..), VkExtent3D(..), VkMemoryRequirements(..))
+import Graphics.Vulkan.Data (VkComponentMapping(..), VkComputePipelineCreateInfo(..), VkDescriptorBufferInfo(..), VkDescriptorPoolSize(..), VkExtent2D(..), VkExtent3D(..), VkImageSubresourceRange(..), VkImageViewCreateInfo(..), VkMemoryRequirements(..))
 import Graphics.Vulkan.Descriptor
 import Graphics.Vulkan.Devices
 import Graphics.Vulkan.Enumerations
@@ -50,6 +50,8 @@ initialize vkInst vkSurf vkDev0 = do
                     compositeAlphaOpaqueBitKHR presentModeFIFOKHR (VkBool 1) (VkSwapchainKHR nullHandle)
     vkSC    <- vkCreateSwapchainKHR vkDev0 vkSCCI
     vkSCIs  <- vkGetSwapchainImagesKHR vkDev0 vkSC
+    let vkIVCI = VkImageViewCreateInfo structureTypeImageViewCreateInfo nullPtr (VkImageViewCreateFlags 0) (head vkSCIs) imageViewType2D formatB8G8R8A8SRGB (VkComponentMapping componentSwizzleIdentity componentSwizzleIdentity componentSwizzleIdentity componentSwizzleIdentity) (VkImageSubresourceRange (VkImageAspectFlags $ unVkImageAspectFlagBits imageAspectColorBit) 0 1 0 1)
+    vkIV0   <- vkCreateImageView vkDev0 vkIVCI
 
     vkBCI   <- vkCreateBufferInfo nullPtr (VkBufferCreateFlags 0) (VkDeviceSize 2136746240)
         [bufferUsageStorageBufferBit, bufferUsageTransferDSTBit] sharingModeExclusive 3 [0]
@@ -59,16 +61,16 @@ initialize vkInst vkSurf vkDev0 = do
     vkDeMe  <- vkAllocateMemory vkDev0 vkMAI
     buffMa  <- vkMapMemory vkDev0 vkDeMe (VkDeviceSize 0) wholeSize (VkMemoryMapFlags 0)
     buffMB  <- vkBindBufferMemory vkDev0 vkBuff vkDeMe (alignment vkBuMR)
-    imInfo  <- vkCreateImageInfo nullPtr [imageCreateMutableFormatBit] imageType2D formatR16G16B16A16UInt
+    vkICIn  <- createVkImageCreateInfo nullPtr [imageCreateMutableFormatBit] imageType2D formatR16G16B16A16UInt
                 (VkExtent3D 256 256 1) 8 1 sampleCount1Bit imageTilingLinear
                 [imageUsageColorAttachmentBit, imageUsageTransferDSTBit] sharingModeExclusive 1 [0] imageLayoutUndefined
-    vkIma0  <- vkCreateImage vkDev0 imInfo
+    vkIma0  <- vkCreateImage vkDev0 vkICIn
     imagMR  <- vkGetImageMemoryRequirements vkDev0 vkIma0
     let imagMI = vkCreateMemoryAllocateInfo nullPtr (VkDeviceSize $ 699904 + 256) 2
     imagMe  <- vkAllocateMemory vkDev0 imagMI
     imagMa  <- vkMapMemory vkDev0 imagMe (VkDeviceSize 0) wholeSize (VkMemoryMapFlags 0)
     imagMB  <- vkBindImageMemory vkDev0 vkIma0 imagMe (alignment imagMR)
-    imagSu  <- vkCreateImageSubresource [imageAspectColorBit] 4 0
+    imagSu  <- createVkImageSubresource [imageAspectColorBit] 4 0
     imagSL  <- vkGetImageSubresourceLayout vkDev0 vkIma0 imagSu
     vkCCVa  <- createVkClearColorValue [0,0,0,0]
     vkSMIn  <- createShaderModuleInfo nullPtr (VkShaderModuleCreateFlags 0) "Shaders/Simple.spv"
