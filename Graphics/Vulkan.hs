@@ -50,7 +50,8 @@ initialize vkInst vkSurf vkDev0 = do
                     compositeAlphaOpaqueBitKHR presentModeFIFOKHR (VkBool 1) (VkSwapchainKHR nullHandle)
     vkSC    <- vkCreateSwapchainKHR vkDev0 vkSCCI
     vkSCIs  <- vkGetSwapchainImagesKHR vkDev0 vkSC
-    let vkIVCI = VkImageViewCreateInfo structureTypeImageViewCreateInfo nullPtr (VkImageViewCreateFlags 0) (head vkSCIs) imageViewType2D formatB8G8R8A8SRGB (VkComponentMapping componentSwizzleIdentity componentSwizzleIdentity componentSwizzleIdentity componentSwizzleIdentity) (VkImageSubresourceRange (VkImageAspectFlags $ unVkImageAspectFlagBits imageAspectColorBit) 0 1 0 1)
+    let vkIVCI = VkImageViewCreateInfo structureTypeImageViewCreateInfo nullPtr (VkImageViewCreateFlags 0) (head vkSCIs)
+                    imageViewType2D formatB8G8R8A8SRGB vkCMId vkISR0
     vkIV0   <- vkCreateImageView vkDev0 vkIVCI
 
     vkBCI   <- vkCreateBufferInfo nullPtr (VkBufferCreateFlags 0) (VkDeviceSize 2136746240)
@@ -136,6 +137,7 @@ initialize vkInst vkSurf vkDev0 = do
     vkUnmapMemory vkDev0 vkDeMe
     vkFreeMemory vkDev0 vkDeMe
     vkDestroyBuffer vkDev0 vkBuff
+    vkDestroyImageView vkDev0 vkIV0
     vkDestroySwapchainKHR vkDev0 vkSC
     vkDestroyDevice vkDev0
     vkDestroySurfaceKHR vkInst vkSurf
@@ -144,3 +146,4 @@ initialize vkInst vkSurf vkDev0 = do
     return ()
     where
         vkISR0 = createVkImageSubresourceRange [imageAspectColorBit] 0 1 0 1
+        vkCMId = VkComponentMapping componentSwizzleIdentity componentSwizzleIdentity componentSwizzleIdentity componentSwizzleIdentity
