@@ -279,6 +279,11 @@ data VkMemoryRequirements = VkMemoryRequirements{
     memoryTypeBits :: Word32
 }
 
+data VkOffset2D = VkOffset2D{
+    x :: Int32,
+    y :: Int32
+}
+
 data VkPhysicalDeviceFeatures = VkPhysicalDeviceFeatures{
     robustBufferAccess :: VkBool,
     fullDrawIndexUint32 :: VkBool,
@@ -345,6 +350,14 @@ data VkPipelineCacheCreateInfo = VkPipelineCacheCreateInfo{
     pInitialData :: Ptr Void
 }
 
+data VkPipelineInputAssemblyStateCreateInfo = VkPipelineInputAssemblyStateCreateInfo{
+    sType :: VkStructureType,
+    next :: Ptr Void,
+    flags :: VkPipelineInputAssemblyStateCreateFlags,
+    topology :: VkPrimitiveTopology,
+    primitiveRestartEnable :: VkBool
+}
+
 data VkPipelineLayoutCreateInfo = VkPipelineLayoutCreateInfo{
     sType :: VkStructureType,
     next :: Ptr Void,
@@ -353,6 +366,22 @@ data VkPipelineLayoutCreateInfo = VkPipelineLayoutCreateInfo{
     pSetLayouts :: Ptr VkDescriptorSetLayout,
     pushConstantRangeCount :: Word32,
     pPushConstantRanges :: Ptr VkPushConstantRange
+}
+
+data VkPipelineRasterizationStateCreateInfo = VkPipelineRasterizationStateCreateInfo{
+    sType :: VkStructureType,
+    next :: Ptr Void,
+    flags :: VkPipelineRasterizationStateCreateFlags,
+    depthClampEnable :: VkBool,
+    rasterizerDiscardEnable :: VkBool,
+    polygonMode :: VkPolygonMode,
+    cullMode :: VkCullModeFlags,
+    frontFace :: VkFrontFace,
+    depthBiasEnable :: VkBool,
+    depthBiasConstantFactor :: Float,
+    depthBiasClamp :: Float,
+    depthBiasSlopeFactor :: Float,
+    lineWidth :: Float
 }
 
 data VkPipelineShaderStageCreateInfo = VkPipelineShaderStageCreateInfo{
@@ -375,10 +404,25 @@ data VkPipelineVertexInputStateCreateInfo = VkPipelineVertexInputStateCreateInfo
     pVertexAttributeDescriptions :: Ptr VkVertexInputAttributeDescription
 }
 
+data VkPipelineViewportStateCreateInfo = VkPipelineViewportStateCreateInfo{
+    sType :: VkStructureType,
+    next :: Ptr Void,
+    flags :: VkPipelineViewportStateCreateFlags,
+    viewportCount :: Word32,
+    pViewports :: Ptr VkViewport,
+    scissorCount :: Word32,
+    pScissors :: Ptr VkRect2D
+}
+
 data VkPushConstantRange = VkPushConstantRange{
     stageFlags :: VkShaderStageFlags,
     offset :: Word32,
     size :: Word32
+}
+
+data VkRect2D = VkRect2D{
+    offset :: VkOffset2D,
+    extent :: VkExtent2D
 }
 
 data VkRenderPassCreateInfo = VkRenderPassCreateInfo{
@@ -489,6 +533,15 @@ data VkVertexInputBindingDescription = VkVertexInputBindingDescription{
     binding :: Word32,
     stride :: Word32,
     inputRate :: VkVertexInputRate
+}
+
+data VkViewport = VkViewport{
+    x :: Float,
+    y :: Float,
+    width :: Float,
+    height :: Float,
+    minDepth :: Float,
+    maxDepth :: Float
 }
 
 data VkWriteDescriptorSet = VkWriteDescriptorSet{
@@ -1061,6 +1114,17 @@ instance Storable VkMemoryRequirements where
         pokeByteOff p 8 v2
         pokeByteOff p 16 v3
 
+instance Storable VkOffset2D where
+    sizeOf _ = 8
+    alignment _ = 4
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 4
+        return (VkOffset2D v1 v2)
+    poke p (VkOffset2D v1 v2) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 4 v2
+
 instance Storable VkPhysicalDeviceFeatures where
     sizeOf _ = 220
     alignment _ = 4
@@ -1195,6 +1259,23 @@ instance Storable VkPipelineCacheCreateInfo where
         pokeByteOff p 24 v4
         pokeByteOff p 32 v5
 
+instance Storable VkPipelineInputAssemblyStateCreateInfo where
+    sizeOf _ = 32
+    alignment _ = 8
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 8
+        v3 <- peekByteOff p 16
+        v4 <- peekByteOff p 20
+        v5 <- peekByteOff p 24
+        return (VkPipelineInputAssemblyStateCreateInfo v1 v2 v3 v4 v5)
+    poke p (VkPipelineInputAssemblyStateCreateInfo v1 v2 v3 v4 v5) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 8 v2
+        pokeByteOff p 16 v3
+        pokeByteOff p 20 v4
+        pokeByteOff p 24 v5
+
 instance Storable VkPipelineLayoutCreateInfo where
     sizeOf _ = 48
     alignment _ = 8
@@ -1215,6 +1296,39 @@ instance Storable VkPipelineLayoutCreateInfo where
         pokeByteOff p 24 v5
         pokeByteOff p 32 v6
         pokeByteOff p 40 v7
+
+instance Storable VkPipelineRasterizationStateCreateInfo where
+    sizeOf _ = 64
+    alignment _ = 8
+    peek p = do
+        v01 <- peekByteOff p 0
+        v02 <- peekByteOff p 8
+        v03 <- peekByteOff p 16
+        v04 <- peekByteOff p 20
+        v05 <- peekByteOff p 24
+        v06 <- peekByteOff p 28
+        v07 <- peekByteOff p 32
+        v08 <- peekByteOff p 36
+        v09 <- peekByteOff p 40
+        v10 <- peekByteOff p 44
+        v11 <- peekByteOff p 48
+        v12 <- peekByteOff p 52
+        v13 <- peekByteOff p 56
+        return (VkPipelineRasterizationStateCreateInfo v01 v02 v03 v04 v05 v06 v07 v08 v09 v10 v11 v12 v13)
+    poke p (VkPipelineRasterizationStateCreateInfo v01 v02 v03 v04 v05 v06 v07 v08 v09 v10 v11 v12 v13) = do
+        pokeByteOff p 0 v01
+        pokeByteOff p 8 v02
+        pokeByteOff p 16 v03
+        pokeByteOff p 20 v04
+        pokeByteOff p 24 v05
+        pokeByteOff p 28 v06
+        pokeByteOff p 32 v07
+        pokeByteOff p 36 v08
+        pokeByteOff p 40 v09
+        pokeByteOff p 44 v10
+        pokeByteOff p 48 v11
+        pokeByteOff p 52 v12
+        pokeByteOff p 56 v13
 
 instance Storable VkPipelineShaderStageCreateInfo where
     sizeOf _ = 48
@@ -1258,6 +1372,27 @@ instance Storable VkPipelineVertexInputStateCreateInfo where
         pokeByteOff p 32 v6
         pokeByteOff p 40 v7
 
+instance Storable VkPipelineViewportStateCreateInfo where
+    sizeOf _ = 48
+    alignment _ = 8
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 8
+        v3 <- peekByteOff p 16
+        v4 <- peekByteOff p 20
+        v5 <- peekByteOff p 24
+        v6 <- peekByteOff p 32
+        v7 <- peekByteOff p 40
+        return (VkPipelineViewportStateCreateInfo v1 v2 v3 v4 v5 v6 v7)
+    poke p (VkPipelineViewportStateCreateInfo v1 v2 v3 v4 v5 v6 v7) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 8 v2
+        pokeByteOff p 16 v3
+        pokeByteOff p 20 v4
+        pokeByteOff p 24 v5
+        pokeByteOff p 32 v6
+        pokeByteOff p 40 v7
+
 instance Storable VkPushConstantRange where
     sizeOf _ = 12
     alignment _ = 4
@@ -1270,6 +1405,17 @@ instance Storable VkPushConstantRange where
         pokeByteOff p 0 v1
         pokeByteOff p 4 v2
         pokeByteOff p 8 v3
+
+instance Storable VkRect2D where
+    sizeOf _ = 16
+    alignment _ = 4
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 8
+        return (VkRect2D v1 v2)
+    poke p (VkRect2D v1 v2) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 8 v2
 
 instance Storable VkRenderPassCreateInfo where
     sizeOf _ = 64
@@ -1501,6 +1647,25 @@ instance Storable VkVertexInputBindingDescription where
         pokeByteOff p 0 v1
         pokeByteOff p 4 v2
         pokeByteOff p 8 v3
+
+instance Storable VkViewport where
+    sizeOf _ = 24
+    alignment _ = 4
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 4
+        v3 <- peekByteOff p 8
+        v4 <- peekByteOff p 12
+        v5 <- peekByteOff p 16
+        v6 <- peekByteOff p 20
+        return (VkViewport v1 v2 v3 v4 v5 v6)
+    poke p (VkViewport v1 v2 v3 v4 v5 v6) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 4 v2
+        pokeByteOff p 8 v3
+        pokeByteOff p 12 v4
+        pokeByteOff p 16 v5
+        pokeByteOff p 20 v6
 
 instance Storable VkWriteDescriptorSet where
     sizeOf _ = 64

@@ -23,9 +23,13 @@ newtype VkComponentSwizzle = VkComponentSwizzle { unVkComponentSwizzle :: Word32
     deriving (Eq)
 newtype VkCompositeAlphaFlagBitsKHR = VkCompositeAlphaFlagBitsKHR { unVkCompositeAlphaFlagBitsKHR :: Word32 }
     deriving (Eq)
+newtype VkCullModeFlagBits = VkCullModeFlagBits { unVkCullModeFlagBits :: Word32 }
+    deriving (Eq)
 newtype VkDescriptorType = VkDescriptorType { unVkDescriptorType :: Word32 }
     deriving (Eq)
 newtype VkFormat = VkFormat { unVkFormat :: Word32 }
+    deriving (Eq)
+newtype VkFrontFace = VkFrontFace { unVkFrontFace :: Word32 }
     deriving (Eq)
 newtype VkImageAspectFlagBits = VkImageAspectFlagBits { unVkImageAspectFlagBits :: Word32 }
     deriving (Eq)
@@ -47,7 +51,11 @@ newtype VkInternalAllocationType = VkInternalAllocationType { unVkInternalAlloca
     deriving (Eq)
 newtype VkPipelineBindPoint = VkPipelineBindPoint { unVkPipelineBindPoint :: Word32 }
     deriving (Eq)
+newtype VkPolygonMode = VkPolygonMode { unVkPolygonMode :: Word32 }
+    deriving (Eq)
 newtype VkPresentModeKHR = VkPresentModeKHR { unVkPresentModeKHR :: Word32 }
+    deriving (Eq)
+newtype VkPrimitiveTopology = VkPrimitiveTopology { unVkPrimitiveTopology :: Word32 }
     deriving (Eq)
 newtype VkResult = VkResult { unVkResult :: Int32 }
     deriving (Eq)
@@ -167,6 +175,16 @@ compositeAlphaPostMultipliedBitKHR   :: VkCompositeAlphaFlagBitsKHR
 compositeAlphaPostMultipliedBitKHR   = VkCompositeAlphaFlagBitsKHR 4
 compositeAlphaInheritBitKHR          :: VkCompositeAlphaFlagBitsKHR
 compositeAlphaInheritBitKHR          = VkCompositeAlphaFlagBitsKHR 8
+
+-- VkCullModeFlagBits
+cullModeNone             :: VkCullModeFlagBits
+cullModeNone             = VkCullModeFlagBits 0
+cullModeFrontBit         :: VkCullModeFlagBits
+cullModeFrontBit         = VkCullModeFlagBits 1
+cullModeBackBit          :: VkCullModeFlagBits
+cullModeBackBit          = VkCullModeFlagBits 2
+cullModeFrontAndBack     :: VkCullModeFlagBits
+cullModeFrontAndBack     = VkCullModeFlagBits 3
 
 -- VkDescriptorType
 descriptorTypeSampler                :: VkDescriptorType
@@ -582,6 +600,12 @@ formatPVRTC22BPPSRGBBlockImg     = VkFormat 1000054006
 formatPVRTC24BPPSRGBBlockImg     :: VkFormat
 formatPVRTC24BPPSRGBBlockImg     = VkFormat 1000054007
 
+-- VkFrontFace
+frontFaceCounterClockwise    :: VkFrontFace
+frontFaceCounterClockwise    = VkFrontFace 0
+frontFaceClockwise           :: VkFrontFace
+frontFaceClockwise           = VkFrontFace 1
+
 -- VkImageAspectFlagBits
 imageAspectColorBit          :: VkImageAspectFlagBits
 imageAspectColorBit          = VkImageAspectFlagBits 1
@@ -692,6 +716,14 @@ pipelineBindPointCompute        = VkPipelineBindPoint 1
 pipelineBindPointRayTracingKHR  :: VkPipelineBindPoint
 pipelineBindPointRayTracingKHR  = VkPipelineBindPoint 1000165000
 
+-- VkPolygonMode
+polygonModeFill          :: VkPolygonMode
+polygonModeFill          = VkPolygonMode 0
+polygonModeLine          :: VkPolygonMode
+polygonModeLine          = VkPolygonMode 1
+polygonModePoint         :: VkPolygonMode
+polygonModePoint         = VkPolygonMode 2
+
 -- VkPresentModeKHR
 presentModeImmediateKHR      :: VkPresentModeKHR
 presentModeImmediateKHR      = VkPresentModeKHR 0
@@ -701,6 +733,30 @@ presentModeFIFOKHR           :: VkPresentModeKHR
 presentModeFIFOKHR           = VkPresentModeKHR 2
 presentModeFIFORelaxedKHR    :: VkPresentModeKHR
 presentModeFIFORelaxedKHR    = VkPresentModeKHR 3
+
+-- VkPrimitiveTopology
+primitiveTopologyPointList                   :: VkPrimitiveTopology
+primitiveTopologyPointList                   = VkPrimitiveTopology 0
+primitiveTopologyLineList                    :: VkPrimitiveTopology
+primitiveTopologyLineList                    = VkPrimitiveTopology 1
+primitiveTopologyLineStrip                   :: VkPrimitiveTopology
+primitiveTopologyLineStrip                   = VkPrimitiveTopology 2
+primitiveTopologyTriangleList                :: VkPrimitiveTopology
+primitiveTopologyTriangleList                = VkPrimitiveTopology 3
+primitiveTopologyTriangleStrip               :: VkPrimitiveTopology
+primitiveTopologyTriangleStrip               = VkPrimitiveTopology 4
+primitiveTopologyTriangleFan                 :: VkPrimitiveTopology
+primitiveTopologyTriangleFan                 = VkPrimitiveTopology 5
+primitiveTopologyLineListWithAdjacency       :: VkPrimitiveTopology
+primitiveTopologyLineListWithAdjacency       = VkPrimitiveTopology 6
+primitiveTopologyLineStripWithAdjacency      :: VkPrimitiveTopology
+primitiveTopologyLineStripWithAdjacency      = VkPrimitiveTopology 7
+primitiveTopologyTriangleListWithAdjacency   :: VkPrimitiveTopology
+primitiveTopologyTriangleListWithAdjacency   = VkPrimitiveTopology 8
+primitiveTopologyTriangleStripWithAdjacency  :: VkPrimitiveTopology
+primitiveTopologyTriangleStripWithAdjacency  = VkPrimitiveTopology 9
+primitiveTopologyPatchList                   :: VkPrimitiveTopology
+primitiveTopologyPatchList                   = VkPrimitiveTopology 10
 
 -- VkResult
 success                      :: VkResult
@@ -841,8 +897,8 @@ structureTypePipelineTessellationStateCreateInfo              :: VkStructureType
 structureTypePipelineTessellationStateCreateInfo              = VkStructureType 21
 structureTypePipelineViewportStateCreateInfo                  :: VkStructureType
 structureTypePipelineViewportStateCreateInfo                  = VkStructureType 22
-structureTypePipelineRaterizationStateCreateInfo              :: VkStructureType
-structureTypePipelineRaterizationStateCreateInfo              = VkStructureType 23
+structureTypePipelineRasterizationStateCreateInfo              :: VkStructureType
+structureTypePipelineRasterizationStateCreateInfo              = VkStructureType 23
 structureTypePipelineMultisampleStateCreateInfo               :: VkStructureType
 structureTypePipelineMultisampleStateCreateInfo               = VkStructureType 24
 structureTypePipelineDepthStencilStateCreateInfo              :: VkStructureType
@@ -1011,7 +1067,7 @@ instance Storable VkCommandBufferLevel where
     poke p (VkCommandBufferLevel v) = pokeByteOff p 0 v
 
 instance Storable VkComponentSwizzle where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -1025,6 +1081,14 @@ instance Storable VkCompositeAlphaFlagBitsKHR where
         v <- peekByteOff p 0
         return (VkCompositeAlphaFlagBitsKHR v)
     poke p (VkCompositeAlphaFlagBitsKHR v) = pokeByteOff p 0 v
+
+instance Storable VkCullModeFlagBits where
+    sizeOf _    = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkCullModeFlagBits v)
+    poke p (VkCullModeFlagBits v) = pokeByteOff p 0 v
 
 instance Storable VkDescriptorType where
     sizeOf _    = 4
@@ -1041,6 +1105,14 @@ instance Storable VkFormat where
         v <- peekByteOff p 0
         return (VkFormat v)
     poke p (VkFormat v) = pokeByteOff p 0 v
+
+instance Storable VkFrontFace where
+    sizeOf _    = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkFrontFace v)
+    poke p (VkFrontFace v) = pokeByteOff p 0 v
 
 instance Storable VkImageAspectFlagBits where
     sizeOf _    = 4
@@ -1122,6 +1194,14 @@ instance Storable VkPipelineBindPoint where
         return (VkPipelineBindPoint v)
     poke p (VkPipelineBindPoint v) = pokeByteOff p 0 v
 
+instance Storable VkPolygonMode where
+    sizeOf _    = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkPolygonMode v)
+    poke p (VkPolygonMode v) = pokeByteOff p 0 v
+
 instance Storable VkPresentModeKHR where
     sizeOf _    = 4
     alignment _ = 4
@@ -1129,6 +1209,14 @@ instance Storable VkPresentModeKHR where
         v <- peekByteOff p 0
         return (VkPresentModeKHR v)
     poke p (VkPresentModeKHR v) = pokeByteOff p 0 v
+
+instance Storable VkPrimitiveTopology where
+    sizeOf _    = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkPrimitiveTopology v)
+    poke p (VkPrimitiveTopology v) = pokeByteOff p 0 v
 
 instance Storable VkResult where
     sizeOf _    = 4
@@ -1195,7 +1283,7 @@ instance Storable VkSystemAllocationScope where
     poke p (VkSystemAllocationScope v) = pokeByteOff p 0 v
 
 instance Storable VkVertexInputRate where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0

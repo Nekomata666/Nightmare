@@ -23,6 +23,7 @@ nullHandle :: VkHandle
 nullHandle = 0
 
 -- Vulkan Types
+-- 0 = False, 1 = True
 newtype VkBool  = VkBool { unVkBool :: Word32 }
 
 -- Vulkan Flags
@@ -32,6 +33,7 @@ newtype VkBufferCreateFlags = VkBufferCreateFlags { unVkBufferCreateFlags :: VkF
 newtype VkBufferUsageFlags = VkBufferUsageFlags { unVkBufferUsageFlags :: VkFlags }
 newtype VkCommandBufferUsageFlags = VkCommandBufferUsageFlags { unVkCommandBufferUsageFlags :: VkFlags }
 newtype VkCommandPoolCreateFlags = VkCommandPoolCreateFlags { unVkCommandPoolCreateFlags :: VkFlags }
+newtype VkCullModeFlags = VkCullModeFlags { unVkCullModeFlags :: VkFlags }
 newtype VkDependencyFlags = VkDependencyFlags { unVkDependencyFlags :: VkFlags }
 newtype VkDescriptorPoolCreateFlags = VkDescriptorPoolCreateFlags { unVkDescriptorPoolCreateFlags :: VkFlags }
 newtype VkDescriptorSetLayoutCreateFlags = VkDescriptorSetLayoutCreateFlags { unVkDescriptorSetLayoutCreateFlags :: VkFlags }
@@ -44,10 +46,13 @@ newtype VkImageViewCreateFlags = VkImageViewCreateFlags { unVkImageViewCreateFla
 newtype VkMemoryMapFlags = VkMemoryMapFlags { unVkMemoryMapFlags :: VkFlags }
 newtype VkPipelineCacheCreateFlags = VkPipelineCacheCreateFlags { unVkPipelineCacheCreateFlags :: VkFlags }
 newtype VkPipelineCreateFlags = VkPipelineCreateFlags { unVkPipelineCreateFlags :: VkFlags }
+newtype VkPipelineInputAssemblyStateCreateFlags = VkPipelineInputAssemblyStateCreateFlags { unVkPipelineInputAssemblyStateCreateFlags :: VkFlags }
 newtype VkPipelineLayoutCreateFlags = VkPipelineLayoutCreateFlags { unVkPipelineLayoutCreateFlags :: VkFlags }
+newtype VkPipelineRasterizationStateCreateFlags = VkPipelineRasterizationStateCreateFlags { unVkPipelineRasterizationStateCreateFlags :: VkFlags }
 newtype VkPipelineShaderStageCreateFlags = VkPipelineShaderStageCreateFlags { unVkPipelineShaderStageCreateFlags :: VkFlags }
 newtype VkPipelineStageFlags = VkPipelineStageFlags { unVkPipelineStageFlags :: VkFlags }
 newtype VkPipelineVertexInputStateCreateFlags = VkPipelineVertexInputStateCreateFlags { unVkPipelineVertexInputStateCreateFlags :: VkFlags }
+newtype VkPipelineViewportStateCreateFlags = VkPipelineViewportStateCreateFlags { unVkPipelineViewportStateCreateFlags :: VkFlags }
 newtype VkQueryControlFlags = VkQueryControlFlags { unVkQueryControlFlags :: VkFlags }
 newtype VkQueryPipelineStatisticFlags = VkQueryPipelineStatisticFlags { unVkQueryPipelineStatisticFlags :: VkFlags }
 newtype VkRenderPassCreateFlags = VkRenderPassCreateFlags { unVkRenderPassCreateFlags :: VkFlags }
@@ -101,7 +106,7 @@ type PFN_vkInternalFreeNotification = FunPtr (Ptr Void -> CSize -> VkInternalAll
 --
 --------------------------------------------------------------------------------------------------------------------------------
 instance Storable VkBool where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -115,7 +120,7 @@ instance Storable VkBool where
 --
 --------------------------------------------------------------------------------------------------------------------------------
 instance Storable VkAccessFlags where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -123,7 +128,7 @@ instance Storable VkAccessFlags where
     poke p (VkAccessFlags v) = pokeByteOff p 0 v
 
 instance Storable VkAttachmentDescriptionFlags where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -131,7 +136,7 @@ instance Storable VkAttachmentDescriptionFlags where
     poke p (VkAttachmentDescriptionFlags v) = pokeByteOff p 0 v
 
 instance Storable VkBufferCreateFlags where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -139,7 +144,7 @@ instance Storable VkBufferCreateFlags where
     poke p (VkBufferCreateFlags v) = pokeByteOff p 0 v
 
 instance Storable VkBufferUsageFlags where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -147,7 +152,7 @@ instance Storable VkBufferUsageFlags where
     poke p (VkBufferUsageFlags v) = pokeByteOff p 0 v
 
 instance Storable VkCommandBufferUsageFlags where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -155,15 +160,23 @@ instance Storable VkCommandBufferUsageFlags where
     poke p (VkCommandBufferUsageFlags v) = pokeByteOff p 0 v
 
 instance Storable VkCommandPoolCreateFlags where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
         return (VkCommandPoolCreateFlags v)
     poke p (VkCommandPoolCreateFlags v) = pokeByteOff p 0 v
 
+instance Storable VkCullModeFlags where
+    sizeOf _    = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkCullModeFlags v)
+    poke p (VkCullModeFlags v) = pokeByteOff p 0 v
+
 instance Storable VkDependencyFlags where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -171,7 +184,7 @@ instance Storable VkDependencyFlags where
     poke p (VkDependencyFlags v) = pokeByteOff p 0 v
 
 instance Storable VkDescriptorPoolCreateFlags where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -179,7 +192,7 @@ instance Storable VkDescriptorPoolCreateFlags where
     poke p (VkDescriptorPoolCreateFlags v) = pokeByteOff p 0 v
 
 instance Storable VkDescriptorSetLayoutCreateFlags where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -187,7 +200,7 @@ instance Storable VkDescriptorSetLayoutCreateFlags where
     poke p (VkDescriptorSetLayoutCreateFlags v) = pokeByteOff p 0 v
 
 instance Storable VkDeviceCreateFlags where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -195,7 +208,7 @@ instance Storable VkDeviceCreateFlags where
     poke p (VkDeviceCreateFlags v) = pokeByteOff p 0 v
 
 instance Storable VkDeviceQueueCreateFlags where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -203,7 +216,7 @@ instance Storable VkDeviceQueueCreateFlags where
     poke p (VkDeviceQueueCreateFlags v) = pokeByteOff p 0 v
 
 instance Storable VkImageAspectFlags where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -211,7 +224,7 @@ instance Storable VkImageAspectFlags where
     poke p (VkImageAspectFlags v) = pokeByteOff p 0 v
 
 instance Storable VkImageCreateFlags where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -219,7 +232,7 @@ instance Storable VkImageCreateFlags where
     poke p (VkImageCreateFlags v) = pokeByteOff p 0 v
 
 instance Storable VkImageUsageFlags where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -227,7 +240,7 @@ instance Storable VkImageUsageFlags where
     poke p (VkImageUsageFlags v) = pokeByteOff p 0 v
 
 instance Storable VkImageViewCreateFlags where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -235,7 +248,7 @@ instance Storable VkImageViewCreateFlags where
     poke p (VkImageViewCreateFlags v) = pokeByteOff p 0 v
 
 instance Storable VkMemoryMapFlags where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -243,7 +256,7 @@ instance Storable VkMemoryMapFlags where
     poke p (VkMemoryMapFlags v) = pokeByteOff p 0 v
 
 instance Storable VkPipelineCacheCreateFlags where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -251,23 +264,39 @@ instance Storable VkPipelineCacheCreateFlags where
     poke p (VkPipelineCacheCreateFlags v) = pokeByteOff p 0 v
 
 instance Storable VkPipelineCreateFlags where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
         return (VkPipelineCreateFlags v)
     poke p (VkPipelineCreateFlags v) = pokeByteOff p 0 v
 
+instance Storable VkPipelineInputAssemblyStateCreateFlags where
+    sizeOf _    = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkPipelineInputAssemblyStateCreateFlags v)
+    poke p (VkPipelineInputAssemblyStateCreateFlags v) = pokeByteOff p 0 v
+
 instance Storable VkPipelineLayoutCreateFlags where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
         return (VkPipelineLayoutCreateFlags v)
     poke p (VkPipelineLayoutCreateFlags v) = pokeByteOff p 0 v
 
+instance Storable VkPipelineRasterizationStateCreateFlags where
+    sizeOf _    = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkPipelineRasterizationStateCreateFlags v)
+    poke p (VkPipelineRasterizationStateCreateFlags v) = pokeByteOff p 0 v
+
 instance Storable VkPipelineShaderStageCreateFlags where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -275,7 +304,7 @@ instance Storable VkPipelineShaderStageCreateFlags where
     poke p (VkPipelineShaderStageCreateFlags v) = pokeByteOff p 0 v
 
 instance Storable VkPipelineStageFlags where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -283,15 +312,23 @@ instance Storable VkPipelineStageFlags where
     poke p (VkPipelineStageFlags v) = pokeByteOff p 0 v
 
 instance Storable VkPipelineVertexInputStateCreateFlags where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
         return (VkPipelineVertexInputStateCreateFlags v)
     poke p (VkPipelineVertexInputStateCreateFlags v) = pokeByteOff p 0 v
 
+instance Storable VkPipelineViewportStateCreateFlags where
+    sizeOf _    = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkPipelineViewportStateCreateFlags v)
+    poke p (VkPipelineViewportStateCreateFlags v) = pokeByteOff p 0 v
+
 instance Storable VkQueryControlFlags where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -299,7 +336,7 @@ instance Storable VkQueryControlFlags where
     poke p (VkQueryControlFlags v) = pokeByteOff p 0 v
 
 instance Storable VkQueryPipelineStatisticFlags where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -307,7 +344,7 @@ instance Storable VkQueryPipelineStatisticFlags where
     poke p (VkQueryPipelineStatisticFlags v) = pokeByteOff p 0 v
 
 instance Storable VkRenderPassCreateFlags where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -315,7 +352,7 @@ instance Storable VkRenderPassCreateFlags where
     poke p (VkRenderPassCreateFlags v) = pokeByteOff p 0 v
 
 instance Storable VkShaderModuleCreateFlags where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -323,7 +360,7 @@ instance Storable VkShaderModuleCreateFlags where
     poke p (VkShaderModuleCreateFlags v) = pokeByteOff p 0 v
 
 instance Storable VkShaderStageFlags where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -331,7 +368,7 @@ instance Storable VkShaderStageFlags where
     poke p (VkShaderStageFlags v) = pokeByteOff p 0 v
 
 instance Storable VkSubpassDescriptionFlags where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -339,7 +376,7 @@ instance Storable VkSubpassDescriptionFlags where
     poke p (VkSubpassDescriptionFlags v) = pokeByteOff p 0 v
 
 instance Storable VkSwapchainCreateFlagsKHR where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -353,7 +390,7 @@ instance Storable VkSwapchainCreateFlagsKHR where
 --
 --------------------------------------------------------------------------------------------------------------------------------
 instance Storable VkBuffer where
-    sizeOf _ = 8
+    sizeOf _    = 8
     alignment _ = 8
     peek p = do
         v <- peekByteOff p 0
@@ -361,7 +398,7 @@ instance Storable VkBuffer where
     poke p (VkBuffer v) = pokeByteOff p 0 v
 
 instance Storable VkBufferView where
-    sizeOf _ = 8
+    sizeOf _    = 8
     alignment _ = 8
     peek p = do
         v <- peekByteOff p 0
@@ -369,7 +406,7 @@ instance Storable VkBufferView where
     poke p (VkBufferView v) = pokeByteOff p 0 v
 
 instance Storable VkCommandBuffer where
-    sizeOf _ = 8
+    sizeOf _    = 8
     alignment _ = 8
     peek p = do
         v <- peekByteOff p 0
@@ -377,7 +414,7 @@ instance Storable VkCommandBuffer where
     poke p (VkCommandBuffer v) = pokeByteOff p 0 v
 
 instance Storable VkCommandPool where
-    sizeOf _ = 8
+    sizeOf _    = 8
     alignment _ = 8
     peek p = do
         v <- peekByteOff p 0
@@ -385,7 +422,7 @@ instance Storable VkCommandPool where
     poke p (VkCommandPool v) = pokeByteOff p 0 v
 
 instance Storable VkDescriptorPool where
-    sizeOf _ = 8
+    sizeOf _    = 8
     alignment _ = 8
     peek p = do
         v <- peekByteOff p 0
@@ -393,7 +430,7 @@ instance Storable VkDescriptorPool where
     poke p (VkDescriptorPool v) = pokeByteOff p 0 v
 
 instance Storable VkDescriptorSet where
-    sizeOf _ = 8
+    sizeOf _    = 8
     alignment _ = 8
     peek p = do
         v <- peekByteOff p 0
@@ -401,7 +438,7 @@ instance Storable VkDescriptorSet where
     poke p (VkDescriptorSet v) = pokeByteOff p 0 v
 
 instance Storable VkDescriptorSetLayout where
-    sizeOf _ = 8
+    sizeOf _    = 8
     alignment _ = 8
     peek p = do
         v <- peekByteOff p 0
@@ -409,7 +446,7 @@ instance Storable VkDescriptorSetLayout where
     poke p (VkDescriptorSetLayout v) = pokeByteOff p 0 v
 
 instance Storable VkDevice where
-    sizeOf _ = 8
+    sizeOf _    = 8
     alignment _ = 8
     peek p = do
         v <- peekByteOff p 0
@@ -417,7 +454,7 @@ instance Storable VkDevice where
     poke p (VkDevice v) = pokeByteOff p 0 v
 
 instance Storable VkDeviceMemory where
-    sizeOf _ = 8
+    sizeOf _    = 8
     alignment _ = 8
     peek p = do
         v <- peekByteOff p 0
@@ -425,7 +462,7 @@ instance Storable VkDeviceMemory where
     poke p (VkDeviceMemory v) = pokeByteOff p 0 v
 
 instance Storable VkDeviceSize where
-    sizeOf _ = 8
+    sizeOf _    = 8
     alignment _ = 8
     peek p = do
         v <- peekByteOff p 0
@@ -433,7 +470,7 @@ instance Storable VkDeviceSize where
     poke p (VkDeviceSize v) = pokeByteOff p 0 v
 
 instance Storable VkFence where
-    sizeOf _ = 8
+    sizeOf _    = 8
     alignment _ = 8
     peek p = do
         v <- peekByteOff p 0
@@ -441,7 +478,7 @@ instance Storable VkFence where
     poke p (VkFence v) = pokeByteOff p 0 v
 
 instance Storable VkFramebuffer where
-    sizeOf _ = 8
+    sizeOf _    = 8
     alignment _ = 8
     peek p = do
         v <- peekByteOff p 0
@@ -449,7 +486,7 @@ instance Storable VkFramebuffer where
     poke p (VkFramebuffer v) = pokeByteOff p 0 v
 
 instance Storable VkImage where
-    sizeOf _ = 8
+    sizeOf _    = 8
     alignment _ = 8
     peek p = do
         v <- peekByteOff p 0
@@ -457,7 +494,7 @@ instance Storable VkImage where
     poke p (VkImage v) = pokeByteOff p 0 v
 
 instance Storable VkImageView where
-    sizeOf _ = 8
+    sizeOf _    = 8
     alignment _ = 8
     peek p = do
         v <- peekByteOff p 0
@@ -465,7 +502,7 @@ instance Storable VkImageView where
     poke p (VkImageView v) = pokeByteOff p 0 v
 
 instance Storable VkInstance where
-    sizeOf _ = 8
+    sizeOf _    = 8
     alignment _ = 8
     peek p = do
         v <- peekByteOff p 0
@@ -473,7 +510,7 @@ instance Storable VkInstance where
     poke p (VkInstance v) = pokeByteOff p 0 v
 
 instance Storable VkPhysicalDevice where
-    sizeOf _ = 8
+    sizeOf _    = 8
     alignment _ = 8
     peek p = do
         v <- peekByteOff p 0
@@ -481,7 +518,7 @@ instance Storable VkPhysicalDevice where
     poke p (VkPhysicalDevice v) = pokeByteOff p 0 v
 
 instance Storable VkPipeline where
-    sizeOf _ = 8
+    sizeOf _    = 8
     alignment _ = 8
     peek p = do
         v <- peekByteOff p 0
@@ -489,7 +526,7 @@ instance Storable VkPipeline where
     poke p (VkPipeline v) = pokeByteOff p 0 v
 
 instance Storable VkPipelineCache where
-    sizeOf _ = 8
+    sizeOf _    = 8
     alignment _ = 8
     peek p = do
         v <- peekByteOff p 0
@@ -497,7 +534,7 @@ instance Storable VkPipelineCache where
     poke p (VkPipelineCache v) = pokeByteOff p 0 v
 
 instance Storable VkPipelineLayout where
-    sizeOf _ = 8
+    sizeOf _    = 8
     alignment _ = 8
     peek p = do
         v <- peekByteOff p 0
@@ -505,7 +542,7 @@ instance Storable VkPipelineLayout where
     poke p (VkPipelineLayout v) = pokeByteOff p 0 v
 
 instance Storable VkRenderPass where
-    sizeOf _ = 8
+    sizeOf _    = 8
     alignment _ = 8
     peek p = do
         v <- peekByteOff p 0
@@ -513,7 +550,7 @@ instance Storable VkRenderPass where
     poke p (VkRenderPass v) = pokeByteOff p 0 v
 
 instance Storable VkSampler where
-    sizeOf _ = 8
+    sizeOf _    = 8
     alignment _ = 8
     peek p = do
         v <- peekByteOff p 0
@@ -521,7 +558,7 @@ instance Storable VkSampler where
     poke p (VkSampler v) = pokeByteOff p 0 v
 
 instance Storable VkSemaphore where
-    sizeOf _ = 8
+    sizeOf _    = 8
     alignment _ = 8
     peek p = do
         v <- peekByteOff p 0
@@ -529,7 +566,7 @@ instance Storable VkSemaphore where
     poke p (VkSemaphore v) = pokeByteOff p 0 v
 
 instance Storable VkShaderModule where
-    sizeOf _ = 8
+    sizeOf _    = 8
     alignment _ = 8
     peek p = do
         v <- peekByteOff p 0
@@ -537,7 +574,7 @@ instance Storable VkShaderModule where
     poke p (VkShaderModule v) = pokeByteOff p 0 v
 
 instance Storable VkSurfaceKHR where
-    sizeOf _ = 8
+    sizeOf _    = 8
     alignment _ = 8
     peek p = do
         v <- peekByteOff p 0
@@ -545,7 +582,7 @@ instance Storable VkSurfaceKHR where
     poke p (VkSurfaceKHR v) = pokeByteOff p 0 v
 
 instance Storable VkSwapchainKHR where
-    sizeOf _ = 8
+    sizeOf _    = 8
     alignment _ = 8
     peek p = do
         v <- peekByteOff p 0
@@ -553,7 +590,7 @@ instance Storable VkSwapchainKHR where
     poke p (VkSwapchainKHR v) = pokeByteOff p 0 v
 
 instance Storable VkQueue where
-    sizeOf _ = 8
+    sizeOf _    = 8
     alignment _ = 8
     peek p = do
         v <- peekByteOff p 0
