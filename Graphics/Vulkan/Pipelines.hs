@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Pipelines (createVkPipelineShaderStageInfo, createVkPipelineCacheInfo, createVkPipelineLayoutCreateInfo, vkCreateComputePipelines, vkCreatePipelineCache, vkCreatePipelineLayout, vkDestroyPipeline, vkDestroyPipelineCache, vkDestroyPipelineLayout) where
+module Graphics.Vulkan.Pipelines (createVkPipelineCacheInfo, createVkPipelineLayoutCreateInfo,  createVkPipelineShaderStageInfo, createVkPipelineVertexInputStateCreateInfo, vkCreateComputePipelines, vkCreatePipelineCache, vkCreatePipelineLayout, vkDestroyPipeline, vkDestroyPipelineCache, vkDestroyPipelineLayout) where
 
 
 import Data.Maybe
@@ -18,10 +18,12 @@ import Graphics.Vulkan.Enumerations
 import Graphics.Vulkan.Types
 
 -- Type aliases.
-type CreateInfoCount        = Word32
-type Name                   = String
-type PushConstantRangeCount = Word32
-type SetLayoutCount         = Word32
+type CreateInfoCount                    = Word32
+type Name                               = String
+type PushConstantRangeCount             = Word32
+type SetLayoutCount                     = Word32
+type VertexAttributeDescriptionCount    = Word32
+type VertexBindingDescriptionCount      = Word32
 
 foreign import ccall unsafe "vkCreateComputePipelines"
     c_vkCreateComputePipelines :: VkDevice -> VkPipelineCache -> Word32 -> Ptr VkComputePipelineCreateInfo ->
@@ -68,6 +70,14 @@ createVkPipelineShaderStageInfo v pSSCF sSF sM n mVKSI = do
     n' <- newCString n
     pInfo <- fromMaybeIO mVKSI
     return $ VkPipelineShaderStageCreateInfo structureTypePipelineShaderStageCreateInfo v pSSCF sSF sM n' pInfo
+
+createVkPipelineVertexInputStateCreateInfo :: Ptr Void -> VkPipelineVertexInputStateCreateFlags -> VertexBindingDescriptionCount ->
+    Maybe [VkVertexInputBindingDescription] -> VertexAttributeDescriptionCount -> Maybe [VkVertexInputAttributeDescription] ->
+    IO VkPipelineVertexInputStateCreateInfo
+createVkPipelineVertexInputStateCreateInfo v pVISCF vBDC mVIBD vADC mVIAD = do
+        pVIBD <- fromMaybeListIO vBDC mVIBD
+        pVIAD <- fromMaybeListIO vADC mVIAD
+        return $ VkPipelineVertexInputStateCreateInfo structureTypePipelineVertexInputStateCreateInfo v pVISCF vBDC pVIBD vADC pVIAD
 
 vkCreateComputePipelines :: VkDevice -> VkPipelineCache -> CreateInfoCount -> [VkComputePipelineCreateInfo] -> IO [VkPipeline]
 vkCreateComputePipelines d pC cIC cPCI = allocaArray i $ \pCPCI ->

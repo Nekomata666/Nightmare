@@ -365,6 +365,16 @@ data VkPipelineShaderStageCreateInfo = VkPipelineShaderStageCreateInfo{
     pSpecializationInfo :: Ptr VkSpecializationInfo
 }
 
+data VkPipelineVertexInputStateCreateInfo = VkPipelineVertexInputStateCreateInfo{
+    sType :: VkStructureType,
+    next :: Ptr Void,
+    flags :: VkPipelineVertexInputStateCreateFlags,
+    vertexBindingDescriptionCount :: Word32,
+    pVertexBindingDescriptions :: Ptr VkVertexInputBindingDescription,
+    vertexAttributeDescriptionCount :: Word32,
+    pVertexAttributeDescriptions :: Ptr VkVertexInputAttributeDescription
+}
+
 data VkPushConstantRange = VkPushConstantRange{
     stageFlags :: VkShaderStageFlags,
     offset :: Word32,
@@ -466,6 +476,19 @@ data VkSwapchainCreateInfoKHR = VkSwapchainCreateInfoKHR{
     presentMode :: VkPresentModeKHR,
     clipped :: VkBool,
     oldSwapchain :: VkSwapchainKHR
+}
+
+data VkVertexInputAttributeDescription = VkVertexInputAttributeDescription{
+    location :: Word32,
+    binding :: Word32,
+    format :: VkFormat,
+    offset :: Word32
+}
+
+data VkVertexInputBindingDescription = VkVertexInputBindingDescription{
+    binding :: Word32,
+    stride :: Word32,
+    inputRate :: VkVertexInputRate
 }
 
 data VkWriteDescriptorSet = VkWriteDescriptorSet{
@@ -1214,6 +1237,27 @@ instance Storable VkPipelineShaderStageCreateInfo where
         pokeByteOff p 32 v6
         pokeByteOff p 40 v7
 
+instance Storable VkPipelineVertexInputStateCreateInfo where
+    sizeOf _ = 48
+    alignment _ = 8
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 8
+        v3 <- peekByteOff p 16
+        v4 <- peekByteOff p 20
+        v5 <- peekByteOff p 24
+        v6 <- peekByteOff p 32
+        v7 <- peekByteOff p 40
+        return (VkPipelineVertexInputStateCreateInfo v1 v2 v3 v4 v5 v6 v7)
+    poke p (VkPipelineVertexInputStateCreateInfo v1 v2 v3 v4 v5 v6 v7) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 8 v2
+        pokeByteOff p 16 v3
+        pokeByteOff p 20 v4
+        pokeByteOff p 24 v5
+        pokeByteOff p 32 v6
+        pokeByteOff p 40 v7
+
 instance Storable VkPushConstantRange where
     sizeOf _ = 12
     alignment _ = 4
@@ -1429,6 +1473,34 @@ instance Storable VkSwapchainCreateInfoKHR where
         pokeByteOff p 88 v16
         pokeByteOff p 92 v17
         pokeByteOff p 96 v18
+
+instance Storable VkVertexInputAttributeDescription where
+    sizeOf _ = 16
+    alignment _ = 4
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 4
+        v3 <- peekByteOff p 8
+        v4 <- peekByteOff p 12
+        return (VkVertexInputAttributeDescription v1 v2 v3 v4)
+    poke p (VkVertexInputAttributeDescription v1 v2 v3 v4) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 4 v2
+        pokeByteOff p 8 v3
+        pokeByteOff p 12 v4
+
+instance Storable VkVertexInputBindingDescription where
+    sizeOf _ = 12
+    alignment _ = 4
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 4
+        v3 <- peekByteOff p 8
+        return (VkVertexInputBindingDescription v1 v2 v3)
+    poke p (VkVertexInputBindingDescription v1 v2 v3) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 4 v2
+        pokeByteOff p 8 v3
 
 instance Storable VkWriteDescriptorSet where
     sizeOf _ = 64
