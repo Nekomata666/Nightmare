@@ -54,6 +54,16 @@ initialize vkInst vkSurf vkDev0 = do
                     imageViewType2D formatB8G8R8A8SRGB vkCMId vkISR0
     vkIV0   <- vkCreateImageView vkDev0 vkIVCI
 
+    vkSMIV  <- createVkShaderModuleInfo nullPtr (VkShaderModuleCreateFlags 0) "Shaders/Simple.v.spv"
+    vkSMIF  <- createVkShaderModuleInfo nullPtr (VkShaderModuleCreateFlags 0) "Shaders/Simple.f.spv"
+    vkSMIC  <- createVkShaderModuleInfo nullPtr (VkShaderModuleCreateFlags 0) "Shaders/Simple.c.spv"
+    vkSMoV  <- vkCreateShaderModule vkDev0 vkSMIV
+    vkSMoF  <- vkCreateShaderModule vkDev0 vkSMIF
+    vkSMoC  <- vkCreateShaderModule vkDev0 vkSMIC
+    vkPSIV  <- createVkPipelineShaderStageInfo nullPtr (VkPipelineShaderStageCreateFlags 0) shaderStageVertexBit vkSMoV "main" Nothing
+    vkPSIF  <- createVkPipelineShaderStageInfo nullPtr (VkPipelineShaderStageCreateFlags 0) shaderStageFragmentBit vkSMoF "main" Nothing
+    vkPSIC  <- createVkPipelineShaderStageInfo nullPtr (VkPipelineShaderStageCreateFlags 0) shaderStageComputeBit vkSMoC "main" Nothing
+
     vkBCI   <- vkCreateBufferInfo nullPtr (VkBufferCreateFlags 0) (VkDeviceSize 2136746240)
         [bufferUsageStorageBufferBit, bufferUsageTransferDSTBit] sharingModeExclusive 3 [0]
     vkBuff  <- vkCreateBuffer vkDev0 vkBCI
@@ -74,9 +84,6 @@ initialize vkInst vkSurf vkDev0 = do
     imagSu  <- createVkImageSubresource [imageAspectColorBit] 4 0
     imagSL  <- vkGetImageSubresourceLayout vkDev0 vkIma0 imagSu
     vkCCVa  <- createVkClearColorValue [0,0,0,0]
-    vkSMIn  <- createShaderModuleInfo nullPtr (VkShaderModuleCreateFlags 0) "Shaders/Simple.spv"
-    vkSMod  <- vkCreateShaderModule vkDev0 vkSMIn
-    vkPSSI  <- createVkPipelineShaderStageInfo nullPtr (VkPipelineShaderStageCreateFlags 0) shaderStageComputeBit vkSMod "main" Nothing
     vkDSLB  <- createVkDescriptorSetLayoutBinding 0 descriptorTypeStorageBuffer 1 [shaderStageComputeBit] Nothing
     vDSLCI  <- createVkDescriptorSetLayoutCreateInfo nullPtr (VkDescriptorSetLayoutCreateFlags 0) 1 (Just [vkDSLB])
     vkDSL0  <- vkCreateDescriptorSetLayout vkDev0 vDSLCI
@@ -84,7 +91,7 @@ initialize vkInst vkSurf vkDev0 = do
     vkPiLa  <- vkCreatePipelineLayout vkDev0 vkPLCI
     vkPCCI  <- createVkPipelineCacheInfo nullPtr (VkPipelineCacheCreateFlags 0) ""
     vkPiCa  <- vkCreatePipelineCache vkDev0 vkPCCI
-    let vkCPCI = VkComputePipelineCreateInfo structureTypeComputePipelineCreateInfo nullPtr (VkPipelineCreateFlags 0) vkPSSI vkPiLa (VkPipeline 0) 0
+    let vkCPCI = VkComputePipelineCreateInfo structureTypeComputePipelineCreateInfo nullPtr (VkPipelineCreateFlags 0) vkPSIC vkPiLa (VkPipeline 0) 0
     vkCoPi <- vkCreateComputePipelines vkDev0 vkPiCa 1 [vkCPCI]
     let vkDPS0 = VkDescriptorPoolSize descriptorTypeStorageBuffer 1
     vkDPCI <- createVkDescriptorPoolCreateInfo nullPtr (VkDescriptorPoolCreateFlags 0) 1 1 [vkDPS0]
@@ -129,7 +136,9 @@ initialize vkInst vkSurf vkDev0 = do
     vkDestroyPipelineLayout vkDev0 vkPiLa
     vkDestroyDescriptorSetLayout vkDev0 vkDSL0
     vkDestroyPipeline vkDev0 vkCoP0
-    vkDestroyShaderModule vkDev0 vkSMod
+    -- vkDestroyShaderModule vkDev0 vkSMoV
+    -- vkDestroyShaderModule vkDev0 vkSMoF
+    vkDestroyShaderModule vkDev0 vkSMoC
     vkDestroyCommandPool vkDev0 vkCPo0
     vkUnmapMemory vkDev0 imagMe
     vkFreeMemory vkDev0 imagMe

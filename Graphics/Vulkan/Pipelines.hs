@@ -48,7 +48,7 @@ createVkPipelineCacheInfo :: Ptr Void -> VkPipelineCacheCreateFlags -> FilePath 
 createVkPipelineCacheInfo v pCCF fP
     | null fP = return $ VkPipelineCacheCreateInfo structureTypePipelineCacheCreateInfo v pCCF (CSize 0) nullPtr
     | otherwise  = do
-        r <- openVulkanFile "CreatePipelineCacheInfo" fP
+        r <- openVulkanFile fP
         let p  = fst r :: Ptr Word32
             cs = snd r
         return $ VkPipelineCacheCreateInfo structureTypePipelineCacheCreateInfo v pCCF cs (castPtr p)

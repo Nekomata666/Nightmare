@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Shaders (createShaderModuleInfo, vkCreateShaderModule, vkDestroyShaderModule) where
+module Graphics.Vulkan.Shaders (createVkShaderModuleInfo, vkCreateShaderModule, vkDestroyShaderModule) where
 
 
 import Data.Void (Void)
@@ -21,9 +21,9 @@ foreign import ccall unsafe "vkCreateShaderModule"
 foreign import ccall unsafe "vkDestroyShaderModule"
     c_vkDestroyShaderModule :: VkDevice -> VkShaderModule -> Ptr VkAllocationCallbacks -> IO ()
 
-createShaderModuleInfo :: Ptr Void -> VkShaderModuleCreateFlags -> FilePath -> IO VkShaderModuleCreateInfo
-createShaderModuleInfo v sMCF fP = do
-    r <- openVulkanFile "CreateShaderModuleInfo" fP
+createVkShaderModuleInfo :: Ptr Void -> VkShaderModuleCreateFlags -> FilePath -> IO VkShaderModuleCreateInfo
+createVkShaderModuleInfo v sMCF fP = do
+    r <- openVulkanFile fP
     let p  = fst r
         cs = snd r
     return $ VkShaderModuleCreateInfo structureTypeShaderModuleCreateInfo v sMCF cs p
