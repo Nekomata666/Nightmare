@@ -65,6 +65,8 @@ newtype VkSurfaceTransformFlagBitsKHR = VkSurfaceTransformFlagBitsKHR { unVkSurf
     deriving (Eq)
 newtype VkSystemAllocationScope = VkSystemAllocationScope { unVkSystemAllocationScope :: Word32 }
     deriving (Eq)
+newtype VkVertexInputRate = VkVertexInputRate { unVkVertexInputRate :: Word32 }
+    deriving (Eq)
 
 
 -- Vulkan enumerations
@@ -960,6 +962,12 @@ systemAllocationScopeDevice      = VkSystemAllocationScope 3
 systemAllocationScopeInstance    :: VkSystemAllocationScope
 systemAllocationScopeInstance    = VkSystemAllocationScope 4
 
+-- VkVertexInputRate
+vertexInputRateVertex        :: VkVertexInputRate
+vertexInputRateVertex        = VkVertexInputRate 0
+vertexInputRateInstance      :: VkVertexInputRate
+vertexInputRateInstance      = VkVertexInputRate 1
+
 
 -- Storable instances
 instance Storable VkAttachmentLoadOp where
@@ -1185,3 +1193,11 @@ instance Storable VkSystemAllocationScope where
         v <- peekByteOff p 0
         return (VkSystemAllocationScope v)
     poke p (VkSystemAllocationScope v) = pokeByteOff p 0 v
+
+instance Storable VkVertexInputRate where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkVertexInputRate v)
+    poke p (VkVertexInputRate v) = pokeByteOff p 0 v

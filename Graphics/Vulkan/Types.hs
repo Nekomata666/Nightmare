@@ -47,6 +47,7 @@ newtype VkPipelineCreateFlags = VkPipelineCreateFlags { unVkPipelineCreateFlags 
 newtype VkPipelineLayoutCreateFlags = VkPipelineLayoutCreateFlags { unVkPipelineLayoutCreateFlags :: VkFlags }
 newtype VkPipelineShaderStageCreateFlags = VkPipelineShaderStageCreateFlags { unVkPipelineShaderStageCreateFlags :: VkFlags }
 newtype VkPipelineStageFlags = VkPipelineStageFlags { unVkPipelineStageFlags :: VkFlags }
+newtype VkPipelineVertexInputStateCreateFlags = VkPipelineVertexInputStateCreateFlags { unVkPipelineVertexInputStateCreateFlags :: VkFlags }
 newtype VkQueryControlFlags = VkQueryControlFlags { unVkQueryControlFlags :: VkFlags }
 newtype VkQueryPipelineStatisticFlags = VkQueryPipelineStatisticFlags { unVkQueryPipelineStatisticFlags :: VkFlags }
 newtype VkRenderPassCreateFlags = VkRenderPassCreateFlags { unVkRenderPassCreateFlags :: VkFlags }
@@ -280,6 +281,14 @@ instance Storable VkPipelineStageFlags where
         v <- peekByteOff p 0
         return (VkPipelineStageFlags v)
     poke p (VkPipelineStageFlags v) = pokeByteOff p 0 v
+
+instance Storable VkPipelineVertexInputStateCreateFlags where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkPipelineVertexInputStateCreateFlags v)
+    poke p (VkPipelineVertexInputStateCreateFlags v) = pokeByteOff p 0 v
 
 instance Storable VkQueryControlFlags where
     sizeOf _ = 4
