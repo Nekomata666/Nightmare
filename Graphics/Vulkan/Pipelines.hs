@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Pipelines (createVkPipelineCacheInfo, createVkPipelineLayoutCreateInfo, createVkPipelineShaderStageInfo, createVkPipelineVertexInputStateCreateInfo, createVkPipelineViewportStateCreateInfo, vkCreateComputePipelines, vkCreatePipelineCache, vkCreatePipelineLayout, vkDestroyPipeline, vkDestroyPipelineCache, vkDestroyPipelineLayout) where
+module Graphics.Vulkan.Pipelines (createVkPipelineCacheInfo, createVkPipelineColorBlendStateCreateInfo, createVkPipelineLayoutCreateInfo, createVkPipelineShaderStageInfo, createVkPipelineVertexInputStateCreateInfo, createVkPipelineViewportStateCreateInfo, vkCreateComputePipelines, vkCreatePipelineCache, vkCreatePipelineLayout, vkDestroyPipeline, vkDestroyPipelineCache, vkDestroyPipelineLayout) where
 
 
 import Data.Maybe
@@ -18,7 +18,10 @@ import Graphics.Vulkan.Enumerations
 import Graphics.Vulkan.Types
 
 -- Type aliases.
+type AttachmentCount                    = Word32
+type BlendConstants                     = [Float]
 type CreateInfoCount                    = Word32
+type LogicOpEnable                      = VkBool
 type Name                               = String
 type PushConstantRangeCount             = Word32
 type ScissorCount                       = Word32
@@ -57,14 +60,24 @@ createVkPipelineCacheInfo v pCCF fP
             cs = snd r
         return $ VkPipelineCacheCreateInfo structureTypePipelineCacheCreateInfo v pCCF cs (castPtr p)
 
+createVkPipelineColorBlendStateCreateInfo :: Ptr Void -> VkPipelineColorBlendStateCreateFlags -> LogicOpEnable -> VkLogicOp -> AttachmentCount -> [VkPipelineColorBlendAttachmentState] -> BlendConstants -> IO VkPipelineColorBlendStateCreateInfo
+createVkPipelineColorBlendStateCreateInfo v pCBSCF lOE lO aC pCBAS bC = allocaArray i $ \p ->
+    allocaArray 4 $ \pBC -> do
+        pokeArray p pCBAS
+        pokeArray pBC bC
+        return $ VkPipelineColorBlendStateCreateInfo structureTypePipelineColorBlendStateCreateInfo v pCBSCF lOE lO aC p pBC
+        where
+            i = cast aC
+
+
 createVkPipelineLayoutCreateInfo :: Ptr Void -> VkPipelineLayoutCreateFlags -> SetLayoutCount -> [VkDescriptorSetLayout] ->
     PushConstantRangeCount -> Maybe [VkPushConstantRange] -> IO VkPipelineLayoutCreateInfo
 createVkPipelineLayoutCreateInfo v pLCF sLC dSL pCRC m = allocaArray i $ \pDSL -> do
-        pokeArray pDSL dSL
-        pPCR <- fromMaybeListIO pCRC m
-        return $ VkPipelineLayoutCreateInfo structureTypePipelineLayoutCreateInfo v pLCF sLC pDSL pCRC pPCR
-        where
-            i = cast sLC
+    pokeArray pDSL dSL
+    pPCR <- fromMaybeListIO pCRC m
+    return $ VkPipelineLayoutCreateInfo structureTypePipelineLayoutCreateInfo v pLCF sLC pDSL pCRC pPCR
+    where
+        i = cast sLC
 
 createVkPipelineShaderStageInfo :: Ptr Void -> VkPipelineShaderStageCreateFlags -> VkShaderStageFlagBits -> VkShaderModule ->
     Name -> Maybe VkSpecializationInfo -> IO VkPipelineShaderStageCreateInfo
