@@ -350,6 +350,28 @@ data VkPipelineCacheCreateInfo = VkPipelineCacheCreateInfo{
     pInitialData :: Ptr Void
 }
 
+data VkPipelineColorBlendAttachmentState = VkPipelineColorBlendAttachmentState{
+    blendEnable :: VkBool,
+    srcColorBlendFactor :: VkBlendFactor,
+    dstColorBlendFactor :: VkBlendFactor,
+    colorBlendOp :: VkBlendOp,
+    srcAlphaBlendFactor :: VkBlendFactor,
+    dstAlphaBlendFactor :: VkBlendFactor,
+    alphaBlendOp :: VkBlendOp,
+    colorWriteMask :: VkColorComponentFlags
+}
+
+data VkPipelineColorBlendStateCreateInfo = VkPipelineColorBlendStateCreateInfo{
+    sType :: VkStructureType,
+    next :: Ptr Void,
+    flags :: VkPipelineColorBlendStateCreateFlags,
+    logicOpEnable :: VkBool,
+    logicOp :: VkLogicOp,
+    attachmentCount :: Word32,
+    pAttachments :: Ptr VkPipelineColorBlendAttachmentState,
+    blendConstants :: Ptr Float -- [4]
+}
+
 data VkPipelineInputAssemblyStateCreateInfo = VkPipelineInputAssemblyStateCreateInfo{
     sType :: VkStructureType,
     next :: Ptr Void,
@@ -366,6 +388,18 @@ data VkPipelineLayoutCreateInfo = VkPipelineLayoutCreateInfo{
     pSetLayouts :: Ptr VkDescriptorSetLayout,
     pushConstantRangeCount :: Word32,
     pPushConstantRanges :: Ptr VkPushConstantRange
+}
+
+data VkPipelineMultisampleStateCreateInfo = VkPipelineMultisampleStateCreateInfo{
+    sType :: VkStructureType,
+    next :: Ptr Void,
+    flags :: VkPipelineMultisampleStateCreateFlags,
+    rasterizationSamples :: VkSampleCountFlagBits,
+    sampleShadingEnable :: VkBool,
+    minSampleShading :: Float,
+    pSampleMask :: Ptr VkSampleMask,
+    alphaToCoverageEnable :: VkBool,
+    alphaToOneEnable :: VkBool
 }
 
 data VkPipelineRasterizationStateCreateInfo = VkPipelineRasterizationStateCreateInfo{
@@ -1259,6 +1293,52 @@ instance Storable VkPipelineCacheCreateInfo where
         pokeByteOff p 24 v4
         pokeByteOff p 32 v5
 
+instance Storable VkPipelineColorBlendAttachmentState where
+    sizeOf _ = 32
+    alignment _ = 4
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 4
+        v3 <- peekByteOff p 8
+        v4 <- peekByteOff p 12
+        v5 <- peekByteOff p 16
+        v6 <- peekByteOff p 20
+        v7 <- peekByteOff p 24
+        v8 <- peekByteOff p 28
+        return (VkPipelineColorBlendAttachmentState v1 v2 v3 v4 v5 v6 v7 v8)
+    poke p (VkPipelineColorBlendAttachmentState v1 v2 v3 v4 v5 v6 v7 v8) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 4 v2
+        pokeByteOff p 8 v3
+        pokeByteOff p 12 v4
+        pokeByteOff p 16 v5
+        pokeByteOff p 20 v6
+        pokeByteOff p 24 v7
+        pokeByteOff p 28 v8
+
+instance Storable VkPipelineColorBlendStateCreateInfo where
+    sizeOf _ = 56
+    alignment _ = 8
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 8
+        v3 <- peekByteOff p 16
+        v4 <- peekByteOff p 20
+        v5 <- peekByteOff p 24
+        v6 <- peekByteOff p 28
+        v7 <- peekByteOff p 32
+        v8 <- peekByteOff p 40
+        return (VkPipelineColorBlendStateCreateInfo v1 v2 v3 v4 v5 v6 v7 v8)
+    poke p (VkPipelineColorBlendStateCreateInfo v1 v2 v3 v4 v5 v6 v7 v8) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 8 v2
+        pokeByteOff p 16 v3
+        pokeByteOff p 20 v4
+        pokeByteOff p 24 v5
+        pokeByteOff p 28 v6
+        pokeByteOff p 32 v7
+        pokeByteOff p 40 v8
+
 instance Storable VkPipelineInputAssemblyStateCreateInfo where
     sizeOf _ = 32
     alignment _ = 8
@@ -1296,6 +1376,31 @@ instance Storable VkPipelineLayoutCreateInfo where
         pokeByteOff p 24 v5
         pokeByteOff p 32 v6
         pokeByteOff p 40 v7
+
+instance Storable VkPipelineMultisampleStateCreateInfo where
+    sizeOf _ = 48
+    alignment _ = 8
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 8
+        v3 <- peekByteOff p 16
+        v4 <- peekByteOff p 20
+        v5 <- peekByteOff p 24
+        v6 <- peekByteOff p 28
+        v7 <- peekByteOff p 32
+        v8 <- peekByteOff p 40
+        v9 <- peekByteOff p 44
+        return (VkPipelineMultisampleStateCreateInfo v1 v2 v3 v4 v5 v6 v7 v8 v9)
+    poke p (VkPipelineMultisampleStateCreateInfo v1 v2 v3 v4 v5 v6 v7 v8 v9) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 8 v2
+        pokeByteOff p 16 v3
+        pokeByteOff p 20 v4
+        pokeByteOff p 24 v5
+        pokeByteOff p 28 v6
+        pokeByteOff p 32 v7
+        pokeByteOff p 40 v8
+        pokeByteOff p 44 v9
 
 instance Storable VkPipelineRasterizationStateCreateInfo where
     sizeOf _ = 64

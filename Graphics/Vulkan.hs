@@ -3,6 +3,7 @@
 module Graphics.Vulkan where
 
 
+import Data.Bits ((.|.))
 import Foreign.Ptr (nullPtr)
 
 import Graphics.Utilities
@@ -10,7 +11,7 @@ import Graphics.Utilities
 import Graphics.Vulkan.Buffers
 import Graphics.Vulkan.Command
 import Graphics.Vulkan.Constants
-import Graphics.Vulkan.Data (VkComponentMapping(..), VkComputePipelineCreateInfo(..), VkDescriptorBufferInfo(..), VkDescriptorPoolSize(..), VkExtent2D(..), VkExtent3D(..), VkImageSubresourceRange(..), VkImageViewCreateInfo(..), VkMemoryRequirements(..), VkOffset2D(..), VkPipelineInputAssemblyStateCreateInfo(..), VkRect2D(..), VkViewport(..))
+import Graphics.Vulkan.Data (VkComponentMapping(..), VkComputePipelineCreateInfo(..), VkDescriptorBufferInfo(..), VkDescriptorPoolSize(..), VkExtent2D(..), VkExtent3D(..), VkImageSubresourceRange(..), VkImageViewCreateInfo(..), VkMemoryRequirements(..), VkOffset2D(..), VkPipelineColorBlendAttachmentState(..), VkPipelineInputAssemblyStateCreateInfo(..), VkPipelineMultisampleStateCreateInfo(..), VkRect2D(..), VkViewport(..))
 import Graphics.Vulkan.Descriptor
 import Graphics.Vulkan.Devices
 import Graphics.Vulkan.Enumerations
@@ -68,6 +69,9 @@ initialize vkInst vkSurf vkDev0 = do
         vkView = VkViewport 0 0 1600 900 0 1
         scisso = VkRect2D (VkOffset2D 0 0) (VkExtent2D 1600 900)
     vPVSCI  <- createVkPipelineViewportStateCreateInfo nullPtr (VkPipelineViewportStateCreateFlags 0) 1 [vkView] 1 [scisso]
+    let vPMSCI = VkPipelineMultisampleStateCreateInfo structureTypePipelineMultisampleStateCreateInfo nullPtr (VkPipelineMultisampleStateCreateFlags 0) sampleCount1Bit (VkBool 0) 1 nullPtr (VkBool 0) (VkBool 0)
+        vPCBAS = VkPipelineColorBlendAttachmentState (VkBool 0) blendFactorOne blendFactorZero blendOpAdd blendFactorOne blendFactorZero blendOpAdd colorComponentRGBA
+    vPCBCI <- createVkPipelineColorBlendStateCreateInfo nullPtr (VkPipelineColorBlendStateCreateFlags 0) (VkBool 0) logicOpCopy 1 [vPCBAS] [0,0,0,0]
 
     vkBCI   <- vkCreateBufferInfo nullPtr (VkBufferCreateFlags 0) (VkDeviceSize 2136746240)
         [bufferUsageStorageBufferBit, bufferUsageTransferDSTBit] sharingModeExclusive 3 [0]
@@ -141,8 +145,8 @@ initialize vkInst vkSurf vkDev0 = do
     vkDestroyPipelineLayout vkDev0 vkPiLa
     vkDestroyDescriptorSetLayout vkDev0 vkDSL0
     vkDestroyPipeline vkDev0 vkCoP0
-    -- vkDestroyShaderModule vkDev0 vkSMoV
-    -- vkDestroyShaderModule vkDev0 vkSMoF
+    vkDestroyShaderModule vkDev0 vkSMoV
+    vkDestroyShaderModule vkDev0 vkSMoF
     vkDestroyShaderModule vkDev0 vkSMoC
     vkDestroyCommandPool vkDev0 vkCPo0
     vkUnmapMemory vkDev0 imagMe
@@ -161,3 +165,4 @@ initialize vkInst vkSurf vkDev0 = do
     where
         vkISR0 = createVkImageSubresourceRange [imageAspectColorBit] 0 1 0 1
         vkCMId = VkComponentMapping componentSwizzleIdentity componentSwizzleIdentity componentSwizzleIdentity componentSwizzleIdentity
+        colorComponentRGBA = VkColorComponentFlags $ unVkColorComponentFlagBits colorComponentRBit .|. unVkColorComponentFlagBits colorComponentGBit .|. unVkColorComponentFlagBits colorComponentBBit .|. unVkColorComponentFlagBits colorComponentABit

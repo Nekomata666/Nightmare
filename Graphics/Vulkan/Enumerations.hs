@@ -13,7 +13,13 @@ newtype VkAttachmentLoadOp = VkAttachmentLoadOp { unVkAttachmentLoadOp :: Word32
     deriving (Eq)
 newtype VkAttachmentStoreOp = VkAttachmentStoreOp { unVkAttachmentStoreOp :: Word32 }
     deriving (Eq)
+newtype VkBlendFactor = VkBlendFactor { unVkBlendFactor :: Word32 }
+    deriving (Eq)
+newtype VkBlendOp = VkBlendOp { unVkBlendOp :: Word32 }
+    deriving (Eq)
 newtype VkBufferUsageFlagBits = VkBufferUsageFlagBits { unVkBufferUsageFlagBits :: Word32 }
+    deriving (Eq)
+newtype VkColorComponentFlagBits = VkColorComponentFlagBits { unVkColorComponentFlagBits :: Word32 }
     deriving (Eq)
 newtype VkColorSpaceKHR = VkColorSpaceKHR { unVkColorSpaceKHR :: Word32 }
     deriving (Eq)
@@ -48,6 +54,8 @@ newtype VkImageViewCreateFlagBits = VkImageViewCreateFlagBits { unVkImageViewCre
 newtype VkImageViewType = VkImageViewType { unVkImageViewType :: Word32 }
     deriving (Eq)
 newtype VkInternalAllocationType = VkInternalAllocationType { unVkInternalAllocationType :: Word32 }
+    deriving (Eq)
+newtype VkLogicOp = VkLogicOp { unVkLogicOp :: Word32 }
     deriving (Eq)
 newtype VkPipelineBindPoint = VkPipelineBindPoint { unVkPipelineBindPoint :: Word32 }
     deriving (Eq)
@@ -92,6 +100,58 @@ attachmentStoreOpStore       = VkAttachmentStoreOp 0
 attachmentStoreOpDontCare    :: VkAttachmentStoreOp
 attachmentStoreOpDontCare    = VkAttachmentStoreOp 1
 
+-- VkBlendFactor
+blendFactorZero                      :: VkBlendFactor
+blendFactorZero                      = VkBlendFactor 0
+blendFactorOne                       :: VkBlendFactor
+blendFactorOne                       = VkBlendFactor 1
+blendFactorSrcColor                  :: VkBlendFactor
+blendFactorSrcColor                  = VkBlendFactor 2
+blendFactorOneMinusSrcColor          :: VkBlendFactor
+blendFactorOneMinusSrcColor          = VkBlendFactor 3
+blendFactorDstColor                  :: VkBlendFactor
+blendFactorDstColor                  = VkBlendFactor 4
+blendFactorOneMinusDstColor          :: VkBlendFactor
+blendFactorOneMinusDstColor          = VkBlendFactor 5
+blendFactorSrcAlpha                  :: VkBlendFactor
+blendFactorSrcAlpha                  = VkBlendFactor 6
+blendFactorOneMinusAlpha             :: VkBlendFactor
+blendFactorOneMinusAlpha             = VkBlendFactor 7
+blendFactorDstAlpha                  :: VkBlendFactor
+blendFactorDstAlpha                  = VkBlendFactor 8
+blendFactorOneMinusDstalpha          :: VkBlendFactor
+blendFactorOneMinusDstalpha          = VkBlendFactor 9
+blendFactorConstantColor             :: VkBlendFactor
+blendFactorConstantColor             = VkBlendFactor 10
+blendFactorOneMinusConstantColor     :: VkBlendFactor
+blendFactorOneMinusConstantColor     = VkBlendFactor 11
+blendFactorConstantAlpha             :: VkBlendFactor
+blendFactorConstantAlpha             = VkBlendFactor 12
+blendFactorOneMinusConstantAlpha     :: VkBlendFactor
+blendFactorOneMinusConstantAlpha     = VkBlendFactor 13
+blendFactorSrcAlphaSaturate          :: VkBlendFactor
+blendFactorSrcAlphaSaturate          = VkBlendFactor 14
+blendFactorSrc1Color                 :: VkBlendFactor
+blendFactorSrc1Color                 = VkBlendFactor 15
+blendFactorOneMinusSrc1Color         :: VkBlendFactor
+blendFactorOneMinusSrc1Color         = VkBlendFactor 16
+blendFactorSrc1Alpha                 :: VkBlendFactor
+blendFactorSrc1Alpha                 = VkBlendFactor 17
+blendFactorOneMinusSrc1Alpha         :: VkBlendFactor
+blendFactorOneMinusSrc1Alpha         = VkBlendFactor 18
+
+-- VkBlendOp
+blendOpAdd               :: VkBlendOp
+blendOpAdd               = VkBlendOp 0
+blendOpSubtract          :: VkBlendOp
+blendOpSubtract          = VkBlendOp 1
+blendOpReverseSubtract   :: VkBlendOp
+blendOpReverseSubtract   = VkBlendOp 2
+blendOpMin               :: VkBlendOp
+blendOpMin               = VkBlendOp 3
+blendOpMax               :: VkBlendOp
+blendOpMax               = VkBlendOp 4
+
 -- VkBufferUsageFlagBits
 bufferUsageTransferSRCBit            :: VkBufferUsageFlagBits
 bufferUsageTransferSRCBit            = VkBufferUsageFlagBits 1
@@ -111,6 +171,16 @@ bufferUsageVertexBufferBit           :: VkBufferUsageFlagBits
 bufferUsageVertexBufferBit           = VkBufferUsageFlagBits 128
 bufferUsageIndirectBufferBit         :: VkBufferUsageFlagBits
 bufferUsageIndirectBufferBit         = VkBufferUsageFlagBits 256
+
+-- VkColorComponentFlagBits
+colorComponentRBit               :: VkColorComponentFlagBits
+colorComponentRBit               = VkColorComponentFlagBits 1
+colorComponentGBit               :: VkColorComponentFlagBits
+colorComponentGBit               = VkColorComponentFlagBits 2
+colorComponentBBit               :: VkColorComponentFlagBits
+colorComponentBBit               = VkColorComponentFlagBits 4
+colorComponentABit               :: VkColorComponentFlagBits
+colorComponentABit               = VkColorComponentFlagBits 8
 
 -- Note: Hope another "better" color space gets added.
 -- Todo: Remove SRGB A.S.A.P.
@@ -708,6 +778,40 @@ imageViewTypeCubeArray   = VkImageViewType 6
 internalAllocationTypeExecutable     :: VkInternalAllocationType
 internalAllocationTypeExecutable     = VkInternalAllocationType 0
 
+-- VkLogicOp
+logicOpClear         :: VkLogicOp
+logicOpClear         = VkLogicOp 0
+logicOpAnd           :: VkLogicOp
+logicOpAnd           = VkLogicOp 1
+logicOpReverse       :: VkLogicOp
+logicOpReverse       = VkLogicOp 2
+logicOpCopy          :: VkLogicOp
+logicOpCopy          = VkLogicOp 3
+logicOpAndInverted   :: VkLogicOp
+logicOpAndInverted   = VkLogicOp 4
+logicOpNoOp          :: VkLogicOp
+logicOpNoOp          = VkLogicOp 5
+logicOpXor           :: VkLogicOp
+logicOpXor           = VkLogicOp 6
+logicOpOr            :: VkLogicOp
+logicOpOr            = VkLogicOp 7
+logicOpNor           :: VkLogicOp
+logicOpNor           = VkLogicOp 8
+logicOpEquivalent    :: VkLogicOp
+logicOpEquivalent    = VkLogicOp 9
+logicOpInvert        :: VkLogicOp
+logicOpInvert        = VkLogicOp 10
+logicOpOrReverse     :: VkLogicOp
+logicOpOrReverse     = VkLogicOp 11
+logicOpCopyInverted  :: VkLogicOp
+logicOpCopyInverted  = VkLogicOp 12
+logicOpOrInverted    :: VkLogicOp
+logicOpOrInverted    = VkLogicOp 13
+logicOpNand          :: VkLogicOp
+logicOpNand          = VkLogicOp 14
+logicOpSet           :: VkLogicOp
+logicOpSet           = VkLogicOp 15
+
 -- VkPipelineBindPoint
 pipelineBindPointGraphics       :: VkPipelineBindPoint
 pipelineBindPointGraphics       = VkPipelineBindPoint 0
@@ -1042,6 +1146,22 @@ instance Storable VkAttachmentStoreOp where
         return (VkAttachmentStoreOp v)
     poke p (VkAttachmentStoreOp v) = pokeByteOff p 0 v
 
+instance Storable VkBlendFactor where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkBlendFactor v)
+    poke p (VkBlendFactor v) = pokeByteOff p 0 v
+
+instance Storable VkBlendOp where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkBlendOp v)
+    poke p (VkBlendOp v) = pokeByteOff p 0 v
+
 instance Storable VkBufferUsageFlagBits where
     sizeOf _    = 4
     alignment _ = 4
@@ -1049,6 +1169,14 @@ instance Storable VkBufferUsageFlagBits where
         v <- peekByteOff p 0
         return (VkBufferUsageFlagBits v)
     poke p (VkBufferUsageFlagBits v) = pokeByteOff p 0 v
+
+instance Storable VkColorComponentFlagBits where
+    sizeOf _    = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkColorComponentFlagBits v)
+    poke p (VkColorComponentFlagBits v) = pokeByteOff p 0 v
 
 instance Storable VkColorSpaceKHR where
     sizeOf _    = 4
@@ -1185,6 +1313,14 @@ instance Storable VkInternalAllocationType where
         v <- peekByteOff p 0
         return (VkInternalAllocationType v)
     poke p (VkInternalAllocationType v) = pokeByteOff p 0 v
+
+instance Storable VkLogicOp where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkLogicOp v)
+    poke p (VkLogicOp v) = pokeByteOff p 0 v
 
 instance Storable VkPipelineBindPoint where
     sizeOf _    = 4

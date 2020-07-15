@@ -25,12 +25,14 @@ nullHandle = 0
 -- Vulkan Types
 -- 0 = False, 1 = True
 newtype VkBool  = VkBool { unVkBool :: Word32 }
+newtype VkSampleMask = VkSampleMask { unVkSampleMask :: Word32 }
 
 -- Vulkan Flags
 newtype VkAccessFlags = VkAccessFlags { unVkAccessFlags :: VkFlags }
 newtype VkAttachmentDescriptionFlags = VkAttachmentDescriptionFlags { unVkAttachmentDescriptionFlags :: VkFlags }
 newtype VkBufferCreateFlags = VkBufferCreateFlags { unVkBufferCreateFlags :: VkFlags }
 newtype VkBufferUsageFlags = VkBufferUsageFlags { unVkBufferUsageFlags :: VkFlags }
+newtype VkColorComponentFlags = VkColorComponentFlags { unVkColorComponentFlags :: VkFlags }
 newtype VkCommandBufferUsageFlags = VkCommandBufferUsageFlags { unVkCommandBufferUsageFlags :: VkFlags }
 newtype VkCommandPoolCreateFlags = VkCommandPoolCreateFlags { unVkCommandPoolCreateFlags :: VkFlags }
 newtype VkCullModeFlags = VkCullModeFlags { unVkCullModeFlags :: VkFlags }
@@ -45,9 +47,11 @@ newtype VkImageUsageFlags = VkImageUsageFlags { unVkImageUsageFlags :: VkFlags }
 newtype VkImageViewCreateFlags = VkImageViewCreateFlags { unVkImageViewCreateFlags :: VkFlags }
 newtype VkMemoryMapFlags = VkMemoryMapFlags { unVkMemoryMapFlags :: VkFlags }
 newtype VkPipelineCacheCreateFlags = VkPipelineCacheCreateFlags { unVkPipelineCacheCreateFlags :: VkFlags }
+newtype VkPipelineColorBlendStateCreateFlags = VkPipelineColorBlendStateCreateFlags { unVkPipelineColorBlendStateCreateFlags :: VkFlags }
 newtype VkPipelineCreateFlags = VkPipelineCreateFlags { unVkPipelineCreateFlags :: VkFlags }
 newtype VkPipelineInputAssemblyStateCreateFlags = VkPipelineInputAssemblyStateCreateFlags { unVkPipelineInputAssemblyStateCreateFlags :: VkFlags }
 newtype VkPipelineLayoutCreateFlags = VkPipelineLayoutCreateFlags { unVkPipelineLayoutCreateFlags :: VkFlags }
+newtype VkPipelineMultisampleStateCreateFlags = VkPipelineMultisampleStateCreateFlags { unVkPipelineMultisampleStateCreateFlags :: VkFlags }
 newtype VkPipelineRasterizationStateCreateFlags = VkPipelineRasterizationStateCreateFlags { unVkPipelineRasterizationStateCreateFlags :: VkFlags }
 newtype VkPipelineShaderStageCreateFlags = VkPipelineShaderStageCreateFlags { unVkPipelineShaderStageCreateFlags :: VkFlags }
 newtype VkPipelineStageFlags = VkPipelineStageFlags { unVkPipelineStageFlags :: VkFlags }
@@ -113,6 +117,14 @@ instance Storable VkBool where
         return (VkBool v)
     poke p (VkBool v) = pokeByteOff p 0 v
 
+instance Storable VkSampleMask where
+    sizeOf _    = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkSampleMask v)
+    poke p (VkSampleMask v) = pokeByteOff p 0 v
+
 
 --------------------------------------------------------------------------------------------------------------------------------
 --
@@ -150,6 +162,14 @@ instance Storable VkBufferUsageFlags where
         v <- peekByteOff p 0
         return (VkBufferUsageFlags v)
     poke p (VkBufferUsageFlags v) = pokeByteOff p 0 v
+
+instance Storable VkColorComponentFlags where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkColorComponentFlags v)
+    poke p (VkColorComponentFlags v) = pokeByteOff p 0 v
 
 instance Storable VkCommandBufferUsageFlags where
     sizeOf _    = 4
@@ -263,6 +283,14 @@ instance Storable VkPipelineCacheCreateFlags where
         return (VkPipelineCacheCreateFlags v)
     poke p (VkPipelineCacheCreateFlags v) = pokeByteOff p 0 v
 
+instance Storable VkPipelineColorBlendStateCreateFlags where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkPipelineColorBlendStateCreateFlags v)
+    poke p (VkPipelineColorBlendStateCreateFlags v) = pokeByteOff p 0 v
+
 instance Storable VkPipelineCreateFlags where
     sizeOf _    = 4
     alignment _ = 4
@@ -286,6 +314,14 @@ instance Storable VkPipelineLayoutCreateFlags where
         v <- peekByteOff p 0
         return (VkPipelineLayoutCreateFlags v)
     poke p (VkPipelineLayoutCreateFlags v) = pokeByteOff p 0 v
+
+instance Storable VkPipelineMultisampleStateCreateFlags where
+    sizeOf _    = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkPipelineMultisampleStateCreateFlags v)
+    poke p (VkPipelineMultisampleStateCreateFlags v) = pokeByteOff p 0 v
 
 instance Storable VkPipelineRasterizationStateCreateFlags where
     sizeOf _    = 4
