@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Pipelines (createVkPipelineCacheInfo, createVkPipelineLayoutCreateInfo,  createVkPipelineShaderStageInfo, createVkPipelineVertexInputStateCreateInfo, vkCreateComputePipelines, vkCreatePipelineCache, vkCreatePipelineLayout, vkDestroyPipeline, vkDestroyPipelineCache, vkDestroyPipelineLayout) where
+module Graphics.Vulkan.Pipelines (createVkPipelineCacheInfo, createVkPipelineLayoutCreateInfo, createVkPipelineShaderStageInfo, createVkPipelineVertexInputStateCreateInfo, createVkPipelineViewportStateCreateInfo, vkCreateComputePipelines, vkCreatePipelineCache, vkCreatePipelineLayout, vkDestroyPipeline, vkDestroyPipelineCache, vkDestroyPipelineLayout) where
 
 
 import Data.Maybe
@@ -21,9 +21,11 @@ import Graphics.Vulkan.Types
 type CreateInfoCount                    = Word32
 type Name                               = String
 type PushConstantRangeCount             = Word32
+type ScissorCount                       = Word32
 type SetLayoutCount                     = Word32
 type VertexAttributeDescriptionCount    = Word32
 type VertexBindingDescriptionCount      = Word32
+type ViewportCount                      = Word32
 
 foreign import ccall unsafe "vkCreateComputePipelines"
     c_vkCreateComputePipelines :: VkDevice -> VkPipelineCache -> Word32 -> Ptr VkComputePipelineCreateInfo ->
@@ -51,7 +53,7 @@ createVkPipelineCacheInfo v pCCF fP
     | null fP = return $ VkPipelineCacheCreateInfo structureTypePipelineCacheCreateInfo v pCCF (CSize 0) nullPtr
     | otherwise  = do
         r <- openVulkanFile fP
-        let p  = fst r :: Ptr Word32
+        let p  = fst r
             cs = snd r
         return $ VkPipelineCacheCreateInfo structureTypePipelineCacheCreateInfo v pCCF cs (castPtr p)
 
@@ -75,9 +77,20 @@ createVkPipelineVertexInputStateCreateInfo :: Ptr Void -> VkPipelineVertexInputS
     Maybe [VkVertexInputBindingDescription] -> VertexAttributeDescriptionCount -> Maybe [VkVertexInputAttributeDescription] ->
     IO VkPipelineVertexInputStateCreateInfo
 createVkPipelineVertexInputStateCreateInfo v pVISCF vBDC mVIBD vADC mVIAD = do
-        pVIBD <- fromMaybeListIO vBDC mVIBD
-        pVIAD <- fromMaybeListIO vADC mVIAD
-        return $ VkPipelineVertexInputStateCreateInfo structureTypePipelineVertexInputStateCreateInfo v pVISCF vBDC pVIBD vADC pVIAD
+    pVIBD <- fromMaybeListIO vBDC mVIBD
+    pVIAD <- fromMaybeListIO vADC mVIAD
+    return $ VkPipelineVertexInputStateCreateInfo structureTypePipelineVertexInputStateCreateInfo v pVISCF vBDC pVIBD vADC pVIAD
+
+createVkPipelineViewportStateCreateInfo :: Ptr Void -> VkPipelineViewportStateCreateFlags -> ViewportCount -> [VkViewport] ->
+    ScissorCount -> [VkRect2D] -> IO VkPipelineViewportStateCreateInfo
+createVkPipelineViewportStateCreateInfo v pVSCF vC vVs sC sS = allocaArray i1 $ \pVVs ->
+    allocaArray i2 $ \pSSs -> do
+        pokeArray pVVs vVs
+        pokeArray pSSs sS
+        return $ VkPipelineViewportStateCreateInfo structureTypePipelineViewportStateCreateInfo v pVSCF vC pVVs sC pSSs
+        where
+            i1 = cast vC
+            i2 = cast sC
 
 vkCreateComputePipelines :: VkDevice -> VkPipelineCache -> CreateInfoCount -> [VkComputePipelineCreateInfo] -> IO [VkPipeline]
 vkCreateComputePipelines d pC cIC cPCI = allocaArray i $ \pCPCI ->
