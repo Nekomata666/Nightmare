@@ -49,6 +49,7 @@ newtype VkMemoryMapFlags = VkMemoryMapFlags { unVkMemoryMapFlags :: VkFlags }
 newtype VkPipelineCacheCreateFlags = VkPipelineCacheCreateFlags { unVkPipelineCacheCreateFlags :: VkFlags }
 newtype VkPipelineColorBlendStateCreateFlags = VkPipelineColorBlendStateCreateFlags { unVkPipelineColorBlendStateCreateFlags :: VkFlags }
 newtype VkPipelineCreateFlags = VkPipelineCreateFlags { unVkPipelineCreateFlags :: VkFlags }
+newtype VkPipelineDynamicStateCreateFlags = VkPipelineDynamicStateCreateFlags { unVkPipelineDynamicStateCreateFlags :: VkFlags }
 newtype VkPipelineInputAssemblyStateCreateFlags = VkPipelineInputAssemblyStateCreateFlags { unVkPipelineInputAssemblyStateCreateFlags :: VkFlags }
 newtype VkPipelineLayoutCreateFlags = VkPipelineLayoutCreateFlags { unVkPipelineLayoutCreateFlags :: VkFlags }
 newtype VkPipelineMultisampleStateCreateFlags = VkPipelineMultisampleStateCreateFlags { unVkPipelineMultisampleStateCreateFlags :: VkFlags }
@@ -164,7 +165,7 @@ instance Storable VkBufferUsageFlags where
     poke p (VkBufferUsageFlags v) = pokeByteOff p 0 v
 
 instance Storable VkColorComponentFlags where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -284,7 +285,7 @@ instance Storable VkPipelineCacheCreateFlags where
     poke p (VkPipelineCacheCreateFlags v) = pokeByteOff p 0 v
 
 instance Storable VkPipelineColorBlendStateCreateFlags where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -298,6 +299,14 @@ instance Storable VkPipelineCreateFlags where
         v <- peekByteOff p 0
         return (VkPipelineCreateFlags v)
     poke p (VkPipelineCreateFlags v) = pokeByteOff p 0 v
+
+instance Storable VkPipelineDynamicStateCreateFlags where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkPipelineDynamicStateCreateFlags v)
+    poke p (VkPipelineDynamicStateCreateFlags v) = pokeByteOff p 0 v
 
 instance Storable VkPipelineInputAssemblyStateCreateFlags where
     sizeOf _    = 4
