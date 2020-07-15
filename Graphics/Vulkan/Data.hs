@@ -372,6 +372,14 @@ data VkPipelineColorBlendStateCreateInfo = VkPipelineColorBlendStateCreateInfo{
     blendConstants :: Ptr Float -- [4]
 }
 
+data VkPipelineDynamicStateCreateInfo = VkPipelineDynamicStateCreateInfo{
+    sType :: VkStructureType,
+    next :: Ptr Void,
+    flags :: VkPipelineDynamicStateCreateFlags,
+    dynamicStateCount :: Word32,
+    pDynamicStates :: Ptr VkDynamicState
+}
+
 data VkPipelineInputAssemblyStateCreateInfo = VkPipelineInputAssemblyStateCreateInfo{
     sType :: VkStructureType,
     next :: Ptr Void,
@@ -593,7 +601,7 @@ data VkWriteDescriptorSet = VkWriteDescriptorSet{
 
 -- Storable instances
 instance Storable VkAllocationCallbacks where
-    sizeOf _ = 48
+    sizeOf _    = 48
     alignment _ = 8
     peek p = do
         v1 <- peekByteOff p 0
@@ -612,7 +620,7 @@ instance Storable VkAllocationCallbacks where
         pokeByteOff p 40 v6
 
 instance Storable VkApplicationInfo where
-    sizeOf _ = 48
+    sizeOf _    = 48
     alignment _ = 8
     peek p = do
         v1 <- peekByteOff p 0
@@ -633,7 +641,7 @@ instance Storable VkApplicationInfo where
         pokeByteOff p 44 v7
 
 instance Storable VkAttachmentDescription where
-    sizeOf _ = 36
+    sizeOf _    = 36
     alignment _ = 4
     peek p = do
         v1 <- peekByteOff p 0
@@ -658,7 +666,7 @@ instance Storable VkAttachmentDescription where
         pokeByteOff p 32 v9
 
 instance Storable VkAttachmentReference where
-    sizeOf _ = 8
+    sizeOf _    = 8
     alignment _ = 4
     peek p = do
         v1 <- peekByteOff p 0
@@ -669,7 +677,7 @@ instance Storable VkAttachmentReference where
         pokeByteOff p 4 v2
 
 instance Storable VkBufferCreateInfo where
-    sizeOf _ = 56
+    sizeOf _    = 56
     alignment _ = 8
     peek p = do
         v1 <- peekByteOff p 0
@@ -692,7 +700,7 @@ instance Storable VkBufferCreateInfo where
         pokeByteOff p 48 v8
 
 instance Storable VkClearColorValue where
-    sizeOf _ = 16
+    sizeOf _    = 16
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -700,7 +708,7 @@ instance Storable VkClearColorValue where
     poke p (VkClearColorValue v) = pokeByteOff p 0 v
 
 instance Storable VkCommandBufferAllocateInfo where
-    sizeOf _ = 32
+    sizeOf _    = 32
     alignment _ = 8
     peek p = do
         v1 <- peekByteOff p 0
@@ -717,7 +725,7 @@ instance Storable VkCommandBufferAllocateInfo where
         pokeByteOff p 28 v5
 
 instance Storable VkCommandBufferBeginInfo where
-    sizeOf _ = 32
+    sizeOf _    = 32
     alignment _ = 8
     peek p = do
         v1 <- peekByteOff p 0
@@ -732,7 +740,7 @@ instance Storable VkCommandBufferBeginInfo where
         pokeByteOff p 24 v4
 
 instance Storable VkCommandBufferInheritanceInfo where
-    sizeOf _ = 56
+    sizeOf _    = 56
     alignment _ = 8
     peek p = do
         v1 <- peekByteOff p 0
@@ -755,7 +763,7 @@ instance Storable VkCommandBufferInheritanceInfo where
         pokeByteOff p 48 v8
 
 instance Storable VkCommandPoolCreateInfo where
-    sizeOf _ = 24
+    sizeOf _    = 24
     alignment _ = 8
     peek p = do
         v1 <- peekByteOff p 0
@@ -770,7 +778,7 @@ instance Storable VkCommandPoolCreateInfo where
         pokeByteOff p 20 v4
 
 instance Storable VkComponentMapping where
-    sizeOf _ = 16
+    sizeOf _    = 16
     alignment _ = 4
     peek p = do
         v1 <- peekByteOff p 0
@@ -785,7 +793,7 @@ instance Storable VkComponentMapping where
         pokeByteOff p 12 v4
 
 instance Storable VkComputePipelineCreateInfo where
-    sizeOf _ = 96
+    sizeOf _    = 96
     alignment _ = 8
     peek p = do
         v1 <- peekByteOff p 0
@@ -806,7 +814,7 @@ instance Storable VkComputePipelineCreateInfo where
         pokeByteOff p 88 v7
 
 instance Storable VkCopyDescriptorSet where
-    sizeOf _ = 56
+    sizeOf _    = 56
     alignment _ = 8
     peek p = do
         v1 <- peekByteOff p 0
@@ -831,7 +839,7 @@ instance Storable VkCopyDescriptorSet where
         pokeByteOff p 48 v9
 
 instance Storable VkDescriptorBufferInfo where
-    sizeOf _ = 24
+    sizeOf _    = 24
     alignment _ = 8
     peek p = do
         v1 <- peekByteOff p 0
@@ -844,7 +852,7 @@ instance Storable VkDescriptorBufferInfo where
         pokeByteOff p 16 v3
 
 instance Storable VkDescriptorImageInfo where
-    sizeOf _ = 24
+    sizeOf _    = 24
     alignment _ = 8
     peek p = do
         v1 <- peekByteOff p 0
@@ -857,7 +865,7 @@ instance Storable VkDescriptorImageInfo where
         pokeByteOff p 16 v3
 
 instance Storable VkDescriptorPoolCreateInfo where
-    sizeOf _ = 40
+    sizeOf _    = 40
     alignment _ = 8
     peek p = do
         v1 <- peekByteOff p 0
@@ -876,7 +884,7 @@ instance Storable VkDescriptorPoolCreateInfo where
         pokeByteOff p 32 v6
 
 instance Storable VkDescriptorPoolSize where
-    sizeOf _ = 8
+    sizeOf _    = 8
     alignment _ = 4
     peek p = do
         v1 <- peekByteOff p 0
@@ -887,7 +895,7 @@ instance Storable VkDescriptorPoolSize where
         pokeByteOff p 4 v2
 
 instance Storable VkDescriptorSetAllocateInfo where
-    sizeOf _ = 40
+    sizeOf _    = 40
     alignment _ = 8
     peek p = do
         v1 <- peekByteOff p 0
@@ -904,7 +912,7 @@ instance Storable VkDescriptorSetAllocateInfo where
         pokeByteOff p 32 v5
 
 instance Storable VkDescriptorSetLayoutBinding where
-    sizeOf _ = 24
+    sizeOf _    = 24
     alignment _ = 8
     peek p = do
         v1 <- peekByteOff p 0
@@ -921,7 +929,7 @@ instance Storable VkDescriptorSetLayoutBinding where
         pokeByteOff p 16 v5
 
 instance Storable VkDescriptorSetLayoutCreateInfo where
-    sizeOf _ = 32
+    sizeOf _    = 32
     alignment _ = 8
     peek p = do
         v1 <- peekByteOff p 0
@@ -938,7 +946,7 @@ instance Storable VkDescriptorSetLayoutCreateInfo where
         pokeByteOff p 24 v5
 
 instance Storable VkDeviceCreateInfo where
-    sizeOf _ = 72
+    sizeOf _    = 72
     alignment _ = 8
     peek p = do
         v01 <- peekByteOff p 0
@@ -965,7 +973,7 @@ instance Storable VkDeviceCreateInfo where
         pokeByteOff p 64 v10
 
 instance Storable VkDeviceQueueCreateInfo where
-    sizeOf _ = 40
+    sizeOf _    = 40
     alignment _ = 8
     peek p = do
         v1 <- peekByteOff p 0
@@ -984,7 +992,7 @@ instance Storable VkDeviceQueueCreateInfo where
         pokeByteOff p 32 v6
 
 instance Storable VkExtent2D where
-    sizeOf _ = 8
+    sizeOf _    = 8
     alignment _ = 4
     peek p = do
         v1 <- peekByteOff p 0
@@ -995,7 +1003,7 @@ instance Storable VkExtent2D where
         pokeByteOff p 4 v2
 
 instance Storable VkExtent3D where
-    sizeOf _ = 12
+    sizeOf _    = 12
     alignment _ = 4
     peek p = do
         v1 <- peekByteOff p 0
@@ -1008,7 +1016,7 @@ instance Storable VkExtent3D where
         pokeByteOff p 8 v3
 
 instance Storable VkImageCreateInfo where
-    sizeOf _ = 88
+    sizeOf _    = 88
     alignment _ = 8
     peek p = do
         v01 <- peekByteOff p 0
@@ -1045,7 +1053,7 @@ instance Storable VkImageCreateInfo where
         pokeByteOff p 80 v15
 
 instance Storable VkImageSubresource where
-    sizeOf _ = 12
+    sizeOf _    = 12
     alignment _ = 4
     peek p = do
         v1 <- peekByteOff p 0
@@ -1058,7 +1066,7 @@ instance Storable VkImageSubresource where
         pokeByteOff p 8 v3
 
 instance Storable VkImageSubresourceRange where
-    sizeOf _ = 20
+    sizeOf _    = 20
     alignment _ = 4
     peek p = do
         v1 <- peekByteOff p 0
@@ -1075,7 +1083,7 @@ instance Storable VkImageSubresourceRange where
         pokeByteOff p 16 v5
 
 instance Storable VkImageViewCreateInfo where
-    sizeOf _ = 80
+    sizeOf _    = 80
     alignment _ = 8
     peek p = do
         v1 <- peekByteOff p 0
@@ -1098,7 +1106,7 @@ instance Storable VkImageViewCreateInfo where
         pokeByteOff p 56 v8
 
 instance Storable VkInstanceCreateInfo where
-    sizeOf _ = 64
+    sizeOf _    = 64
     alignment _ = 8
     peek p = do
         v1 <- peekByteOff p 0
@@ -1121,7 +1129,7 @@ instance Storable VkInstanceCreateInfo where
         pokeByteOff p 56 v8
 
 instance Storable VkMemoryAllocateInfo where
-    sizeOf _ = 32
+    sizeOf _    = 32
     alignment _ = 8
     peek p = do
         v1 <- peekByteOff p 0
@@ -1136,7 +1144,7 @@ instance Storable VkMemoryAllocateInfo where
         pokeByteOff p 24 v4
 
 instance Storable VkMemoryRequirements where
-    sizeOf _ = 24
+    sizeOf _    = 24
     alignment _ = 8
     peek p = do
         v1 <- peekByteOff p 0
@@ -1149,7 +1157,7 @@ instance Storable VkMemoryRequirements where
         pokeByteOff p 16 v3
 
 instance Storable VkOffset2D where
-    sizeOf _ = 8
+    sizeOf _    = 8
     alignment _ = 4
     peek p = do
         v1 <- peekByteOff p 0
@@ -1160,7 +1168,7 @@ instance Storable VkOffset2D where
         pokeByteOff p 4 v2
 
 instance Storable VkPhysicalDeviceFeatures where
-    sizeOf _ = 220
+    sizeOf _    = 220
     alignment _ = 4
     peek p = do
         v01 <- peekByteOff p 0
@@ -1277,7 +1285,7 @@ instance Storable VkPhysicalDeviceFeatures where
         pokeByteOff p 216 v55
 
 instance Storable VkPipelineCacheCreateInfo where
-    sizeOf _ = 40
+    sizeOf _    = 40
     alignment _ = 8
     peek p = do
         v1 <- peekByteOff p 0
@@ -1294,7 +1302,7 @@ instance Storable VkPipelineCacheCreateInfo where
         pokeByteOff p 32 v5
 
 instance Storable VkPipelineColorBlendAttachmentState where
-    sizeOf _ = 32
+    sizeOf _    = 32
     alignment _ = 4
     peek p = do
         v1 <- peekByteOff p 0
@@ -1317,7 +1325,7 @@ instance Storable VkPipelineColorBlendAttachmentState where
         pokeByteOff p 28 v8
 
 instance Storable VkPipelineColorBlendStateCreateInfo where
-    sizeOf _ = 56
+    sizeOf _    = 56
     alignment _ = 8
     peek p = do
         v1 <- peekByteOff p 0
@@ -1339,8 +1347,25 @@ instance Storable VkPipelineColorBlendStateCreateInfo where
         pokeByteOff p 32 v7
         pokeByteOff p 40 v8
 
-instance Storable VkPipelineInputAssemblyStateCreateInfo where
+instance Storable VkPipelineDynamicStateCreateInfo where
     sizeOf _ = 32
+    alignment _ = 8
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 8
+        v3 <- peekByteOff p 16
+        v4 <- peekByteOff p 20
+        v5 <- peekByteOff p 24
+        return (VkPipelineDynamicStateCreateInfo v1 v2 v3 v4 v5)
+    poke p (VkPipelineDynamicStateCreateInfo v1 v2 v3 v4 v5) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 8 v2
+        pokeByteOff p 16 v3
+        pokeByteOff p 20 v4
+        pokeByteOff p 24 v5
+
+instance Storable VkPipelineInputAssemblyStateCreateInfo where
+    sizeOf _    = 32
     alignment _ = 8
     peek p = do
         v1 <- peekByteOff p 0
@@ -1357,7 +1382,7 @@ instance Storable VkPipelineInputAssemblyStateCreateInfo where
         pokeByteOff p 24 v5
 
 instance Storable VkPipelineLayoutCreateInfo where
-    sizeOf _ = 48
+    sizeOf _    = 48
     alignment _ = 8
     peek p = do
         v1 <- peekByteOff p 0
@@ -1378,7 +1403,7 @@ instance Storable VkPipelineLayoutCreateInfo where
         pokeByteOff p 40 v7
 
 instance Storable VkPipelineMultisampleStateCreateInfo where
-    sizeOf _ = 48
+    sizeOf _    = 48
     alignment _ = 8
     peek p = do
         v1 <- peekByteOff p 0
@@ -1403,7 +1428,7 @@ instance Storable VkPipelineMultisampleStateCreateInfo where
         pokeByteOff p 44 v9
 
 instance Storable VkPipelineRasterizationStateCreateInfo where
-    sizeOf _ = 64
+    sizeOf _    = 64
     alignment _ = 8
     peek p = do
         v01 <- peekByteOff p 0
@@ -1436,7 +1461,7 @@ instance Storable VkPipelineRasterizationStateCreateInfo where
         pokeByteOff p 56 v13
 
 instance Storable VkPipelineShaderStageCreateInfo where
-    sizeOf _ = 48
+    sizeOf _    = 48
     alignment _ = 8
     peek p = do
         v1 <- peekByteOff p 0
@@ -1457,7 +1482,7 @@ instance Storable VkPipelineShaderStageCreateInfo where
         pokeByteOff p 40 v7
 
 instance Storable VkPipelineVertexInputStateCreateInfo where
-    sizeOf _ = 48
+    sizeOf _    = 48
     alignment _ = 8
     peek p = do
         v1 <- peekByteOff p 0
@@ -1478,7 +1503,7 @@ instance Storable VkPipelineVertexInputStateCreateInfo where
         pokeByteOff p 40 v7
 
 instance Storable VkPipelineViewportStateCreateInfo where
-    sizeOf _ = 48
+    sizeOf _    = 48
     alignment _ = 8
     peek p = do
         v1 <- peekByteOff p 0
@@ -1499,7 +1524,7 @@ instance Storable VkPipelineViewportStateCreateInfo where
         pokeByteOff p 40 v7
 
 instance Storable VkPushConstantRange where
-    sizeOf _ = 12
+    sizeOf _    = 12
     alignment _ = 4
     peek p = do
         v1 <- peekByteOff p 0
@@ -1512,7 +1537,7 @@ instance Storable VkPushConstantRange where
         pokeByteOff p 8 v3
 
 instance Storable VkRect2D where
-    sizeOf _ = 16
+    sizeOf _    = 16
     alignment _ = 4
     peek p = do
         v1 <- peekByteOff p 0
@@ -1523,7 +1548,7 @@ instance Storable VkRect2D where
         pokeByteOff p 8 v2
 
 instance Storable VkRenderPassCreateInfo where
-    sizeOf _ = 64
+    sizeOf _    = 64
     alignment _ = 8
     peek p = do
         v1 <- peekByteOff p 0
@@ -1548,7 +1573,7 @@ instance Storable VkRenderPassCreateInfo where
         pokeByteOff p 56 v9
 
 instance Storable VkShaderModuleCreateInfo where
-    sizeOf _ = 40
+    sizeOf _    = 40
     alignment _ = 8
     peek p = do
         v1 <- peekByteOff p 0
@@ -1565,7 +1590,7 @@ instance Storable VkShaderModuleCreateInfo where
         pokeByteOff p 32 v5
 
 instance Storable VkSpecializationInfo where
-    sizeOf _ = 32
+    sizeOf _    = 32
     alignment _ = 8
     peek p = do
         v1 <- peekByteOff p 0
@@ -1580,7 +1605,7 @@ instance Storable VkSpecializationInfo where
         pokeByteOff p 24 v4
 
 instance Storable VkSpecializationMapEntry where
-    sizeOf _ = 16
+    sizeOf _    = 16
     alignment _ = 8
     peek p = do
         v1 <- peekByteOff p 0
@@ -1593,7 +1618,7 @@ instance Storable VkSpecializationMapEntry where
         pokeByteOff p 8 v3
 
 instance Storable VkSubmitInfo where
-    sizeOf _ = 72
+    sizeOf _    = 72
     alignment _ = 8
     peek p = do
         v1 <- peekByteOff p 0
@@ -1618,7 +1643,7 @@ instance Storable VkSubmitInfo where
         pokeByteOff p 64 v9
 
 instance Storable VkSubpassDependency where
-    sizeOf _ = 28
+    sizeOf _    = 28
     alignment _ = 4
     peek p = do
         v1 <- peekByteOff p 0
@@ -1639,7 +1664,7 @@ instance Storable VkSubpassDependency where
         pokeByteOff p 24 v7
 
 instance Storable VkSubpassDescription where
-    sizeOf _ = 72
+    sizeOf _    = 72
     alignment _ = 8
     peek p = do
         v01 <- peekByteOff p 0
@@ -1666,7 +1691,7 @@ instance Storable VkSubpassDescription where
         pokeByteOff p 64 v10
 
 instance Storable VkSubresourceLayout where
-    sizeOf _ = 40
+    sizeOf _    = 40
     alignment _ = 8
     peek p = do
         v1 <- peekByteOff p 0
@@ -1683,7 +1708,7 @@ instance Storable VkSubresourceLayout where
         pokeByteOff p 32 v5
 
 instance Storable VkSwapchainCreateInfoKHR where
-    sizeOf _ = 104
+    sizeOf _    = 104
     alignment _ = 8
     peek p = do
         v01 <- peekByteOff p 0
@@ -1726,7 +1751,7 @@ instance Storable VkSwapchainCreateInfoKHR where
         pokeByteOff p 96 v18
 
 instance Storable VkVertexInputAttributeDescription where
-    sizeOf _ = 16
+    sizeOf _    = 16
     alignment _ = 4
     peek p = do
         v1 <- peekByteOff p 0
@@ -1741,7 +1766,7 @@ instance Storable VkVertexInputAttributeDescription where
         pokeByteOff p 12 v4
 
 instance Storable VkVertexInputBindingDescription where
-    sizeOf _ = 12
+    sizeOf _    = 12
     alignment _ = 4
     peek p = do
         v1 <- peekByteOff p 0
@@ -1754,7 +1779,7 @@ instance Storable VkVertexInputBindingDescription where
         pokeByteOff p 8 v3
 
 instance Storable VkViewport where
-    sizeOf _ = 24
+    sizeOf _    = 24
     alignment _ = 4
     peek p = do
         v1 <- peekByteOff p 0
@@ -1773,7 +1798,7 @@ instance Storable VkViewport where
         pokeByteOff p 20 v6
 
 instance Storable VkWriteDescriptorSet where
-    sizeOf _ = 64
+    sizeOf _    = 64
     alignment _ = 8
     peek p = do
         v01 <- peekByteOff p 0

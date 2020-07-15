@@ -33,6 +33,8 @@ newtype VkCullModeFlagBits = VkCullModeFlagBits { unVkCullModeFlagBits :: Word32
     deriving (Eq)
 newtype VkDescriptorType = VkDescriptorType { unVkDescriptorType :: Word32 }
     deriving (Eq)
+newtype VkDynamicState = VkDynamicState { unVkDynamicState :: Word32 }
+    deriving (Eq)
 newtype VkFormat = VkFormat { unVkFormat :: Word32 }
     deriving (Eq)
 newtype VkFrontFace = VkFrontFace { unVkFrontFace :: Word32 }
@@ -279,6 +281,26 @@ descriptorTypeStorageBufferDynamic   :: VkDescriptorType
 descriptorTypeStorageBufferDynamic   = VkDescriptorType 9
 descriptorTypeInputAttachment        :: VkDescriptorType
 descriptorTypeInputAttachment        = VkDescriptorType 10
+
+-- VkDynamicState
+dynamicStateViewport             :: VkDynamicState
+dynamicStateViewport             = VkDynamicState 0
+dynamicStateScissor              :: VkDynamicState
+dynamicStateScissor              = VkDynamicState 1
+dynamicStateLineWidth            :: VkDynamicState
+dynamicStateLineWidth            = VkDynamicState 2
+dynamicStateDepthBias            :: VkDynamicState
+dynamicStateDepthBias            = VkDynamicState 3
+dynamicStateBlendConstants       :: VkDynamicState
+dynamicStateBlendConstants       = VkDynamicState 4
+dynamicStateDepthBounds          :: VkDynamicState
+dynamicStateDepthBounds          = VkDynamicState 5
+dynamicStateCompareMask          :: VkDynamicState
+dynamicStateCompareMask          = VkDynamicState 6
+dynamicStateStencilWriteMask     :: VkDynamicState
+dynamicStateStencilWriteMask     = VkDynamicState 7
+dynamicStateStencilReference     :: VkDynamicState
+dynamicStateStencilReference     = VkDynamicState 8
 
 -- VkFormat
 -- Todo: Remove unwanted formats, like: SRGB, SFloat, UFloat, UNorm
@@ -1147,7 +1169,7 @@ instance Storable VkAttachmentStoreOp where
     poke p (VkAttachmentStoreOp v) = pokeByteOff p 0 v
 
 instance Storable VkBlendFactor where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -1155,7 +1177,7 @@ instance Storable VkBlendFactor where
     poke p (VkBlendFactor v) = pokeByteOff p 0 v
 
 instance Storable VkBlendOp where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -1225,6 +1247,14 @@ instance Storable VkDescriptorType where
         v <- peekByteOff p 0
         return (VkDescriptorType v)
     poke p (VkDescriptorType v) = pokeByteOff p 0 v
+
+instance Storable VkDynamicState where
+    sizeOf _    = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkDynamicState v)
+    poke p (VkDynamicState v) = pokeByteOff p 0 v
 
 instance Storable VkFormat where
     sizeOf _    = 4
@@ -1315,7 +1345,7 @@ instance Storable VkInternalAllocationType where
     poke p (VkInternalAllocationType v) = pokeByteOff p 0 v
 
 instance Storable VkLogicOp where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
