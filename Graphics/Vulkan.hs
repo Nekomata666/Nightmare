@@ -66,6 +66,7 @@ createGraphicsPipeline vkDev0 vkRePa = do
     vkPiLa  <- vkCreatePipelineLayout vkDev0 vkPLCI
 
     vkGPCI  <- createVkGraphicsPipelineCreateInfo nullPtr (VkPipelineCreateFlags 0) 2 [vkPSIV, vkPSIF] vPVICI vPISCI Nothing vPVSCI vPRSCI vPMSCI Nothing vPCBCI Nothing vkPiLa vkRePa 0 (VkPipeline nullHandle) (-1)
+    graphP <- vkCreateGraphicsPipelines vkDev0 (VkPipelineCache nullHandle) 1 [vkGPCI]
 
     vkDestroyShaderModule vkDev0 vkSMoV
     vkDestroyShaderModule vkDev0 vkSMoF

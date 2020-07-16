@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Pipelines (createVkGraphicsPipelineCreateInfo, createVkPipelineCacheInfo, createVkPipelineColorBlendStateCreateInfo, createVkPipelineDynamicStateCreateInfo, createVkPipelineLayoutCreateInfo, createVkPipelineShaderStageInfo, createVkPipelineVertexInputStateCreateInfo, createVkPipelineViewportStateCreateInfo, vkCreateComputePipelines, vkCreatePipelineCache, vkCreatePipelineLayout, vkDestroyPipeline, vkDestroyPipelineCache, vkDestroyPipelineLayout) where
+module Graphics.Vulkan.Pipelines (createVkGraphicsPipelineCreateInfo, createVkPipelineCacheInfo, createVkPipelineColorBlendStateCreateInfo, createVkPipelineDynamicStateCreateInfo, createVkPipelineLayoutCreateInfo, createVkPipelineShaderStageInfo, createVkPipelineVertexInputStateCreateInfo, createVkPipelineViewportStateCreateInfo, vkCreateComputePipelines, vkCreateGraphicsPipelines, vkCreatePipelineCache, vkCreatePipelineLayout, vkDestroyPipeline, vkDestroyPipelineCache, vkDestroyPipelineLayout) where
 
 
 import Data.Maybe
@@ -37,6 +37,10 @@ type ViewportCount                      = Word32
 foreign import ccall unsafe "vkCreateComputePipelines"
     c_vkCreateComputePipelines :: VkDevice -> VkPipelineCache -> Word32 -> Ptr VkComputePipelineCreateInfo ->
         Ptr VkAllocationCallbacks -> Ptr VkPipeline -> IO VkResult
+
+foreign import ccall unsafe "vkCreateGraphicsPipelines"
+    c_vkCreateGraphicsPipelines :: VkDevice -> VkPipelineCache -> Word32 -> Ptr
+        VkGraphicsPipelineCreateInfo -> Ptr VkAllocationCallbacks -> Ptr VkPipeline -> IO VkResult
 
 foreign import ccall unsafe "vkCreatePipelineCache"
     c_vkCreatePipelineCache :: VkDevice -> Ptr VkPipelineCacheCreateInfo -> Ptr VkAllocationCallbacks ->
@@ -141,6 +145,15 @@ vkCreateComputePipelines d pC cIC cPCI = allocaArray i $ \pCPCI ->
     allocaArray i $ \pP -> do
         pokeArray pCPCI cPCI
         _ <- c_vkCreateComputePipelines d pC cIC pCPCI nullPtr pP
+        peekArray i pP
+        where
+            i = cast cIC
+
+vkCreateGraphicsPipelines :: VkDevice -> VkPipelineCache -> CreateInfoCount -> [VkGraphicsPipelineCreateInfo] -> IO [VkPipeline]
+vkCreateGraphicsPipelines d pC cIC gPCI = allocaArray i $ \pGPCI ->
+    allocaArray i $ \pP -> do
+        pokeArray pGPCI gPCI
+        _ <- c_vkCreateGraphicsPipelines d pC cIC pGPCI nullPtr pP
         peekArray i pP
         where
             i = cast cIC
