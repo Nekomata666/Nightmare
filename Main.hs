@@ -24,7 +24,8 @@ main = do
     --
     ----------------------------------------------------------------------------------------------------------------------------
     vkDev0 <- createDevice vkInst vkSurf
-    initialize vkInst vkSurf vkDev0
+    vkPLGr <- createGraphicsPipeline vkDev0
+    initialize vkInst vkSurf vkDev0 vkPLGr
 
     threadDelay 9000000
 
