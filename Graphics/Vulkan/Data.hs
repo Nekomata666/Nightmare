@@ -212,6 +212,28 @@ data VkExtent3D = VkExtent3D{
     depth :: Word32
 }
 
+data VkGraphicsPipelineCreateInfo = VkGraphicsPipelineCreateInfo{
+    sType :: VkStructureType,
+    next :: Ptr Void,
+    flags :: VkPipelineCreateFlags,
+    stageCount :: Word32,
+    pStages :: Ptr VkPipelineShaderStageCreateInfo,
+    pVertexInputState :: Ptr VkPipelineVertexInputStateCreateInfo,
+    pInputAssemblyState :: Ptr VkPipelineInputAssemblyStateCreateInfo,
+    pTessellationState :: Ptr VkPipelineTessellationStateCreateInfo,
+    pViewportState :: Ptr VkPipelineViewportStateCreateInfo,
+    pRasterizationState :: Ptr VkPipelineRasterizationStateCreateInfo,
+    pMultisampleState :: Ptr VkPipelineMultisampleStateCreateInfo,
+    pDepthStencilState :: Ptr VkPipelineDepthStencilStateCreateInfo,
+    pColorBlendState :: Ptr VkPipelineColorBlendStateCreateInfo,
+    pDynamicState :: Ptr VkPipelineDynamicStateCreateInfo,
+    layout :: VkPipelineLayout,
+    renderPass :: VkRenderPass,
+    subpass :: Word32,
+    basePipelineHandle :: VkPipeline,
+    basePipelineIndex :: Int32
+}
+
 data VkImageCreateInfo = VkImageCreateInfo{
     sType :: VkStructureType,
     next :: Ptr Void,
@@ -372,6 +394,21 @@ data VkPipelineColorBlendStateCreateInfo = VkPipelineColorBlendStateCreateInfo{
     blendConstants :: Ptr Float -- [4]
 }
 
+data VkPipelineDepthStencilStateCreateInfo = VkPipelineDepthStencilStateCreateInfo{
+    sType :: VkStructureType,
+    next :: Ptr Void,
+    flags :: VkPipelineDepthStencilStateCreateFlags,
+    depthTestEnable :: VkBool,
+    depthWriteEnable :: VkBool,
+    depthCompareOp :: VkCompareOp,
+    depthBoundsTestEnable :: VkBool,
+    stencilTestEnable :: VkBool,
+    front :: VkStencilOpState,
+    back :: VkStencilOpState,
+    minDepthBounds :: Float,
+    maxDepthBounds :: Float
+}
+
 data VkPipelineDynamicStateCreateInfo = VkPipelineDynamicStateCreateInfo{
     sType :: VkStructureType,
     next :: Ptr Void,
@@ -436,6 +473,13 @@ data VkPipelineShaderStageCreateInfo = VkPipelineShaderStageCreateInfo{
     pSpecializationInfo :: Ptr VkSpecializationInfo
 }
 
+data VkPipelineTessellationStateCreateInfo = VkPipelineTessellationStateCreateInfo{
+    sType :: VkStructureType,
+    next :: Ptr Void,
+    flags :: VkPipelineTessellationStateCreateFlags,
+    patchControlPoints :: Word32
+}
+
 data VkPipelineVertexInputStateCreateInfo = VkPipelineVertexInputStateCreateInfo{
     sType :: VkStructureType,
     next :: Ptr Void,
@@ -498,6 +542,16 @@ data VkSpecializationMapEntry = VkSpecializationMapEntry{
     constantID :: Word32,
     offset :: Word32,
     size :: CSize
+}
+
+data VkStencilOpState = VkStencilOpState{
+    failOp :: VkStencilOp,
+    passOp :: VkStencilOp,
+    depthFailOp :: VkStencilOp,
+    compareOp :: VkCompareOp,
+    compareMask :: Word32,
+    writeMask :: Word32,
+    reference :: Word32
 }
 
 data VkSubmitInfo = VkSubmitInfo{
@@ -1015,6 +1069,51 @@ instance Storable VkExtent3D where
         pokeByteOff p 4 v2
         pokeByteOff p 8 v3
 
+instance Storable VkGraphicsPipelineCreateInfo where
+    sizeOf _    = 144
+    alignment _ = 8
+    peek p = do
+        v01 <- peekByteOff p 0
+        v02 <- peekByteOff p 8
+        v03 <- peekByteOff p 16
+        v04 <- peekByteOff p 20
+        v05 <- peekByteOff p 24
+        v06 <- peekByteOff p 32
+        v07 <- peekByteOff p 40
+        v08 <- peekByteOff p 48
+        v09 <- peekByteOff p 56
+        v10 <- peekByteOff p 64
+        v11 <- peekByteOff p 72
+        v12 <- peekByteOff p 80
+        v13 <- peekByteOff p 88
+        v14 <- peekByteOff p 96
+        v15 <- peekByteOff p 104
+        v16 <- peekByteOff p 112
+        v17 <- peekByteOff p 120
+        v18 <- peekByteOff p 128
+        v19 <- peekByteOff p 136
+        return (VkGraphicsPipelineCreateInfo v01 v02 v03 v04 v05 v06 v07 v08 v09 v10 v11 v12 v13 v14 v15 v16 v17 v18 v19)
+    poke p (VkGraphicsPipelineCreateInfo v01 v02 v03 v04 v05 v06 v07 v08 v09 v10 v11 v12 v13 v14 v15 v16 v17 v18 v19) = do
+        pokeByteOff p 0 v01
+        pokeByteOff p 8 v02
+        pokeByteOff p 16 v03
+        pokeByteOff p 20 v04
+        pokeByteOff p 24 v05
+        pokeByteOff p 32 v06
+        pokeByteOff p 40 v07
+        pokeByteOff p 48 v08
+        pokeByteOff p 56 v09
+        pokeByteOff p 64 v10
+        pokeByteOff p 72 v11
+        pokeByteOff p 80 v12
+        pokeByteOff p 88 v13
+        pokeByteOff p 96 v14
+        pokeByteOff p 104 v15
+        pokeByteOff p 112 v16
+        pokeByteOff p 120 v17
+        pokeByteOff p 128 v18
+        pokeByteOff p 136 v19
+
 instance Storable VkImageCreateInfo where
     sizeOf _    = 88
     alignment _ = 8
@@ -1347,8 +1446,39 @@ instance Storable VkPipelineColorBlendStateCreateInfo where
         pokeByteOff p 32 v7
         pokeByteOff p 40 v8
 
+instance Storable VkPipelineDepthStencilStateCreateInfo where
+    sizeOf _    = 104
+    alignment _ = 8
+    peek p = do
+        v01 <- peekByteOff p 0
+        v02 <- peekByteOff p 8
+        v03 <- peekByteOff p 16
+        v04 <- peekByteOff p 20
+        v05 <- peekByteOff p 24
+        v06 <- peekByteOff p 28
+        v07 <- peekByteOff p 32
+        v08 <- peekByteOff p 36
+        v09 <- peekByteOff p 40
+        v10 <- peekByteOff p 68
+        v11 <- peekByteOff p 96
+        v12 <- peekByteOff p 100
+        return (VkPipelineDepthStencilStateCreateInfo v01 v02 v03 v04 v05 v06 v07 v08 v09 v10 v11 v12)
+    poke p (VkPipelineDepthStencilStateCreateInfo v01 v02 v03 v04 v05 v06 v07 v08 v09 v10 v11 v12) = do
+        pokeByteOff p 0 v01
+        pokeByteOff p 8 v02
+        pokeByteOff p 16 v03
+        pokeByteOff p 20 v04
+        pokeByteOff p 24 v05
+        pokeByteOff p 28 v06
+        pokeByteOff p 32 v07
+        pokeByteOff p 36 v08
+        pokeByteOff p 40 v09
+        pokeByteOff p 68 v10
+        pokeByteOff p 96 v11
+        pokeByteOff p 100 v12
+
 instance Storable VkPipelineDynamicStateCreateInfo where
-    sizeOf _ = 32
+    sizeOf _    = 32
     alignment _ = 8
     peek p = do
         v1 <- peekByteOff p 0
@@ -1480,6 +1610,21 @@ instance Storable VkPipelineShaderStageCreateInfo where
         pokeByteOff p 24 v5
         pokeByteOff p 32 v6
         pokeByteOff p 40 v7
+
+instance Storable VkPipelineTessellationStateCreateInfo where
+    sizeOf _    = 24
+    alignment _ = 8
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 8
+        v3 <- peekByteOff p 16
+        v4 <- peekByteOff p 20
+        return (VkPipelineTessellationStateCreateInfo v1 v2 v3 v4)
+    poke p (VkPipelineTessellationStateCreateInfo v1 v2 v3 v4) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 8 v2
+        pokeByteOff p 16 v3
+        pokeByteOff p 20 v4
 
 instance Storable VkPipelineVertexInputStateCreateInfo where
     sizeOf _    = 48
@@ -1616,6 +1761,27 @@ instance Storable VkSpecializationMapEntry where
         pokeByteOff p 0 v1
         pokeByteOff p 4 v2
         pokeByteOff p 8 v3
+
+instance Storable VkStencilOpState where
+    sizeOf _    = 28
+    alignment _ = 4
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 4
+        v3 <- peekByteOff p 8
+        v4 <- peekByteOff p 12
+        v5 <- peekByteOff p 16
+        v6 <- peekByteOff p 20
+        v7 <- peekByteOff p 24
+        return (VkStencilOpState v1 v2 v3 v4 v5 v6 v7)
+    poke p (VkStencilOpState v1 v2 v3 v4 v5 v6 v7) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 4 v2
+        pokeByteOff p 8 v3
+        pokeByteOff p 12 v4
+        pokeByteOff p 16 v5
+        pokeByteOff p 20 v6
+        pokeByteOff p 24 v7
 
 instance Storable VkSubmitInfo where
     sizeOf _    = 72

@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Pipelines (createVkPipelineCacheInfo, createVkPipelineColorBlendStateCreateInfo, createVkPipelineDynamicStateCreateInfo, createVkPipelineLayoutCreateInfo, createVkPipelineShaderStageInfo, createVkPipelineVertexInputStateCreateInfo, createVkPipelineViewportStateCreateInfo, vkCreateComputePipelines, vkCreatePipelineCache, vkCreatePipelineLayout, vkDestroyPipeline, vkDestroyPipelineCache, vkDestroyPipelineLayout) where
+module Graphics.Vulkan.Pipelines (createVkGraphicsPipelineCreateInfo, createVkPipelineCacheInfo, createVkPipelineColorBlendStateCreateInfo, createVkPipelineDynamicStateCreateInfo, createVkPipelineLayoutCreateInfo, createVkPipelineShaderStageInfo, createVkPipelineVertexInputStateCreateInfo, createVkPipelineViewportStateCreateInfo, vkCreateComputePipelines, vkCreatePipelineCache, vkCreatePipelineLayout, vkDestroyPipeline, vkDestroyPipelineCache, vkDestroyPipelineLayout) where
 
 
 import Data.Maybe
@@ -19,6 +19,7 @@ import Graphics.Vulkan.Types
 
 -- Type aliases.
 type AttachmentCount                    = Word32
+type BasePipelineIndex                  = Int32
 type BlendConstants                     = [Float]
 type CreateInfoCount                    = Word32
 type DynamicStateCount                  = Word32
@@ -27,6 +28,8 @@ type Name                               = String
 type PushConstantRangeCount             = Word32
 type ScissorCount                       = Word32
 type SetLayoutCount                     = Word32
+type StageCount                         = Word32
+type Subpass                            = Word32
 type VertexAttributeDescriptionCount    = Word32
 type VertexBindingDescriptionCount      = Word32
 type ViewportCount                      = Word32
@@ -77,6 +80,28 @@ createVkPipelineDynamicStateCreateInfo v pDSCF dSC dS = allocaArray i $ \pDS -> 
     return $ VkPipelineDynamicStateCreateInfo structureTypePipelineDynamicStateCreateInfo v pDSCF dSC pDS
     where
         i = cast dSC
+
+createVkGraphicsPipelineCreateInfo :: Ptr Void -> VkPipelineCreateFlags -> StageCount -> [VkPipelineShaderStageCreateInfo] -> VkPipelineVertexInputStateCreateInfo -> VkPipelineInputAssemblyStateCreateInfo -> Maybe VkPipelineTessellationStateCreateInfo -> VkPipelineViewportStateCreateInfo -> VkPipelineRasterizationStateCreateInfo -> VkPipelineMultisampleStateCreateInfo -> Maybe VkPipelineDepthStencilStateCreateInfo -> VkPipelineColorBlendStateCreateInfo -> Maybe VkPipelineDynamicStateCreateInfo -> VkPipelineLayout -> VkRenderPass -> Subpass -> VkPipeline -> BasePipelineIndex -> IO VkGraphicsPipelineCreateInfo
+createVkGraphicsPipelineCreateInfo v pCF sC pSSCI pVISCI pIASCI mPTSCI pVSCI pRSCI pMSCI mPDSSCI pCBSCI mPDSCI pL rP sP p bPI = allocaArray i $ \pPSSCI ->
+    alloca $ \pPVISCI ->
+        alloca $ \pPIASCI ->
+            alloca $ \pPVSCI ->
+                alloca $ \pPRSCI ->
+                    alloca $ \pPMSCI ->
+                        alloca $ \pPCBSCI -> do
+                            pokeArray pPSSCI pSSCI
+                            poke pPVISCI pVISCI
+                            poke pPIASCI pIASCI
+                            pPTSCI <- fromMaybeIO mPTSCI
+                            poke pPVSCI pVSCI
+                            poke pPRSCI pRSCI
+                            poke pPMSCI pMSCI
+                            pPDSSCI <- fromMaybeIO mPDSSCI
+                            poke pPCBSCI pCBSCI
+                            pPDSCI <- fromMaybeIO mPDSCI
+                            return $ VkGraphicsPipelineCreateInfo structureTypeGraphicsPipelineCreateInfo v pCF sC pPSSCI pPVISCI pPIASCI pPTSCI pPVSCI pPRSCI pPMSCI pPDSSCI pPCBSCI pPDSCI pL rP sP p bPI
+                            where
+                                i = cast sC
 
 createVkPipelineLayoutCreateInfo :: Ptr Void -> VkPipelineLayoutCreateFlags -> SetLayoutCount -> Maybe [VkDescriptorSetLayout] ->
     PushConstantRangeCount -> Maybe [VkPushConstantRange] -> IO VkPipelineLayoutCreateInfo

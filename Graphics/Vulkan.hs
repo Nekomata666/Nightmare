@@ -11,7 +11,7 @@ import Graphics.Utilities
 import Graphics.Vulkan.Buffers
 import Graphics.Vulkan.Command
 import Graphics.Vulkan.Constants
-import Graphics.Vulkan.Data (VkComponentMapping(..), VkComputePipelineCreateInfo(..), VkDescriptorBufferInfo(..), VkDescriptorPoolSize(..), VkExtent2D(..), VkExtent3D(..), VkImageSubresourceRange(..), VkImageViewCreateInfo(..), VkMemoryRequirements(..), VkOffset2D(..), VkPipelineColorBlendAttachmentState(..), VkPipelineInputAssemblyStateCreateInfo(..), VkPipelineMultisampleStateCreateInfo(..), VkRect2D(..), VkViewport(..))
+import Graphics.Vulkan.Data (VkAttachmentDescription(..), VkAttachmentReference(..), VkComponentMapping(..), VkComputePipelineCreateInfo(..), VkDescriptorBufferInfo(..), VkDescriptorPoolSize(..), VkExtent2D(..), VkExtent3D(..), VkImageSubresourceRange(..), VkImageViewCreateInfo(..), VkMemoryRequirements(..), VkOffset2D(..), VkPipelineColorBlendAttachmentState(..), VkPipelineInputAssemblyStateCreateInfo(..), VkPipelineMultisampleStateCreateInfo(..), VkPipelineRasterizationStateCreateInfo(..), VkRect2D(..), VkViewport(..))
 import Graphics.Vulkan.Descriptor
 import Graphics.Vulkan.Devices
 import Graphics.Vulkan.Enumerations
@@ -44,25 +44,28 @@ createDevice vkInst vkSurf = do
     vkDCI   <- createVkDeviceCreateInfo nullPtr (VkDeviceCreateFlags 0) 1 vkDQCI 1 ["VK_KHR_swapchain"] vkPDF
     createVkDevice vkPD0 vkDCI
 
-createGraphicsPipeline :: VkDevice -> IO VkPipelineLayout
-createGraphicsPipeline vkDev0 = do
+createGraphicsPipeline :: VkDevice -> VkRenderPass -> IO VkPipelineLayout
+createGraphicsPipeline vkDev0 vkRePa = do
     vkSMIV  <- createVkShaderModuleInfo nullPtr (VkShaderModuleCreateFlags 0) "Shaders/Simple.v.spv"
     vkSMIF  <- createVkShaderModuleInfo nullPtr (VkShaderModuleCreateFlags 0) "Shaders/Simple.f.spv"
     vkSMoV  <- vkCreateShaderModule vkDev0 vkSMIV
     vkSMoF  <- vkCreateShaderModule vkDev0 vkSMIF
     vkPSIV  <- createVkPipelineShaderStageInfo nullPtr (VkPipelineShaderStageCreateFlags 0) shaderStageVertexBit vkSMoV "main" Nothing
     vkPSIF  <- createVkPipelineShaderStageInfo nullPtr (VkPipelineShaderStageCreateFlags 0) shaderStageFragmentBit vkSMoF "main" Nothing
-    vPVSCI  <- createVkPipelineVertexInputStateCreateInfo nullPtr (VkPipelineVertexInputStateCreateFlags 0) 0 Nothing 0 Nothing
+    vPVICI  <- createVkPipelineVertexInputStateCreateInfo nullPtr (VkPipelineVertexInputStateCreateFlags 0) 0 Nothing 0 Nothing
     let vPISCI = VkPipelineInputAssemblyStateCreateInfo structureTypePipelineInputAssembyStateCreateInfo nullPtr (VkPipelineInputAssemblyStateCreateFlags 0) primitiveTopologyTriangleList (VkBool 0)
         vkView = VkViewport 0 0 1600 900 0 1
         scisso = VkRect2D (VkOffset2D 0 0) (VkExtent2D 1600 900)
     vPVSCI  <- createVkPipelineViewportStateCreateInfo nullPtr (VkPipelineViewportStateCreateFlags 0) 1 [vkView] 1 [scisso]
-    let vPMSCI = VkPipelineMultisampleStateCreateInfo structureTypePipelineMultisampleStateCreateInfo nullPtr (VkPipelineMultisampleStateCreateFlags 0) sampleCount1Bit (VkBool 0) 1 nullPtr (VkBool 0) (VkBool 0)
+    let vPRSCI = VkPipelineRasterizationStateCreateInfo structureTypePipelineRasterizationStateCreateInfo nullPtr (VkPipelineRasterizationStateCreateFlags 0) (VkBool 0) (VkBool 0) polygonModeFill (VkCullModeFlags $ unVkCullModeFlagBits cullModeBackBit) frontFaceClockwise (VkBool 0) 0 0 0 1
+        vPMSCI = VkPipelineMultisampleStateCreateInfo structureTypePipelineMultisampleStateCreateInfo nullPtr (VkPipelineMultisampleStateCreateFlags 0) sampleCount1Bit (VkBool 0) 1 nullPtr (VkBool 0) (VkBool 0)
         vPCBAS = VkPipelineColorBlendAttachmentState (VkBool 0) blendFactorOne blendFactorZero blendOpAdd blendFactorOne blendFactorZero blendOpAdd colorComponentRGBA
     vPCBCI  <- createVkPipelineColorBlendStateCreateInfo nullPtr (VkPipelineColorBlendStateCreateFlags 0) (VkBool 0) logicOpCopy 1 [vPCBAS] [0,0,0,0]
     vPDSCI  <- createVkPipelineDynamicStateCreateInfo nullPtr (VkPipelineDynamicStateCreateFlags 0) 2 [dynamicStateViewport, dynamicStateLineWidth]
     vkPLCI  <- createVkPipelineLayoutCreateInfo nullPtr (VkPipelineLayoutCreateFlags 0)  0 Nothing 0 Nothing
     vkPiLa  <- vkCreatePipelineLayout vkDev0 vkPLCI
+
+    vkGPCI  <- createVkGraphicsPipelineCreateInfo nullPtr (VkPipelineCreateFlags 0) 2 [vkPSIV, vkPSIF] vPVICI vPISCI Nothing vPVSCI vPRSCI vPMSCI Nothing vPCBCI Nothing vkPiLa vkRePa 0 (VkPipeline nullHandle) (-1)
 
     vkDestroyShaderModule vkDev0 vkSMoV
     vkDestroyShaderModule vkDev0 vkSMoF
@@ -70,8 +73,21 @@ createGraphicsPipeline vkDev0 = do
     where
         colorComponentRGBA = VkColorComponentFlags $ unVkColorComponentFlagBits colorComponentRBit .|. unVkColorComponentFlagBits colorComponentGBit .|. unVkColorComponentFlagBits colorComponentBBit .|. unVkColorComponentFlagBits colorComponentABit
 
-initialize :: VkInstance -> VkSurfaceKHR -> VkDevice -> VkPipelineLayout -> IO ()
-initialize vkInst vkSurf vkDev0 vkPLGr = do
+createRenderpass :: VkDevice -> IO VkRenderPass
+createRenderpass vkDev0 = do
+    let vkADCo = VkAttachmentDescription (VkAttachmentDescriptionFlags 0) formatB8G8R8A8SRGB sampleCount1Bit attachmentLoadOpClear attachmentStoreOpStore attachmentLoadOpDontCare attachmentStoreOpDontCare imageLayoutUndefined imageLayoutPresentSRCKHR
+        vkARCo = VkAttachmentReference 0 imageLayoutColorAttachmentOptimal
+
+    vkSuD0 <- createVkSubpassDescription (VkSubpassDescriptionFlagBits 0) pipelineBindPointGraphics 0 Nothing 1 (Just [vkARCo]) Nothing Nothing 0 Nothing
+    vkRPCI <- createVkRenderPassCreateInfo nullPtr (VkRenderPassCreateFlags 0) 1 (Just [vkADCo]) 1 (Just [vkSuD0]) 0 Nothing
+    vkCreateRenderPass vkDev0 vkRPCI
+
+initialize :: VkInstance -> VkSurfaceKHR -> IO ()
+initialize vkInst vkSurf = do
+    vkDev0 <- createDevice vkInst vkSurf
+    vkRePa <- createRenderpass vkDev0
+    vkPLGr <- createGraphicsPipeline vkDev0 vkRePa
+
     vkSCCI <- createVkSwapchainCreateInfo nullPtr (VkSwapchainCreateFlagsKHR 0) vkSurf 3 formatB8G8R8A8SRGB colorSpaceSRGBNonlinearKHR
                     (VkExtent2D 1600 900) 1 imageUsageColorAttachmentBit sharingModeExclusive 1 [0] surfaceTransformIdentityBitKHR
                     compositeAlphaOpaqueBitKHR presentModeFIFOKHR (VkBool 1) (VkSwapchainKHR nullHandle)
@@ -123,9 +139,6 @@ initialize vkInst vkSurf vkDev0 vkPLGr = do
     vkWDS0 <- createVkWriteDescriptorSet nullPtr (head vkAlDS) 0 0 1 descriptorTypeStorageBuffer Nothing (Just vkDBIn) Nothing
     vkUpdateDescriptorSets vkDev0 1 (Just [vkWDS0]) 0 Nothing
     vkQue0 <- vkGetDeviceQueue vkDev0 0 0
-    vkSuD0 <- createVkSubpassDescription (VkSubpassDescriptionFlagBits 0) pipelineBindPointGraphics 0 Nothing 0 Nothing Nothing Nothing 0 Nothing
-    vkRPCI <- createVkRenderPassCreateInfo nullPtr (VkRenderPassCreateFlags 0) 0 Nothing 1 (Just [vkSuD0]) 0 Nothing
-    vkRePa <- vkCreateRenderPass vkDev0 vkRPCI
     let vkCPIn = createVkCommandPoolInfo nullPtr (VkCommandPoolCreateFlags 0) 0
     vkCPo0 <- vkCreateCommandPool vkDev0 vkCPIn
     let vkCBAI = createVkCommandBufferAllocateInfo nullPtr vkCPo0 commandBufferLevelPrimary 1

@@ -49,6 +49,7 @@ newtype VkMemoryMapFlags = VkMemoryMapFlags { unVkMemoryMapFlags :: VkFlags }
 newtype VkPipelineCacheCreateFlags = VkPipelineCacheCreateFlags { unVkPipelineCacheCreateFlags :: VkFlags }
 newtype VkPipelineColorBlendStateCreateFlags = VkPipelineColorBlendStateCreateFlags { unVkPipelineColorBlendStateCreateFlags :: VkFlags }
 newtype VkPipelineCreateFlags = VkPipelineCreateFlags { unVkPipelineCreateFlags :: VkFlags }
+newtype VkPipelineDepthStencilStateCreateFlags = VkPipelineDepthStencilStateCreateFlags { unVkPipelineDepthStencilStateCreateFlags :: VkFlags }
 newtype VkPipelineDynamicStateCreateFlags = VkPipelineDynamicStateCreateFlags { unVkPipelineDynamicStateCreateFlags :: VkFlags }
 newtype VkPipelineInputAssemblyStateCreateFlags = VkPipelineInputAssemblyStateCreateFlags { unVkPipelineInputAssemblyStateCreateFlags :: VkFlags }
 newtype VkPipelineLayoutCreateFlags = VkPipelineLayoutCreateFlags { unVkPipelineLayoutCreateFlags :: VkFlags }
@@ -56,6 +57,7 @@ newtype VkPipelineMultisampleStateCreateFlags = VkPipelineMultisampleStateCreate
 newtype VkPipelineRasterizationStateCreateFlags = VkPipelineRasterizationStateCreateFlags { unVkPipelineRasterizationStateCreateFlags :: VkFlags }
 newtype VkPipelineShaderStageCreateFlags = VkPipelineShaderStageCreateFlags { unVkPipelineShaderStageCreateFlags :: VkFlags }
 newtype VkPipelineStageFlags = VkPipelineStageFlags { unVkPipelineStageFlags :: VkFlags }
+newtype VkPipelineTessellationStateCreateFlags = VkPipelineTessellationStateCreateFlags { unVkPipelineTessellationStateCreateFlags :: VkFlags }
 newtype VkPipelineVertexInputStateCreateFlags = VkPipelineVertexInputStateCreateFlags { unVkPipelineVertexInputStateCreateFlags :: VkFlags }
 newtype VkPipelineViewportStateCreateFlags = VkPipelineViewportStateCreateFlags { unVkPipelineViewportStateCreateFlags :: VkFlags }
 newtype VkQueryControlFlags = VkQueryControlFlags { unVkQueryControlFlags :: VkFlags }
@@ -300,8 +302,16 @@ instance Storable VkPipelineCreateFlags where
         return (VkPipelineCreateFlags v)
     poke p (VkPipelineCreateFlags v) = pokeByteOff p 0 v
 
+instance Storable VkPipelineDepthStencilStateCreateFlags where
+    sizeOf _    = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkPipelineDepthStencilStateCreateFlags v)
+    poke p (VkPipelineDepthStencilStateCreateFlags v) = pokeByteOff p 0 v
+
 instance Storable VkPipelineDynamicStateCreateFlags where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -355,6 +365,14 @@ instance Storable VkPipelineStageFlags where
         v <- peekByteOff p 0
         return (VkPipelineStageFlags v)
     poke p (VkPipelineStageFlags v) = pokeByteOff p 0 v
+
+instance Storable VkPipelineTessellationStateCreateFlags where
+    sizeOf _    = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkPipelineTessellationStateCreateFlags v)
+    poke p (VkPipelineTessellationStateCreateFlags v) = pokeByteOff p 0 v
 
 instance Storable VkPipelineVertexInputStateCreateFlags where
     sizeOf _    = 4
