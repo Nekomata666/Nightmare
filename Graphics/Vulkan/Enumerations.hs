@@ -25,6 +25,8 @@ newtype VkColorSpaceKHR = VkColorSpaceKHR { unVkColorSpaceKHR :: Word32 }
     deriving (Eq)
 newtype VkCommandBufferLevel = VkCommandBufferLevel { unVkCommandBufferLevel :: Word32 }
     deriving (Eq)
+newtype VkCompareOp = VkCompareOp { unVkCompareOp :: Word32 }
+    deriving (Eq)
 newtype VkComponentSwizzle = VkComponentSwizzle { unVkComponentSwizzle :: Word32 }
     deriving (Eq)
 newtype VkCompositeAlphaFlagBitsKHR = VkCompositeAlphaFlagBitsKHR { unVkCompositeAlphaFlagBitsKHR :: Word32 }
@@ -74,6 +76,8 @@ newtype VkSampleCountFlagBits = VkSampleCountFlagBits { unVkSampleCountFlagBits 
 newtype VkShaderStageFlagBits = VkShaderStageFlagBits { unVkShaderStageFlagBits :: Word32 }
     deriving (Eq)
 newtype VkSharingMode = VkSharingMode { unVkSharingMode :: Word32 }
+    deriving (Eq)
+newtype VkStencilOp = VkStencilOp { unVkStencilOp :: Word32 }
     deriving (Eq)
 newtype VkStructureType = VkStructureType { unVkStructureType :: Int32 }
     deriving (Eq)
@@ -221,6 +225,24 @@ commandBufferLevelPrimary        :: VkCommandBufferLevel
 commandBufferLevelPrimary        = VkCommandBufferLevel 0
 commandBufferLevelSecondary      :: VkCommandBufferLevel
 commandBufferLevelSecondary      = VkCommandBufferLevel 1
+
+-- VkCompareOp
+compareOpNever           :: VkCompareOp
+compareOpNever           = VkCompareOp 0
+compareOpLess            :: VkCompareOp
+compareOpLess            = VkCompareOp 1
+compareOpEqual           :: VkCompareOp
+compareOpEqual           = VkCompareOp 2
+compareOpLessOrEqeal     :: VkCompareOp
+compareOpLessOrEqeal     = VkCompareOp 3
+compareOpGreater         :: VkCompareOp
+compareOpGreater         = VkCompareOp 4
+compareOpNotEqeal        :: VkCompareOp
+compareOpNotEqeal        = VkCompareOp 5
+compareOpGreaterOrEqeal  :: VkCompareOp
+compareOpGreaterOrEqeal  = VkCompareOp 6
+compareOpAlways          :: VkCompareOp
+compareOpAlways          = VkCompareOp 7
 
 -- VkComponentSwizzle
 componentSwizzleIdentity     :: VkComponentSwizzle
@@ -976,131 +998,149 @@ sharingModeExclusive     = VkSharingMode 0
 sharingModeConcurrent    :: VkSharingMode
 sharingModeConcurrent    = VkSharingMode 1
 
+-- VkStencilOp
+stencilOpKeep                :: VkStencilOp
+stencilOpKeep                = VkStencilOp 0
+stencilOpZero                :: VkStencilOp
+stencilOpZero                = VkStencilOp 1
+stencilOpReplace             :: VkStencilOp
+stencilOpReplace             = VkStencilOp 2
+stencilOpIncrementAndClamp   :: VkStencilOp
+stencilOpIncrementAndClamp   = VkStencilOp 3
+stencilOpDecrementAndClamp   :: VkStencilOp
+stencilOpDecrementAndClamp   = VkStencilOp 4
+stencilOpInvert              :: VkStencilOp
+stencilOpInvert              = VkStencilOp 5
+stencilOpIncrementAndWrap    :: VkStencilOp
+stencilOpIncrementAndWrap    = VkStencilOp 6
+stencilOpDecrementAndWrap    :: VkStencilOp
+stencilOpDecrementAndWrap    = VkStencilOp 7
+
 -- VkStructureType
-structureTypeApplicationInfo                                  :: VkStructureType
-structureTypeApplicationInfo                                  = VkStructureType 0
-structureTypeInstanceCreateInfo                               :: VkStructureType
-structureTypeInstanceCreateInfo                               = VkStructureType 1
-structureTypeDeviceQueueCreateInfo                            :: VkStructureType
-structureTypeDeviceQueueCreateInfo                            = VkStructureType 2
-structureTypeDeviceCreateInfo                                 :: VkStructureType
-structureTypeDeviceCreateInfo                                 = VkStructureType 3
-structureTypeSubmitInfo                                       :: VkStructureType
-structureTypeSubmitInfo                                       = VkStructureType 4
-structureTypeMemoryAllocateInfo                               :: VkStructureType
-structureTypeMemoryAllocateInfo                               = VkStructureType 5
-structureTypeMappedMemoryRange                                :: VkStructureType
-structureTypeMappedMemoryRange                                = VkStructureType 6
-structureTypeBindSparseInfo                                   :: VkStructureType
-structureTypeBindSparseInfo                                   = VkStructureType 7
-structureTypeFenceCreateInfo                                  :: VkStructureType
-structureTypeFenceCreateInfo                                  = VkStructureType 8
-structureTypeSemaphreCreateInfo                               :: VkStructureType
-structureTypeSemaphreCreateInfo                               = VkStructureType 9
-structureTypeEventCreateInfo                                  :: VkStructureType
-structureTypeEventCreateInfo                                  = VkStructureType 10
-structureTypeQueryPoolCreateInfo                              :: VkStructureType
-structureTypeQueryPoolCreateInfo                              = VkStructureType 11
-structureTypeBufferCreateInfo                                 :: VkStructureType
-structureTypeBufferCreateInfo                                 = VkStructureType 12
-structureTypeBufferViewCreateInfo                             :: VkStructureType
-structureTypeBufferViewCreateInfo                             = VkStructureType 13
-structureTypeImageCreateInfo                                  :: VkStructureType
-structureTypeImageCreateInfo                                  = VkStructureType 14
-structureTypeImageViewCreateInfo                              :: VkStructureType
-structureTypeImageViewCreateInfo                              = VkStructureType 15
-structureTypeShaderModuleCreateInfo                           :: VkStructureType
-structureTypeShaderModuleCreateInfo                           = VkStructureType 16
-structureTypePipelineCacheCreateInfo                          :: VkStructureType
-structureTypePipelineCacheCreateInfo                          = VkStructureType 17
-structureTypePipelineShaderStageCreateInfo                    :: VkStructureType
-structureTypePipelineShaderStageCreateInfo                    = VkStructureType 18
-structureTypePipelineVertexInputStateCreateInfo               :: VkStructureType
-structureTypePipelineVertexInputStateCreateInfo               = VkStructureType 19
-structureTypePipelineInputAssembyStateCreateInfo              :: VkStructureType
-structureTypePipelineInputAssembyStateCreateInfo              = VkStructureType 20
-structureTypePipelineTessellationStateCreateInfo              :: VkStructureType
-structureTypePipelineTessellationStateCreateInfo              = VkStructureType 21
-structureTypePipelineViewportStateCreateInfo                  :: VkStructureType
-structureTypePipelineViewportStateCreateInfo                  = VkStructureType 22
-structureTypePipelineRasterizationStateCreateInfo              :: VkStructureType
-structureTypePipelineRasterizationStateCreateInfo              = VkStructureType 23
-structureTypePipelineMultisampleStateCreateInfo               :: VkStructureType
-structureTypePipelineMultisampleStateCreateInfo               = VkStructureType 24
-structureTypePipelineDepthStencilStateCreateInfo              :: VkStructureType
-structureTypePipelineDepthStencilStateCreateInfo              = VkStructureType 25
-structureTypePipelineColorBlendStateCreateInfo                :: VkStructureType
-structureTypePipelineColorBlendStateCreateInfo                = VkStructureType 26
-structureTypePipelineDynamicStateCreateInfo                   :: VkStructureType
-structureTypePipelineDynamicStateCreateInfo                   = VkStructureType 27
-structureTypeGraphicsPipelineCreateInfo                       :: VkStructureType
-structureTypeGraphicsPipelineCreateInfo                       = VkStructureType 28
-structureTypeComputePipelineCreateInfo                        :: VkStructureType
-structureTypeComputePipelineCreateInfo                        = VkStructureType 29
-structureTypePipelineLayoutCreateInfo                         :: VkStructureType
-structureTypePipelineLayoutCreateInfo                         = VkStructureType 30
-structureTypeSamplerCreateInfo                                :: VkStructureType
-structureTypeSamplerCreateInfo                                = VkStructureType 31
-structureTypeDescriptorSetLayoutCreateInfo                    :: VkStructureType
-structureTypeDescriptorSetLayoutCreateInfo                    = VkStructureType 32
-structureTypeDescriptorPoolCreateInfo                         :: VkStructureType
-structureTypeDescriptorPoolCreateInfo                         = VkStructureType 33
-structureTypeDescriptorSetAllocateInfo                        :: VkStructureType
-structureTypeDescriptorSetAllocateInfo                        = VkStructureType 34
-structureTypeWriteDescriptorSet                               :: VkStructureType
-structureTypeWriteDescriptorSet                               = VkStructureType 35
-structureTypeCopyDescriptorSet                                :: VkStructureType
-structureTypeCopyDescriptorSet                                = VkStructureType 36
-structureTypeFramebufferCreateInfo                            :: VkStructureType
-structureTypeFramebufferCreateInfo                            = VkStructureType 37
-structureTypeRenderPassCreateInfo                             :: VkStructureType
-structureTypeRenderPassCreateInfo                             = VkStructureType 38
-structureTypeCommandPoolCreateInfo                            :: VkStructureType
-structureTypeCommandPoolCreateInfo                            = VkStructureType 39
-structureTypeCommandBufferAllocateInfo                        :: VkStructureType
-structureTypeCommandBufferAllocateInfo                        = VkStructureType 40
-structureTypeCommandBufferInheritanceInfo                     :: VkStructureType
-structureTypeCommandBufferInheritanceInfo                     = VkStructureType 41
-structureTypeCommandBufferBeginInfo                           :: VkStructureType
-structureTypeCommandBufferBeginInfo                           = VkStructureType 42
-structureTypeRenderPassBeginInfo                              :: VkStructureType
-structureTypeRenderPassBeginInfo                              = VkStructureType 43
-structureTypeBufferMemoryBarrier                              :: VkStructureType
-structureTypeBufferMemoryBarrier                              = VkStructureType 44
-structureTypeImageMemoryBarrier                               :: VkStructureType
-structureTypeImageMemoryBarrier                               = VkStructureType 45
-structureTypeMemoryBarrier                                    :: VkStructureType
-structureTypeMemoryBarrier                                    = VkStructureType 46
-structureTypeLoaderInstanceCreateInfo                         :: VkStructureType
-structureTypeLoaderInstanceCreateInfo                         = VkStructureType 47
-structureTypeLoaderDeviceCreateInfo                           :: VkStructureType
-structureTypeLoaderDeviceCreateInfo                           = VkStructureType 48
-structureTypeSwapchainCreateInfoKHR                           :: VkStructureType
-structureTypeSwapchainCreateInfoKHR                           = VkStructureType 1000001000
-structureTypePresentInfoKHR                                   :: VkStructureType
-structureTypePresentInfoKHR                                   = VkStructureType 1000001001
-structureTypeDisplayModeCreateInfoKHR                         :: VkStructureType
-structureTypeDisplayModeCreateInfoKHR                         = VkStructureType 1000002000
-structureTypeDisplaySurfaceCreateInfoKHR                      :: VkStructureType
-structureTypeDisplaySurfaceCreateInfoKHR                      = VkStructureType 1000002001
-structureTypeDisplayPresentInfoKHR                            :: VkStructureType
-structureTypeDisplayPresentInfoKHR                            = VkStructureType 1000003000
-structureTypeDebugReportCallbackCreateInfoEXT                 :: VkStructureType
-structureTypeDebugReportCallbackCreateInfoEXT                 = VkStructureType 1000011000
-structureTypePipelineRasterizationStateRasterizationOrderAMD  :: VkStructureType
-structureTypePipelineRasterizationStateRasterizationOrderAMD  = VkStructureType 1000018000
-structureTypeDebugMarkerObjectNameInfoEXT                     :: VkStructureType
-structureTypeDebugMarkerObjectNameInfoEXT                     = VkStructureType 1000022000
-structureTypeDebugMarkerObjectTagInfoEXT                      :: VkStructureType
-structureTypeDebugMarkerObjectTagInfoEXT                      = VkStructureType 1000022001
-structureTypeDebugMarkerMarkerInfoEXT                         :: VkStructureType
-structureTypeDebugMarkerMarkerInfoEXT                         = VkStructureType 1000022002
-structureTypeExternalMemoryImageCreateInfoNV                  :: VkStructureType
-structureTypeExternalMemoryImageCreateInfoNV                  = VkStructureType 1000056000
-structureTypeExportMemoryAllocateInfoNV                       :: VkStructureType
-structureTypeExportMemoryAllocateInfoNV                       = VkStructureType 1000056001
-structureTypeValidationFlagsEXT                               :: VkStructureType
-structureTypeValidationFlagsEXT                               = VkStructureType 1000061000
+structureTypeApplicationInfo                                    :: VkStructureType
+structureTypeApplicationInfo                                    = VkStructureType 0
+structureTypeInstanceCreateInfo                                 :: VkStructureType
+structureTypeInstanceCreateInfo                                 = VkStructureType 1
+structureTypeDeviceQueueCreateInfo                              :: VkStructureType
+structureTypeDeviceQueueCreateInfo                              = VkStructureType 2
+structureTypeDeviceCreateInfo                                   :: VkStructureType
+structureTypeDeviceCreateInfo                                   = VkStructureType 3
+structureTypeSubmitInfo                                         :: VkStructureType
+structureTypeSubmitInfo                                         = VkStructureType 4
+structureTypeMemoryAllocateInfo                                 :: VkStructureType
+structureTypeMemoryAllocateInfo                                 = VkStructureType 5
+structureTypeMappedMemoryRange                                  :: VkStructureType
+structureTypeMappedMemoryRange                                  = VkStructureType 6
+structureTypeBindSparseInfo                                     :: VkStructureType
+structureTypeBindSparseInfo                                     = VkStructureType 7
+structureTypeFenceCreateInfo                                    :: VkStructureType
+structureTypeFenceCreateInfo                                    = VkStructureType 8
+structureTypeSemaphreCreateInfo                                 :: VkStructureType
+structureTypeSemaphreCreateInfo                                 = VkStructureType 9
+structureTypeEventCreateInfo                                    :: VkStructureType
+structureTypeEventCreateInfo                                    = VkStructureType 10
+structureTypeQueryPoolCreateInfo                                :: VkStructureType
+structureTypeQueryPoolCreateInfo                                = VkStructureType 11
+structureTypeBufferCreateInfo                                   :: VkStructureType
+structureTypeBufferCreateInfo                                   = VkStructureType 12
+structureTypeBufferViewCreateInfo                               :: VkStructureType
+structureTypeBufferViewCreateInfo                               = VkStructureType 13
+structureTypeImageCreateInfo                                    :: VkStructureType
+structureTypeImageCreateInfo                                    = VkStructureType 14
+structureTypeImageViewCreateInfo                                :: VkStructureType
+structureTypeImageViewCreateInfo                                = VkStructureType 15
+structureTypeShaderModuleCreateInfo                             :: VkStructureType
+structureTypeShaderModuleCreateInfo                             = VkStructureType 16
+structureTypePipelineCacheCreateInfo                            :: VkStructureType
+structureTypePipelineCacheCreateInfo                            = VkStructureType 17
+structureTypePipelineShaderStageCreateInfo                      :: VkStructureType
+structureTypePipelineShaderStageCreateInfo                      = VkStructureType 18
+structureTypePipelineVertexInputStateCreateInfo                 :: VkStructureType
+structureTypePipelineVertexInputStateCreateInfo                 = VkStructureType 19
+structureTypePipelineInputAssembyStateCreateInfo                :: VkStructureType
+structureTypePipelineInputAssembyStateCreateInfo                = VkStructureType 20
+structureTypePipelineTessellationStateCreateInfo                :: VkStructureType
+structureTypePipelineTessellationStateCreateInfo                = VkStructureType 21
+structureTypePipelineViewportStateCreateInfo                    :: VkStructureType
+structureTypePipelineViewportStateCreateInfo                    = VkStructureType 22
+structureTypePipelineRasterizationStateCreateInfo               :: VkStructureType
+structureTypePipelineRasterizationStateCreateInfo               = VkStructureType 23
+structureTypePipelineMultisampleStateCreateInfo                 :: VkStructureType
+structureTypePipelineMultisampleStateCreateInfo                 = VkStructureType 24
+structureTypePipelineDepthStencilStateCreateInfo                :: VkStructureType
+structureTypePipelineDepthStencilStateCreateInfo                = VkStructureType 25
+structureTypePipelineColorBlendStateCreateInfo                  :: VkStructureType
+structureTypePipelineColorBlendStateCreateInfo                  = VkStructureType 26
+structureTypePipelineDynamicStateCreateInfo                     :: VkStructureType
+structureTypePipelineDynamicStateCreateInfo                     = VkStructureType 27
+structureTypeGraphicsPipelineCreateInfo                         :: VkStructureType
+structureTypeGraphicsPipelineCreateInfo                         = VkStructureType 28
+structureTypeComputePipelineCreateInfo                          :: VkStructureType
+structureTypeComputePipelineCreateInfo                          = VkStructureType 29
+structureTypePipelineLayoutCreateInfo                           :: VkStructureType
+structureTypePipelineLayoutCreateInfo                           = VkStructureType 30
+structureTypeSamplerCreateInfo                                  :: VkStructureType
+structureTypeSamplerCreateInfo                                  = VkStructureType 31
+structureTypeDescriptorSetLayoutCreateInfo                      :: VkStructureType
+structureTypeDescriptorSetLayoutCreateInfo                      = VkStructureType 32
+structureTypeDescriptorPoolCreateInfo                           :: VkStructureType
+structureTypeDescriptorPoolCreateInfo                           = VkStructureType 33
+structureTypeDescriptorSetAllocateInfo                          :: VkStructureType
+structureTypeDescriptorSetAllocateInfo                          = VkStructureType 34
+structureTypeWriteDescriptorSet                                 :: VkStructureType
+structureTypeWriteDescriptorSet                                 = VkStructureType 35
+structureTypeCopyDescriptorSet                                  :: VkStructureType
+structureTypeCopyDescriptorSet                                  = VkStructureType 36
+structureTypeFramebufferCreateInfo                              :: VkStructureType
+structureTypeFramebufferCreateInfo                              = VkStructureType 37
+structureTypeRenderPassCreateInfo                               :: VkStructureType
+structureTypeRenderPassCreateInfo                               = VkStructureType 38
+structureTypeCommandPoolCreateInfo                              :: VkStructureType
+structureTypeCommandPoolCreateInfo                              = VkStructureType 39
+structureTypeCommandBufferAllocateInfo                          :: VkStructureType
+structureTypeCommandBufferAllocateInfo                          = VkStructureType 40
+structureTypeCommandBufferInheritanceInfo                       :: VkStructureType
+structureTypeCommandBufferInheritanceInfo                       = VkStructureType 41
+structureTypeCommandBufferBeginInfo                             :: VkStructureType
+structureTypeCommandBufferBeginInfo                             = VkStructureType 42
+structureTypeRenderPassBeginInfo                                :: VkStructureType
+structureTypeRenderPassBeginInfo                                = VkStructureType 43
+structureTypeBufferMemoryBarrier                                :: VkStructureType
+structureTypeBufferMemoryBarrier                                = VkStructureType 44
+structureTypeImageMemoryBarrier                                 :: VkStructureType
+structureTypeImageMemoryBarrier                                 = VkStructureType 45
+structureTypeMemoryBarrier                                      :: VkStructureType
+structureTypeMemoryBarrier                                      = VkStructureType 46
+structureTypeLoaderInstanceCreateInfo                           :: VkStructureType
+structureTypeLoaderInstanceCreateInfo                           = VkStructureType 47
+structureTypeLoaderDeviceCreateInfo                             :: VkStructureType
+structureTypeLoaderDeviceCreateInfo                             = VkStructureType 48
+structureTypeSwapchainCreateInfoKHR                             :: VkStructureType
+structureTypeSwapchainCreateInfoKHR                             = VkStructureType 1000001000
+structureTypePresentInfoKHR                                     :: VkStructureType
+structureTypePresentInfoKHR                                     = VkStructureType 1000001001
+structureTypeDisplayModeCreateInfoKHR                           :: VkStructureType
+structureTypeDisplayModeCreateInfoKHR                           = VkStructureType 1000002000
+structureTypeDisplaySurfaceCreateInfoKHR                        :: VkStructureType
+structureTypeDisplaySurfaceCreateInfoKHR                        = VkStructureType 1000002001
+structureTypeDisplayPresentInfoKHR                              :: VkStructureType
+structureTypeDisplayPresentInfoKHR                              = VkStructureType 1000003000
+structureTypeDebugReportCallbackCreateInfoEXT                   :: VkStructureType
+structureTypeDebugReportCallbackCreateInfoEXT                   = VkStructureType 1000011000
+structureTypePipelineRasterizationStateRasterizationOrderAMD    :: VkStructureType
+structureTypePipelineRasterizationStateRasterizationOrderAMD    = VkStructureType 1000018000
+structureTypeDebugMarkerObjectNameInfoEXT                       :: VkStructureType
+structureTypeDebugMarkerObjectNameInfoEXT                       = VkStructureType 1000022000
+structureTypeDebugMarkerObjectTagInfoEXT                        :: VkStructureType
+structureTypeDebugMarkerObjectTagInfoEXT                        = VkStructureType 1000022001
+structureTypeDebugMarkerMarkerInfoEXT                           :: VkStructureType
+structureTypeDebugMarkerMarkerInfoEXT                           = VkStructureType 1000022002
+structureTypeExternalMemoryImageCreateInfoNV                    :: VkStructureType
+structureTypeExternalMemoryImageCreateInfoNV                    = VkStructureType 1000056000
+structureTypeExportMemoryAllocateInfoNV                         :: VkStructureType
+structureTypeExportMemoryAllocateInfoNV                         = VkStructureType 1000056001
+structureTypeValidationFlagsEXT                                 :: VkStructureType
+structureTypeValidationFlagsEXT                                 = VkStructureType 1000061000
 
 -- VkSubpassDescriptionFlagBits
 subpassDescriptionPerViewAttributesBitNVX       :: VkSubpassDescriptionFlagBits
@@ -1215,6 +1255,14 @@ instance Storable VkCommandBufferLevel where
         v <- peekByteOff p 0
         return (VkCommandBufferLevel v)
     poke p (VkCommandBufferLevel v) = pokeByteOff p 0 v
+
+instance Storable VkCompareOp where
+    sizeOf _    = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkCompareOp v)
+    poke p (VkCompareOp v) = pokeByteOff p 0 v
 
 instance Storable VkComponentSwizzle where
     sizeOf _    = 4
@@ -1415,6 +1463,14 @@ instance Storable VkSharingMode where
         v <- peekByteOff p 0
         return (VkSharingMode v)
     poke p (VkSharingMode v) = pokeByteOff p 0 v
+
+instance Storable VkStencilOp where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkStencilOp v)
+    poke p (VkStencilOp v) = pokeByteOff p 0 v
 
 instance Storable VkStructureType where
     sizeOf _    = 4
