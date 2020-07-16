@@ -78,14 +78,12 @@ createVkPipelineDynamicStateCreateInfo v pDSCF dSC dS = allocaArray i $ \pDS -> 
     where
         i = cast dSC
 
-createVkPipelineLayoutCreateInfo :: Ptr Void -> VkPipelineLayoutCreateFlags -> SetLayoutCount -> [VkDescriptorSetLayout] ->
+createVkPipelineLayoutCreateInfo :: Ptr Void -> VkPipelineLayoutCreateFlags -> SetLayoutCount -> Maybe [VkDescriptorSetLayout] ->
     PushConstantRangeCount -> Maybe [VkPushConstantRange] -> IO VkPipelineLayoutCreateInfo
-createVkPipelineLayoutCreateInfo v pLCF sLC dSL pCRC m = allocaArray i $ \pDSL -> do
-    pokeArray pDSL dSL
-    pPCR <- fromMaybeListIO pCRC m
+createVkPipelineLayoutCreateInfo v pLCF sLC mDSL pCRC mPCR = do
+    pDSL <- fromMaybeListIO sLC mDSL
+    pPCR <- fromMaybeListIO pCRC mPCR
     return $ VkPipelineLayoutCreateInfo structureTypePipelineLayoutCreateInfo v pLCF sLC pDSL pCRC pPCR
-    where
-        i = cast sLC
 
 createVkPipelineShaderStageInfo :: Ptr Void -> VkPipelineShaderStageCreateFlags -> VkShaderStageFlagBits -> VkShaderModule ->
     Name -> Maybe VkSpecializationInfo -> IO VkPipelineShaderStageCreateInfo
