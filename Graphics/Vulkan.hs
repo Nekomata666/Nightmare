@@ -101,6 +101,7 @@ initialize vkInst vkSurf = do
     vkIV0   <- vkCreateImageView vkDev0 vkIVCI
 
     vkFCI0  <- createVkFramebufferCreateInfo nullPtr (VkFramebufferCreateFlags 0) vkRePa 1 [vkIV0] 1600 900 1
+    vkFram  <- vkCreateFramebuffer vkDev0 vkFCI0
 
 
     vkBCI   <- vkCreateBufferInfo nullPtr (VkBufferCreateFlags 0) (VkDeviceSize 2136746240)
