@@ -118,6 +118,7 @@ initialize vkInst vkSurf = do
     vkCmdBeginRenderPass vkCoB0 vkRPBI subpassContentsInline
     vkCmdBindPipeline vkCoB0 pipelineBindPointGraphics graphP
     vkCmdDraw vkCoB0 3 1 0 0
+    vkCmdEndRenderPass vkCoB0
 
     vkBCI   <- vkCreateBufferInfo nullPtr (VkBufferCreateFlags 0) (VkDeviceSize 2136746240)
         [bufferUsageStorageBufferBit, bufferUsageTransferDSTBit] sharingModeExclusive 3 [0]
