@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Command (createVkClearColorValue, createVkCommandBufferAllocateInfo, createVkCommandBufferBeginInfo, createVkCommandPoolInfo, createVkImageSubresourceRange, createVkRenderPassBeginInfo, vkAllocateCommandBuffers, vkBeginCommandBuffer, vkCmdBeginRenderPass, vkCmdBindDescriptorSets, vkCmdBindPipeline, vkCmdClearColorImage, vkCmdDraw, vkCmdFillBuffer, vkCmdPushConstants, vkCreateCommandPool, vkDestroyCommandPool, vkEndCommandBuffer) where
+module Graphics.Vulkan.Command (createVkClearColorValue, createVkCommandBufferAllocateInfo, createVkCommandBufferBeginInfo, createVkCommandPoolInfo, createVkImageSubresourceRange, createVkRenderPassBeginInfo, vkAllocateCommandBuffers, vkBeginCommandBuffer, vkCmdBeginRenderPass, vkCmdBindDescriptorSets, vkCmdBindPipeline, vkCmdClearColorImage, vkCmdDraw, vkCmdFillBuffer, vkCmdPushConstants, vkCreateCommandPool, vkDestroyCommandPool, vkEndCommandBuffer, vkCmdEndRenderPass) where
 
 
 import Data.Maybe   (Maybe)
@@ -76,6 +76,9 @@ foreign import ccall unsafe "vkDestroyCommandPool"
 
 foreign import ccall unsafe "vkEndCommandBuffer"
     c_vkEndCommandBuffer :: VkCommandBuffer -> IO VkResult
+
+foreign import ccall unsafe "vkCmdEndRenderPass"
+    c_vkCmdEndRenderPass :: VkCommandBuffer -> IO ()
 
 
 createVkClearColorValue :: [Word32] -> IO VkClearColorValue
@@ -176,3 +179,6 @@ vkDestroyCommandPool d p = c_vkDestroyCommandPool d p nullPtr
 
 vkEndCommandBuffer :: VkCommandBuffer -> IO VkResult
 vkEndCommandBuffer = c_vkEndCommandBuffer
+
+vkCmdEndRenderPass :: VkCommandBuffer -> IO ()
+vkCmdEndRenderPass = c_vkCmdEndRenderPass
