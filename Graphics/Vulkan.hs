@@ -45,7 +45,7 @@ createDevice vkInst vkSurf = do
     vkDCI   <- createVkDeviceCreateInfo nullPtr (VkDeviceCreateFlags 0) 1 vkDQCI 1 ["VK_KHR_swapchain"] vkPDF
     createVkDevice vkPD0 vkDCI
 
-createGraphicsPipeline :: VkDevice -> VkRenderPass -> IO VkPipelineLayout
+createGraphicsPipeline :: VkDevice -> VkRenderPass -> IO (VkPipelineLayout, [VkPipeline])
 createGraphicsPipeline vkDev0 vkRePa = do
     vkSMIV  <- createVkShaderModuleInfo nullPtr (VkShaderModuleCreateFlags 0) "Shaders/Simple.v.spv"
     vkSMIF  <- createVkShaderModuleInfo nullPtr (VkShaderModuleCreateFlags 0) "Shaders/Simple.f.spv"
@@ -71,8 +71,7 @@ createGraphicsPipeline vkDev0 vkRePa = do
 
     vkDestroyShaderModule vkDev0 vkSMoV
     vkDestroyShaderModule vkDev0 vkSMoF
-    vkDestroyPipeline vkDev0 $ head graphP
-    return vkPiLa
+    return (vkPiLa, graphP)
     where
         colorComponentRGBA = VkColorComponentFlags $ unVkColorComponentFlagBits colorComponentRBit .|. unVkColorComponentFlagBits colorComponentGBit .|. unVkColorComponentFlagBits colorComponentBBit .|. unVkColorComponentFlagBits colorComponentABit
 
@@ -89,7 +88,9 @@ initialize :: VkInstance -> VkSurfaceKHR -> IO ()
 initialize vkInst vkSurf = do
     vkDev0 <- createDevice vkInst vkSurf
     vkRePa <- createRenderpass vkDev0
-    vkPLGr <- createGraphicsPipeline vkDev0 vkRePa
+    graphs <- createGraphicsPipeline vkDev0 vkRePa
+    let vkPLGr = fst graphs
+        graphP = head $ snd graphs
 
     vkSCCI <- createVkSwapchainCreateInfo nullPtr (VkSwapchainCreateFlagsKHR 0) vkSurf 3 formatB8G8R8A8SRGB colorSpaceSRGBNonlinearKHR
                     (VkExtent2D 1600 900) 1 imageUsageColorAttachmentBit sharingModeExclusive 1 [0] surfaceTransformIdentityBitKHR
@@ -115,6 +116,8 @@ initialize vkInst vkSurf = do
         vkClVa = VkClearValueC vkCCVa
     vkRPBI  <- createVkRenderPassBeginInfo nullPtr vkRePa vkFram rendAr 1 [vkClVa]
     vkCmdBeginRenderPass vkCoB0 vkRPBI subpassContentsInline
+    vkCmdBindPipeline vkCoB0 pipelineBindPointGraphics graphP
+    vkCmdDraw vkCoB0 3 1 0 0
 
     vkBCI   <- vkCreateBufferInfo nullPtr (VkBufferCreateFlags 0) (VkDeviceSize 2136746240)
         [bufferUsageStorageBufferBit, bufferUsageTransferDSTBit] sharingModeExclusive 3 [0]
@@ -160,7 +163,6 @@ initialize vkInst vkSurf = do
     -- vkCmdFillBuffer vkCoB0 vkBuff (VkDeviceSize 0) wholeSize 0
     -- vkCmdClearColorImage vkCoB0 vkIma0 imageLayoutGeneral vkCCVa 1 [vkISR0]
     let vkCoP0 = head vkCoPi
-    vkCmdBindPipeline vkCoB0 pipelineBindPointCompute vkCoP0
     vkCmdBindDescriptorSets vkCoB0 pipelineBindPointCompute vkPLCo 0 1 vkAlDS 0 Nothing
     -- vkCmdPushConstants vkCoB0 vkPLCo [shaderStageComputeBit] 0 4 (0 :: Word)
     _ <- vkEndCommandBuffer vkCoB0
@@ -180,6 +182,7 @@ initialize vkInst vkSurf = do
     vkDestroyDescriptorPool vkDev0 vkDeP0
     vkDestroyPipelineCache vkDev0 vkPiCa
     vkDestroyPipelineLayout vkDev0 vkPLGr
+    vkDestroyPipeline vkDev0 graphP
     vkDestroyPipelineLayout vkDev0 vkPLCo
     vkDestroyDescriptorSetLayout vkDev0 vkDSL0
     vkDestroyPipeline vkDev0 vkCoP0
