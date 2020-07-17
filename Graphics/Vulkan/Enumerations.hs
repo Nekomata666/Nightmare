@@ -81,6 +81,8 @@ newtype VkStencilOp = VkStencilOp { unVkStencilOp :: Word32 }
     deriving (Eq)
 newtype VkStructureType = VkStructureType { unVkStructureType :: Int32 }
     deriving (Eq)
+newtype VkSubpassContents = VkSubpassContents { unVkSubpassContents :: Word32 }
+    deriving (Eq)
 newtype VkSubpassDescriptionFlagBits = VkSubpassDescriptionFlagBits { unVkSubpassDescriptionFlagBits :: Word32}
     deriving (Eq)
 newtype VkSurfaceTransformFlagBitsKHR = VkSurfaceTransformFlagBitsKHR { unVkSurfaceTransformFlagBitsKHR :: Word32 }
@@ -1142,6 +1144,12 @@ structureTypeExportMemoryAllocateInfoNV                         = VkStructureTyp
 structureTypeValidationFlagsEXT                                 :: VkStructureType
 structureTypeValidationFlagsEXT                                 = VkStructureType 1000061000
 
+-- VkSubpassContents
+subpassContentsInline                    :: VkSubpassContents
+subpassContentsInline                    = VkSubpassContents 0
+subpassContentsSecondaryCommandBuffers   :: VkSubpassContents
+subpassContentsSecondaryCommandBuffers   = VkSubpassContents 1
+
 -- VkSubpassDescriptionFlagBits
 subpassDescriptionPerViewAttributesBitNVX       :: VkSubpassDescriptionFlagBits
 subpassDescriptionPerViewAttributesBitNVX       = VkSubpassDescriptionFlagBits 1
@@ -1479,6 +1487,14 @@ instance Storable VkStructureType where
         v <- peekByteOff p 0
         return (VkStructureType v)
     poke p (VkStructureType v) = pokeByteOff p 0 v
+
+instance Storable VkSubpassContents where
+    sizeOf _    = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkSubpassContents v)
+    poke p (VkSubpassContents v) = pokeByteOff p 0 v
 
 instance Storable VkSubpassDescriptionFlagBits where
     sizeOf _    = 4

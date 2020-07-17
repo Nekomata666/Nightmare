@@ -11,7 +11,7 @@ import Graphics.Utilities
 import Graphics.Vulkan.Buffers
 import Graphics.Vulkan.Command
 import Graphics.Vulkan.Constants
-import Graphics.Vulkan.Data (VkAttachmentDescription(..), VkAttachmentReference(..), VkComponentMapping(..), VkComputePipelineCreateInfo(..), VkDescriptorBufferInfo(..), VkDescriptorPoolSize(..), VkExtent2D(..), VkExtent3D(..), VkImageSubresourceRange(..), VkImageViewCreateInfo(..), VkMemoryRequirements(..), VkOffset2D(..), VkPipelineColorBlendAttachmentState(..), VkPipelineInputAssemblyStateCreateInfo(..), VkPipelineMultisampleStateCreateInfo(..), VkPipelineRasterizationStateCreateInfo(..), VkRect2D(..), VkViewport(..))
+import Graphics.Vulkan.Data (VkAttachmentDescription(..), VkAttachmentReference(..), VkClearValue(..), VkComponentMapping(..), VkComputePipelineCreateInfo(..), VkDescriptorBufferInfo(..), VkDescriptorPoolSize(..), VkExtent2D(..), VkExtent3D(..), VkImageSubresourceRange(..), VkImageViewCreateInfo(..), VkMemoryRequirements(..), VkOffset2D(..), VkPipelineColorBlendAttachmentState(..), VkPipelineInputAssemblyStateCreateInfo(..), VkPipelineMultisampleStateCreateInfo(..), VkPipelineRasterizationStateCreateInfo(..), VkRect2D(..), VkViewport(..))
 import Graphics.Vulkan.Descriptor
 import Graphics.Vulkan.Devices
 import Graphics.Vulkan.Enumerations
@@ -103,6 +103,17 @@ initialize vkInst vkSurf = do
     vkFCI0  <- createVkFramebufferCreateInfo nullPtr (VkFramebufferCreateFlags 0) vkRePa 1 [vkIV0] 1600 900 1
     vkFram  <- vkCreateFramebuffer vkDev0 vkFCI0
 
+    let vkCPIn = createVkCommandPoolInfo nullPtr (VkCommandPoolCreateFlags 0) 0
+    vkCPo0  <- vkCreateCommandPool vkDev0 vkCPIn
+    let vkCBAI = createVkCommandBufferAllocateInfo nullPtr vkCPo0 commandBufferLevelPrimary 1
+    vkCoBu  <- vkAllocateCommandBuffers vkDev0 vkCBAI
+    vkCBBI  <- createVkCommandBufferBeginInfo nullPtr (VkCommandBufferUsageFlags 0) Nothing
+    let vkCoB0 = head vkCoBu
+    _ <- vkBeginCommandBuffer vkCoB0 vkCBBI
+    vkCCVa  <- createVkClearColorValue [0,0,0,0]
+    let rendAr = VkRect2D (VkOffset2D 0 0) (VkExtent2D 1600 900)
+        vkClVa = VkClearValueC vkCCVa
+    vRPBI   <- createVkRenderPassBeginInfo nullPtr vkRePa vkFram rendAr 1 [vkClVa]
 
     vkBCI   <- vkCreateBufferInfo nullPtr (VkBufferCreateFlags 0) (VkDeviceSize 2136746240)
         [bufferUsageStorageBufferBit, bufferUsageTransferDSTBit] sharingModeExclusive 3 [0]
@@ -123,7 +134,6 @@ initialize vkInst vkSurf = do
     imagMB  <- vkBindImageMemory vkDev0 vkIma0 imagMe (alignment imagMR)
     imagSu  <- createVkImageSubresource [imageAspectColorBit] 4 0
     imagSL  <- vkGetImageSubresourceLayout vkDev0 vkIma0 imagSu
-    vkCCVa  <- createVkClearColorValue [0,0,0,0]
     vkSMIC  <- createVkShaderModuleInfo nullPtr (VkShaderModuleCreateFlags 0) "Shaders/Simple.c.spv"
     vkSMoC  <- vkCreateShaderModule vkDev0 vkSMIC
     vkPSIC  <- createVkPipelineShaderStageInfo nullPtr (VkPipelineShaderStageCreateFlags 0) shaderStageComputeBit vkSMoC "main" Nothing
@@ -145,13 +155,7 @@ initialize vkInst vkSurf = do
     vkWDS0 <- createVkWriteDescriptorSet nullPtr (head vkAlDS) 0 0 1 descriptorTypeStorageBuffer Nothing (Just vkDBIn) Nothing
     vkUpdateDescriptorSets vkDev0 1 (Just [vkWDS0]) 0 Nothing
     vkQue0 <- vkGetDeviceQueue vkDev0 0 0
-    let vkCPIn = createVkCommandPoolInfo nullPtr (VkCommandPoolCreateFlags 0) 0
-    vkCPo0 <- vkCreateCommandPool vkDev0 vkCPIn
-    let vkCBAI = createVkCommandBufferAllocateInfo nullPtr vkCPo0 commandBufferLevelPrimary 1
-    vkCoBu <- vkAllocateCommandBuffers vkDev0 vkCBAI
-    vkCBBI <- createVkCommandBufferBeginInfo nullPtr (VkCommandBufferUsageFlags 0) Nothing
-    let vkCoB0 = head vkCoBu
-    _ <- vkBeginCommandBuffer vkCoB0 vkCBBI
+
     vkCmdFillBuffer vkCoB0 vkBuff (VkDeviceSize 0) wholeSize 0
     vkCmdClearColorImage vkCoB0 vkIma0 imageLayoutGeneral vkCCVa 1 [vkISR0]
     let vkCoP0 = head vkCoPi
