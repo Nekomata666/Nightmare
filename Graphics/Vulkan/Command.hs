@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Command (createVkClearColorValue, createVkCommandBufferAllocateInfo, createVkCommandBufferBeginInfo, createVkCommandPoolInfo, createVkImageSubresourceRange, createVkRenderPassBeginInfo, vkAllocateCommandBuffers, vkBeginCommandBuffer, vkCmdBindDescriptorSets, vkCmdBindPipeline, vkCmdClearColorImage, vkCmdFillBuffer, vkCmdPushConstants, vkCreateCommandPool, vkDestroyCommandPool, vkEndCommandBuffer) where
+module Graphics.Vulkan.Command (createVkClearColorValue, createVkCommandBufferAllocateInfo, createVkCommandBufferBeginInfo, createVkCommandPoolInfo, createVkImageSubresourceRange, createVkRenderPassBeginInfo, vkAllocateCommandBuffers, vkBeginCommandBuffer, vkCmdBeginRenderPass, vkCmdBindDescriptorSets, vkCmdBindPipeline, vkCmdClearColorImage, vkCmdFillBuffer, vkCmdPushConstants, vkCreateCommandPool, vkDestroyCommandPool, vkEndCommandBuffer) where
 
 
 import Data.Maybe   (Maybe)
@@ -39,6 +39,9 @@ foreign import ccall unsafe "vkAllocateCommandBuffers"
 
 foreign import ccall unsafe "vkBeginCommandBuffer"
     c_vkBeginCommandBuffer :: VkCommandBuffer -> Ptr VkCommandBufferBeginInfo -> IO VkResult
+
+foreign import ccall unsafe "vkCmdBeginRenderPass"
+    c_vkCmdBeginRenderPass :: VkCommandBuffer -> Ptr VkRenderPassBeginInfo -> VkSubpassContents -> IO ()
 
 foreign import ccall unsafe "vkCmdBindDescriptorSets"
     c_vkCmdBindDescriptorSets :: VkCommandBuffer -> VkPipelineBindPoint -> VkPipelineLayout -> Word32 -> Word32 ->
@@ -111,6 +114,11 @@ vkBeginCommandBuffer :: VkCommandBuffer -> VkCommandBufferBeginInfo -> IO VkResu
 vkBeginCommandBuffer b i = alloca $ \p -> do
     poke p i
     c_vkBeginCommandBuffer b p
+
+vkCmdBeginRenderPass :: VkCommandBuffer -> VkRenderPassBeginInfo -> VkSubpassContents -> IO ()
+vkCmdBeginRenderPass cB rPBI sC = alloca $ \p -> do
+    poke p rPBI
+    c_vkCmdBeginRenderPass cB p sC
 
 vkCmdBindDescriptorSets :: VkCommandBuffer -> VkPipelineBindPoint -> VkPipelineLayout -> FirstSet -> DescriptorSetCount ->
     [VkDescriptorSet] -> DynamicOffsetCount -> Maybe [DynamicOffsets] -> IO ()

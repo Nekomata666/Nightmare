@@ -113,7 +113,8 @@ initialize vkInst vkSurf = do
     vkCCVa  <- createVkClearColorValue [0,0,0,0]
     let rendAr = VkRect2D (VkOffset2D 0 0) (VkExtent2D 1600 900)
         vkClVa = VkClearValueC vkCCVa
-    vRPBI   <- createVkRenderPassBeginInfo nullPtr vkRePa vkFram rendAr 1 [vkClVa]
+    vkRPBI  <- createVkRenderPassBeginInfo nullPtr vkRePa vkFram rendAr 1 [vkClVa]
+    vkCmdBeginRenderPass vkCoB0 vkRPBI subpassContentsInline
 
     vkBCI   <- vkCreateBufferInfo nullPtr (VkBufferCreateFlags 0) (VkDeviceSize 2136746240)
         [bufferUsageStorageBufferBit, bufferUsageTransferDSTBit] sharingModeExclusive 3 [0]
@@ -156,8 +157,8 @@ initialize vkInst vkSurf = do
     vkUpdateDescriptorSets vkDev0 1 (Just [vkWDS0]) 0 Nothing
     vkQue0 <- vkGetDeviceQueue vkDev0 0 0
 
-    vkCmdFillBuffer vkCoB0 vkBuff (VkDeviceSize 0) wholeSize 0
-    vkCmdClearColorImage vkCoB0 vkIma0 imageLayoutGeneral vkCCVa 1 [vkISR0]
+    -- vkCmdFillBuffer vkCoB0 vkBuff (VkDeviceSize 0) wholeSize 0
+    -- vkCmdClearColorImage vkCoB0 vkIma0 imageLayoutGeneral vkCCVa 1 [vkISR0]
     let vkCoP0 = head vkCoPi
     vkCmdBindPipeline vkCoB0 pipelineBindPointCompute vkCoP0
     vkCmdBindDescriptorSets vkCoB0 pipelineBindPointCompute vkPLCo 0 1 vkAlDS 0 Nothing
