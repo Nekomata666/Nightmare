@@ -1771,16 +1771,16 @@ instance Storable VkRect2D where
         pokeByteOff p 8 v2
 
 instance Storable VkRenderPassBeginInfo where
-    sizeOf _    = 52
-    alignment _ = 4
+    sizeOf _    = 64
+    alignment _ = 8
     peek p = do
         v1 <- peekByteOff p 0
         v2 <- peekByteOff p 8
         v3 <- peekByteOff p 16
         v4 <- peekByteOff p 24
         v5 <- peekByteOff p 32
-        v6 <- peekByteOff p 36
-        v7 <- peekByteOff p 44
+        v6 <- peekByteOff p 48
+        v7 <- peekByteOff p 56
         return (VkRenderPassBeginInfo v1 v2 v3 v4 v5 v6 v7)
     poke p (VkRenderPassBeginInfo v1 v2 v3 v4 v5 v6 v7) = do
         pokeByteOff p 0 v1
@@ -1788,8 +1788,8 @@ instance Storable VkRenderPassBeginInfo where
         pokeByteOff p 16 v3
         pokeByteOff p 24 v4
         pokeByteOff p 32 v5
-        pokeByteOff p 36 v6
-        pokeByteOff p 44 v7
+        pokeByteOff p 48 v6
+        pokeByteOff p 56 v7
 
 instance Storable VkRenderPassCreateInfo where
     sizeOf _    = 64
