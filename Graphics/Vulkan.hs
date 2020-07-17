@@ -15,6 +15,7 @@ import Graphics.Vulkan.Data (VkAttachmentDescription(..), VkAttachmentReference(
 import Graphics.Vulkan.Descriptor
 import Graphics.Vulkan.Devices
 import Graphics.Vulkan.Enumerations
+import Graphics.Vulkan.Framebuffer
 import Graphics.Vulkan.Images
 import Graphics.Vulkan.Instance
 import Graphics.Vulkan.Memory
@@ -70,6 +71,7 @@ createGraphicsPipeline vkDev0 vkRePa = do
 
     vkDestroyShaderModule vkDev0 vkSMoV
     vkDestroyShaderModule vkDev0 vkSMoF
+    vkDestroyPipeline vkDev0 $ head graphP
     return vkPiLa
     where
         colorComponentRGBA = VkColorComponentFlags $ unVkColorComponentFlagBits colorComponentRBit .|. unVkColorComponentFlagBits colorComponentGBit .|. unVkColorComponentFlagBits colorComponentBBit .|. unVkColorComponentFlagBits colorComponentABit
@@ -97,6 +99,8 @@ initialize vkInst vkSurf = do
     let vkIVCI = VkImageViewCreateInfo structureTypeImageViewCreateInfo nullPtr (VkImageViewCreateFlags 0) (head vkSCIs)
                     imageViewType2D formatB8G8R8A8SRGB vkCMId vkISR0
     vkIV0   <- vkCreateImageView vkDev0 vkIVCI
+
+    vkFCI0  <- createVkFramebufferCreateInfo nullPtr (VkFramebufferCreateFlags 0) vkRePa 1 [vkIV0] 1600 900 1
 
 
     vkBCI   <- vkCreateBufferInfo nullPtr (VkBufferCreateFlags 0) (VkDeviceSize 2136746240)
