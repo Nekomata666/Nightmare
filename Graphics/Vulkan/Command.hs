@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Command (createVkClearColorValue, createVkCommandBufferAllocateInfo, createVkCommandBufferBeginInfo, createVkCommandPoolInfo, createVkImageSubresourceRange, vkAllocateCommandBuffers, vkBeginCommandBuffer, vkCmdBindDescriptorSets, vkCmdBindPipeline, vkCmdClearColorImage, vkCmdFillBuffer, vkCmdPushConstants, vkCreateCommandPool, vkDestroyCommandPool, vkEndCommandBuffer) where
+module Graphics.Vulkan.Command (createVkClearColorValue, createVkCommandBufferAllocateInfo, createVkCommandBufferBeginInfo, createVkCommandPoolInfo, createVkImageSubresourceRange, createVkRenderPassBeginInfo, vkAllocateCommandBuffers, vkBeginCommandBuffer, vkCmdBindDescriptorSets, vkCmdBindPipeline, vkCmdClearColorImage, vkCmdFillBuffer, vkCmdPushConstants, vkCreateCommandPool, vkDestroyCommandPool, vkEndCommandBuffer) where
 
 
 import Data.Maybe   (Maybe)
@@ -19,6 +19,7 @@ import Graphics.Vulkan.Types
 -- Type aliases.
 type BaseArrayLayer             = Word32
 type BaseMipLevel               = Word32
+type ClearValueCount            = Word32
 type Data                       = Word32
 type DescriptorSetCount         = Word32
 type DynamicOffsetCount         = Word32
@@ -29,6 +30,7 @@ type LevelCount                 = Word32
 type Offset                     = VkDeviceSize
 type PushOffset                 = Word32
 type PushSize                   = Word32
+type QueueFamilyIndex           = Word32
 type RangeCount                 = Word32
 type Size                       = VkDeviceSize
 
@@ -80,7 +82,7 @@ createVkCommandBufferBeginInfo v f i = do
     p <- fromMaybeIO i
     return $ VkCommandBufferBeginInfo structureTypeCommandBufferBeginInfo v f p
 
-createVkCommandPoolInfo :: Ptr Void -> VkCommandPoolCreateFlags -> Word32 -> VkCommandPoolCreateInfo
+createVkCommandPoolInfo :: Ptr Void -> VkCommandPoolCreateFlags -> QueueFamilyIndex -> VkCommandPoolCreateInfo
 createVkCommandPoolInfo = VkCommandPoolCreateInfo structureTypeCommandPoolCreateInfo
 
 createVkImageSubresourceRange :: [VkImageAspectFlagBits] -> BaseMipLevel -> LevelCount -> BaseArrayLayer -> LayerCount ->
@@ -88,6 +90,13 @@ createVkImageSubresourceRange :: [VkImageAspectFlagBits] -> BaseMipLevel -> Leve
 createVkImageSubresourceRange iAFB = VkImageSubresourceRange iAF
     where
         iAF = VkImageAspectFlags $ vkBits unVkImageAspectFlagBits iAFB
+
+createVkRenderPassBeginInfo :: Ptr Void -> VkRenderPass -> VkFramebuffer -> VkRect2D -> ClearValueCount -> [VkClearValue] -> IO VkRenderPassBeginInfo
+createVkRenderPassBeginInfo v rP fB r2D cVC cV = allocaArray i $ \p -> do
+    pokeArray p cV
+    return $ VkRenderPassBeginInfo structureTypeRenderPassBeginInfo v rP fB r2D cVC p
+    where
+        i = cast cVC
 
 vkAllocateCommandBuffers :: VkDevice -> VkCommandBufferAllocateInfo -> IO [VkCommandBuffer]
 vkAllocateCommandBuffers d info@(VkCommandBufferAllocateInfo _ _ _ _ c) = alloca $ \pInfo ->

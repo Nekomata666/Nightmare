@@ -67,6 +67,14 @@ data VkClearColorValue = VkClearColorValue{
     word32 :: Ptr Word32 -- [4]
 }
 
+data VkClearDepthStencilValue = VkClearDepthStencilValue{
+    depth :: Float,
+    stencil :: Word32
+}
+
+data VkClearValue = VkClearValueC{color :: VkClearColorValue} |
+    VkClearValueDS{depthStencil :: VkClearDepthStencilValue}
+
 data VkCommandBufferAllocateInfo =VkCommandBufferAllocateInfo{
     sType :: VkStructureType,
     next :: Ptr Void,
@@ -523,6 +531,16 @@ data VkRect2D = VkRect2D{
     extent :: VkExtent2D
 }
 
+data VkRenderPassBeginInfo = VkRenderPassBeginInfo{
+    sType :: VkStructureType,
+    next :: Ptr Void,
+    renderPass :: VkRenderPass,
+    framebuffer :: VkFramebuffer,
+    renderArea :: VkRect2D,
+    clearValueCount :: Word32,
+    pClearValues :: Ptr VkClearValue
+}
+
 data VkRenderPassCreateInfo = VkRenderPassCreateInfo{
     sType :: VkStructureType,
     next :: Ptr Void,
@@ -772,6 +790,29 @@ instance Storable VkClearColorValue where
         v <- peekByteOff p 0
         return (VkClearColorValue v)
     poke p (VkClearColorValue v) = pokeByteOff p 0 v
+
+instance Storable VkClearDepthStencilValue where
+    sizeOf _    = 8
+    alignment _ = 4
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 4
+        return (VkClearDepthStencilValue v1 v2)
+    poke p (VkClearDepthStencilValue v1 v2) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 4 v2
+
+instance Storable VkClearValue where
+    sizeOf _    = 16
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkClearValueC v)
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkClearValueDS v)
+    poke p (VkClearValueC v) = pokeByteOff p 0 v
+    poke p (VkClearValueDS v) = pokeByteOff p 0 v
 
 instance Storable VkCommandBufferAllocateInfo where
     sizeOf _    = 32
@@ -1728,6 +1769,27 @@ instance Storable VkRect2D where
     poke p (VkRect2D v1 v2) = do
         pokeByteOff p 0 v1
         pokeByteOff p 8 v2
+
+instance Storable VkRenderPassBeginInfo where
+    sizeOf _    = 52
+    alignment _ = 4
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 8
+        v3 <- peekByteOff p 16
+        v4 <- peekByteOff p 24
+        v5 <- peekByteOff p 32
+        v6 <- peekByteOff p 36
+        v7 <- peekByteOff p 44
+        return (VkRenderPassBeginInfo v1 v2 v3 v4 v5 v6 v7)
+    poke p (VkRenderPassBeginInfo v1 v2 v3 v4 v5 v6 v7) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 8 v2
+        pokeByteOff p 16 v3
+        pokeByteOff p 24 v4
+        pokeByteOff p 32 v5
+        pokeByteOff p 36 v6
+        pokeByteOff p 44 v7
 
 instance Storable VkRenderPassCreateInfo where
     sizeOf _    = 64
