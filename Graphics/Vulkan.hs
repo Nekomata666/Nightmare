@@ -170,6 +170,7 @@ initialize vkInst vkSurf = do
     ----------------------------------------------------------------------------------------------------------------------------
     _ <- vkQueueWaitIdle vkQue0
     _ <- vkDeviceWaitIdle vkDev0
+    vkDestroyFramebuffer vkDev0 vkFram
     vkDestroyRenderPass vkDev0 vkRePa
     vkDestroyDescriptorPool vkDev0 vkDeP0
     vkDestroyPipelineCache vkDev0 vkPiCa

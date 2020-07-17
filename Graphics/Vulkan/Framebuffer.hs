@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Framebuffer (createVkFramebufferCreateInfo, vkCreateFramebuffer) where
+module Graphics.Vulkan.Framebuffer (createVkFramebufferCreateInfo, vkCreateFramebuffer, vkDestroyFramebuffer) where
 
 
 import Data.Maybe   (Maybe)
@@ -26,6 +26,9 @@ type Layers             = Word32
 foreign import ccall unsafe "vkCreateFramebuffer"
     c_vkCreateFramebuffer :: VkDevice -> Ptr VkFramebufferCreateInfo -> Ptr VkAllocationCallbacks -> Ptr VkFramebuffer -> IO VkResult
 
+foreign import ccall unsafe "vkDestroyFramebuffer"
+    c_vkDestroyFramebuffer :: VkDevice -> VkFramebuffer -> Ptr VkAllocationCallbacks -> IO ()
+
 createVkFramebufferCreateInfo :: Ptr Void -> VkFramebufferCreateFlags -> VkRenderPass -> AttachmentCount -> [VkImageView] ->
     Width -> Height -> Layers -> IO VkFramebufferCreateInfo
 createVkFramebufferCreateInfo v fCF rP aC iV w h l = allocaArray i $ \p -> do
@@ -40,3 +43,6 @@ vkCreateFramebuffer d fCI = alloca $ \pFCI ->
         poke pFCI fCI
         _ <- c_vkCreateFramebuffer d pFCI nullPtr pF
         peek pF
+
+vkDestroyFramebuffer :: VkDevice -> VkFramebuffer -> IO ()
+vkDestroyFramebuffer d f = c_vkDestroyFramebuffer d f nullPtr
