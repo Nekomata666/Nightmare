@@ -3,7 +3,7 @@
 module Graphics.Vulkan.Enumerations where
 
 
-import Data.Word (Word32)
+import Data.Word (Word32, Word64)
 
 import Foreign
 
@@ -72,6 +72,8 @@ newtype VkPrimitiveTopology = VkPrimitiveTopology { unVkPrimitiveTopology :: Wor
 newtype VkResult = VkResult { unVkResult :: Int32 }
     deriving (Eq)
 newtype VkSampleCountFlagBits = VkSampleCountFlagBits { unVkSampleCountFlagBits :: Word32 }
+    deriving (Eq)
+newtype VkSemaphoreType = VkSemaphoreType { unVkSemaphoreType :: Word64 }
     deriving (Eq)
 newtype VkShaderStageFlagBits = VkShaderStageFlagBits { unVkShaderStageFlagBits :: Word32 }
     deriving (Eq)
@@ -976,6 +978,12 @@ sampleCount32Bit             = VkSampleCountFlagBits 32
 sampleCount64Bit             :: VkSampleCountFlagBits
 sampleCount64Bit             = VkSampleCountFlagBits 64
 
+-- VkSemaphoreType
+vkSemaphoreTypeBinary   :: VkSemaphoreType
+vkSemaphoreTypeBinary   = VkSemaphoreType 0
+vkSemaphoreTypeTimeline :: VkSemaphoreType
+vkSemaphoreTypeTimeline = VkSemaphoreType 1
+
 -- VkShaderStageFlagBits
 shaderStageVertexBit                     :: VkShaderStageFlagBits
 shaderStageVertexBit                     = VkShaderStageFlagBits 1
@@ -1037,8 +1045,8 @@ structureTypeBindSparseInfo                                     :: VkStructureTy
 structureTypeBindSparseInfo                                     = VkStructureType 7
 structureTypeFenceCreateInfo                                    :: VkStructureType
 structureTypeFenceCreateInfo                                    = VkStructureType 8
-structureTypeSemaphreCreateInfo                                 :: VkStructureType
-structureTypeSemaphreCreateInfo                                 = VkStructureType 9
+structureTypeSemaphoreCreateInfo                                :: VkStructureType
+structureTypeSemaphoreCreateInfo                                = VkStructureType 9
 structureTypeEventCreateInfo                                    :: VkStructureType
 structureTypeEventCreateInfo                                    = VkStructureType 10
 structureTypeQueryPoolCreateInfo                                :: VkStructureType
@@ -1117,6 +1125,7 @@ structureTypeLoaderInstanceCreateInfo                           :: VkStructureTy
 structureTypeLoaderInstanceCreateInfo                           = VkStructureType 47
 structureTypeLoaderDeviceCreateInfo                             :: VkStructureType
 structureTypeLoaderDeviceCreateInfo                             = VkStructureType 48
+-- Todo: Add more later --------------------------------------------------------------------
 structureTypeSwapchainCreateInfoKHR                             :: VkStructureType
 structureTypeSwapchainCreateInfoKHR                             = VkStructureType 1000001000
 structureTypePresentInfoKHR                                     :: VkStructureType
@@ -1143,6 +1152,8 @@ structureTypeExportMemoryAllocateInfoNV                         :: VkStructureTy
 structureTypeExportMemoryAllocateInfoNV                         = VkStructureType 1000056001
 structureTypeValidationFlagsEXT                                 :: VkStructureType
 structureTypeValidationFlagsEXT                                 = VkStructureType 1000061000
+structureTypeSemaphoreTypeCreateInfo                            :: VkStructureType
+structureTypeSemaphoreTypeCreateInfo                            = VkStructureType 1000207002
 
 -- VkSubpassContents
 subpassContentsInline                    :: VkSubpassContents
@@ -1455,6 +1466,14 @@ instance Storable VkSampleCountFlagBits where
         v <- peekByteOff p 0
         return (VkSampleCountFlagBits v)
     poke p (VkSampleCountFlagBits v) = pokeByteOff p 0 v
+
+instance Storable VkSemaphoreType where
+    sizeOf _    = 8
+    alignment _ = 8
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkSemaphoreType v)
+    poke p (VkSemaphoreType v) = pokeByteOff p 0 v
 
 instance Storable VkShaderStageFlagBits where
     sizeOf _    = 4
