@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Buffers (vkBindBufferMemory, vkCreateBuffer, vkCreateBufferInfo, vkDestroyBuffer, vkGetBufferMemoryRequirements) where
+module Graphics.Vulkan.Buffers (createVkBufferInfo, vkBindBufferMemory, vkCreateBuffer, vkDestroyBuffer, vkGetBufferMemoryRequirements) where
 
 
 import Data.Void (Void)
@@ -27,6 +27,15 @@ foreign import ccall unsafe "vkDestroyBuffer"
 foreign import ccall unsafe "vkGetBufferMemoryRequirements"
     c_vkGetBufferMemoryRequirements :: VkDevice -> VkBuffer -> Ptr VkMemoryRequirements -> IO ()
 
+createVkBufferInfo :: Next -> VkBufferCreateFlags -> VkDeviceSize -> [VkBufferUsageFlagBits] -> VkSharingMode ->
+    Word32 -> [Word32] -> IO VkBufferCreateInfo
+createVkBufferInfo v bCF dS bUFB sM iC ind = allocaArray i $ \p -> do
+    pokeArray p ind
+    return $ VkBufferCreateInfo structureTypeBufferCreateInfo v bCF dS u sM iC p
+        where
+            i = cast iC
+            u = VkBufferUsageFlags $ vkBits unVkBufferUsageFlagBits bUFB
+
 vkBindBufferMemory :: VkDevice  -> VkBuffer -> VkDeviceMemory -> VkDeviceSize -> IO VkResult
 vkBindBufferMemory = c_vkBindBufferMemory
 
@@ -36,15 +45,6 @@ vkCreateBuffer device info = alloca $ \pInfo ->
         poke pInfo info
         _ <- c_vkCreateBuffer device pInfo nullPtr pBuffer
         peek pBuffer
-
-vkCreateBufferInfo :: Ptr Void -> VkBufferCreateFlags -> VkDeviceSize -> [VkBufferUsageFlagBits] -> VkSharingMode ->
-    Word32 -> [Word32] -> IO VkBufferCreateInfo
-vkCreateBufferInfo v bCF dS bUFB sM iC ind = allocaArray i $ \p -> do
-    pokeArray p ind
-    return $ VkBufferCreateInfo structureTypeBufferCreateInfo v bCF dS u sM iC p
-        where
-            i = cast iC
-            u = VkBufferUsageFlags $ vkBits unVkBufferUsageFlagBits bUFB
 
 vkDestroyBuffer :: VkDevice -> VkBuffer -> IO ()
 vkDestroyBuffer d b = c_vkDestroyBuffer d b nullPtr

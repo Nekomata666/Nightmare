@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Devices (createVkDevice, createVkDeviceCreateInfo, createVkDeviceQueueCreateInfo, vkDestroyDevice, vkDeviceWaitIdle, vkEnumeratePhysicalDevices, vkGetDeviceQueue, vkGetPhysicalDeviceFeatures, vkGetPhysicalDeviceSurfaceSupport) where
+module Graphics.Vulkan.Devices (createVkDeviceCreateInfo, createVkDeviceQueueCreateInfo, vkCreateDevice, vkDestroyDevice, vkDeviceWaitIdle, vkEnumeratePhysicalDevices, vkGetDeviceQueue, vkGetPhysicalDeviceFeatures, vkGetPhysicalDeviceSurfaceSupport) where
 
 
 import Data.Void (Void)
@@ -53,13 +53,6 @@ createVkDeviceQueueCreateInfo v f fI c p = allocaArray i $ \pP -> do
     where
         i = cast c
 
-createVkDevice :: VkPhysicalDevice -> VkDeviceCreateInfo -> IO VkDevice
-createVkDevice physical dCI = alloca $ \pDCI ->
-    alloca $ \pPD -> do
-        poke pDCI dCI
-        _ <- c_vkCreateDevice physical pDCI nullPtr pPD
-        peek pPD
-
 createVkDeviceCreateInfo :: Next -> VkDeviceCreateFlags -> Word32 -> VkDeviceQueueCreateInfo -> Word32 -> [String] ->
     VkPhysicalDeviceFeatures -> IO VkDeviceCreateInfo
 createVkDeviceCreateInfo v fl qC dQCI eC e fe =
@@ -73,6 +66,13 @@ createVkDeviceCreateInfo v fl qC dQCI eC e fe =
                 return $ VkDeviceCreateInfo structureTypeDeviceCreateInfo v fl qC pQ 0 nullPtr eC pE pF
                 where
                     i = cast eC
+
+vkCreateDevice :: VkPhysicalDevice -> VkDeviceCreateInfo -> IO VkDevice
+vkCreateDevice physical dCI = alloca $ \pDCI ->
+    alloca $ \pPD -> do
+        poke pDCI dCI
+        _ <- c_vkCreateDevice physical pDCI nullPtr pPD
+        peek pPD
 
 vkDestroyDevice :: VkDevice -> IO ()
 vkDestroyDevice d = c_vkDestroyDevice d nullPtr

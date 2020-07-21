@@ -37,7 +37,7 @@ foreign import ccall unsafe "vkGetImageSubresourceLayout"
     c_vkGetImageSubresourceLayout :: VkDevice -> VkImage -> Ptr VkImageSubresource -> Ptr VkSubresourceLayout -> IO ()
 
 -- Note: ImageLayout needs to be imageLayoutUndefined or imageLayoutPreinitialized
-createVkImageCreateInfo :: Ptr Void -> [VkImageCreateFlagBits] -> VkImageType -> VkFormat -> VkExtent3D -> Word32 -> Word32 ->
+createVkImageCreateInfo :: Next -> [VkImageCreateFlagBits] -> VkImageType -> VkFormat -> VkExtent3D -> Word32 -> Word32 ->
     VkSampleCountFlagBits -> VkImageTiling -> [VkImageUsageFlagBits] -> VkSharingMode -> Word32 -> [Word32] -> VkImageLayout ->
     IO VkImageCreateInfo
 createVkImageCreateInfo v cFlags t f e m a s ti uFlags mo iC indices l = allocaArray i $ \p -> do

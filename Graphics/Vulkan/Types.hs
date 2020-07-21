@@ -64,6 +64,7 @@ newtype VkPipelineViewportStateCreateFlags = VkPipelineViewportStateCreateFlags 
 newtype VkQueryControlFlags = VkQueryControlFlags { unVkQueryControlFlags :: VkFlags }
 newtype VkQueryPipelineStatisticFlags = VkQueryPipelineStatisticFlags { unVkQueryPipelineStatisticFlags :: VkFlags }
 newtype VkRenderPassCreateFlags = VkRenderPassCreateFlags { unVkRenderPassCreateFlags :: VkFlags }
+newtype VkSemaphoreCreateFlags = VkSemaphoreCreateFlags { unVkSemaphoreCreateFlags :: VkFlags }
 newtype VkShaderModuleCreateFlags = VkShaderModuleCreateFlags { unVkShaderModuleCreateFlags :: VkFlags }
 newtype VkShaderStageFlags = VkShaderStageFlags { unVkShaderStageFlags :: VkFlags }
 newtype VkSubpassDescriptionFlags = VkSubpassDescriptionFlags { unVkSubpassDescriptionFlags :: VkFlags }
@@ -422,6 +423,14 @@ instance Storable VkRenderPassCreateFlags where
         v <- peekByteOff p 0
         return (VkRenderPassCreateFlags v)
     poke p (VkRenderPassCreateFlags v) = pokeByteOff p 0 v
+
+instance Storable VkSemaphoreCreateFlags where
+    sizeOf _    = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkSemaphoreCreateFlags v)
+    poke p (VkSemaphoreCreateFlags v) = pokeByteOff p 0 v
 
 instance Storable VkShaderModuleCreateFlags where
     sizeOf _    = 4

@@ -28,7 +28,7 @@ foreign import ccall unsafe "vkQueueSubmit"
 foreign import ccall unsafe "vkQueueWaitIdle"
     c_vkQueueWaitIdle :: VkQueue -> IO VkResult
 
-createVkSubmitInfo :: Ptr Void -> Word32 -> Maybe [VkSemaphore] -> Maybe [VkPipelineStageFlags] -> Word32 -> [VkCommandBuffer] ->
+createVkSubmitInfo :: Next -> Word32 -> Maybe [VkSemaphore] -> Maybe [VkPipelineStageFlags] -> Word32 -> [VkCommandBuffer] ->
     Word32 -> Maybe [VkSemaphore] -> IO VkSubmitInfo
 createVkSubmitInfo v wSC wS f cBC cB sSC sS = allocaArray cBI $ \pCB -> do
     pWS <- fromMaybeListIO wSC wS

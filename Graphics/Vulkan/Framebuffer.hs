@@ -29,7 +29,7 @@ foreign import ccall unsafe "vkCreateFramebuffer"
 foreign import ccall unsafe "vkDestroyFramebuffer"
     c_vkDestroyFramebuffer :: VkDevice -> VkFramebuffer -> Ptr VkAllocationCallbacks -> IO ()
 
-createVkFramebufferCreateInfo :: Ptr Void -> VkFramebufferCreateFlags -> VkRenderPass -> AttachmentCount -> [VkImageView] ->
+createVkFramebufferCreateInfo :: Next -> VkFramebufferCreateFlags -> VkRenderPass -> AttachmentCount -> [VkImageView] ->
     Width -> Height -> Layers -> IO VkFramebufferCreateInfo
 createVkFramebufferCreateInfo v fCF rP aC iV w h l = allocaArray i $ \p -> do
     pokeArray p iV

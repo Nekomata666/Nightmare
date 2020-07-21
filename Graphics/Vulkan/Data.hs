@@ -553,6 +553,12 @@ data VkRenderPassCreateInfo = VkRenderPassCreateInfo{
     pDependencies :: Ptr VkSubpassDependency
 }
 
+data VkSemaphoreCreateInfo = VkSemaphoreCreateInfo{
+    sType :: VkStructureType,
+    next :: Ptr Void,
+    flags :: VkSemaphoreCreateFlags
+}
+
 data VkShaderModuleCreateInfo = VkShaderModuleCreateInfo{
     sType :: VkStructureType,
     next :: Ptr Void,
@@ -1815,6 +1821,19 @@ instance Storable VkRenderPassCreateInfo where
         pokeByteOff p 40 v7
         pokeByteOff p 48 v8
         pokeByteOff p 56 v9
+
+instance Storable VkSemaphoreCreateInfo where
+    sizeOf _    = 24
+    alignment _ = 8
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 8
+        v3 <- peekByteOff p 16
+        return (VkSemaphoreCreateInfo v1 v2 v3)
+    poke p (VkSemaphoreCreateInfo v1 v2 v3) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 8 v2
+        pokeByteOff p 16 v3
 
 instance Storable VkShaderModuleCreateInfo where
     sizeOf _    = 40
