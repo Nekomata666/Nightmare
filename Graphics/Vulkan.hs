@@ -22,6 +22,7 @@ import Graphics.Vulkan.Memory
 import Graphics.Vulkan.Pipelines
 import Graphics.Vulkan.Queue
 import Graphics.Vulkan.Renderpass
+import Graphics.Vulkan.Semaphores
 import Graphics.Vulkan.Shaders
 import Graphics.Vulkan.Surface
 import Graphics.Vulkan.Types
@@ -43,7 +44,7 @@ createDevice vkInst vkSurf = do
     _       <- vkGetPhysicalDeviceSurfaceSupport vkPD0 0 vkSurf
     vkDQCI  <- createVkDeviceQueueCreateInfo nullPtr (VkDeviceQueueCreateFlags 0) 0 1 [1.0]
     vkDCI   <- createVkDeviceCreateInfo nullPtr (VkDeviceCreateFlags 0) 1 vkDQCI 1 ["VK_KHR_swapchain"] vkPDF
-    createVkDevice vkPD0 vkDCI
+    vkCreateDevice vkPD0 vkDCI
 
 createGraphicsPipeline :: VkDevice -> VkRenderPass -> IO (VkPipelineLayout, [VkPipeline])
 createGraphicsPipeline vkDev0 vkRePa = do
@@ -120,11 +121,13 @@ initialize vkInst vkSurf = do
     vkCmdDraw vkCoB0 3 1 0 0
     vkCmdEndRenderPass vkCoB0
 
-    vkBCI   <- vkCreateBufferInfo nullPtr (VkBufferCreateFlags 0) (VkDeviceSize 2136746240)
+    vkSTCI <- createTimelineCreateInfo nullPtr vkSemaphoreTypeTimeline 0
+
+    vkBCI   <- createVkBufferInfo nullPtr (VkBufferCreateFlags 0) (VkDeviceSize 2136746240)
         [bufferUsageStorageBufferBit, bufferUsageTransferDSTBit] sharingModeExclusive 3 [0]
     vkBuff  <- vkCreateBuffer vkDev0 vkBCI
     vkBuMR  <- vkGetBufferMemoryRequirements vkDev0 vkBuff
-    let vkMAI = vkCreateMemoryAllocateInfo nullPtr (VkDeviceSize $ 2136746240 + 16) 1
+    let vkMAI = createVkMemoryAllocateInfo nullPtr (VkDeviceSize $ 2136746240 + 16) 1
     vkDeMe  <- vkAllocateMemory vkDev0 vkMAI
     buffMa  <- vkMapMemory vkDev0 vkDeMe (VkDeviceSize 0) wholeSize (VkMemoryMapFlags 0)
     buffMB  <- vkBindBufferMemory vkDev0 vkBuff vkDeMe (alignment vkBuMR)
@@ -133,7 +136,7 @@ initialize vkInst vkSurf = do
                 [imageUsageColorAttachmentBit, imageUsageTransferDSTBit] sharingModeExclusive 1 [0] imageLayoutUndefined
     vkIma0  <- vkCreateImage vkDev0 vkICIn
     imagMR  <- vkGetImageMemoryRequirements vkDev0 vkIma0
-    let imagMI = vkCreateMemoryAllocateInfo nullPtr (VkDeviceSize $ 699904 + 256) 2
+    let imagMI = createVkMemoryAllocateInfo nullPtr (VkDeviceSize $ 699904 + 256) 2
     imagMe  <- vkAllocateMemory vkDev0 imagMI
     imagMa  <- vkMapMemory vkDev0 imagMe (VkDeviceSize 0) wholeSize (VkMemoryMapFlags 0)
     imagMB  <- vkBindImageMemory vkDev0 vkIma0 imagMe (alignment imagMR)

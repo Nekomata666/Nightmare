@@ -4,7 +4,7 @@ module Graphics.Vulkan.Data where
 
 
 import Data.Void (Void)
-import Data.Word (Word8, Word32)
+import Data.Word (Word8, Word32, Word64)
 
 import Foreign
 import Foreign.C.String
@@ -557,6 +557,13 @@ data VkSemaphoreCreateInfo = VkSemaphoreCreateInfo{
     sType :: VkStructureType,
     next :: Ptr Void,
     flags :: VkSemaphoreCreateFlags
+}
+
+data VkSemaphoreTypeCreateInfo = VkSemaphoreTypeCreateInfo{
+    sType :: VkStructureType,
+    next :: Ptr Void,
+    semaphoreType :: VkSemaphoreType,
+    initialValue :: Word64
 }
 
 data VkShaderModuleCreateInfo = VkShaderModuleCreateInfo{
@@ -1834,6 +1841,21 @@ instance Storable VkSemaphoreCreateInfo where
         pokeByteOff p 0 v1
         pokeByteOff p 8 v2
         pokeByteOff p 16 v3
+
+instance Storable VkSemaphoreTypeCreateInfo where
+    sizeOf _    = 32
+    alignment _ = 8
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 8
+        v3 <- peekByteOff p 16
+        v4 <- peekByteOff p 24
+        return (VkSemaphoreTypeCreateInfo v1 v2 v3 v4)
+    poke p (VkSemaphoreTypeCreateInfo v1 v2 v3 v4) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 8 v2
+        pokeByteOff p 16 v3
+        pokeByteOff p 24 v4
 
 instance Storable VkShaderModuleCreateInfo where
     sizeOf _    = 40
