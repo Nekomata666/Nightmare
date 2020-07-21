@@ -86,16 +86,16 @@ createVkClearColorValue v = allocaArray 4 $ \p -> do
     pokeArray p v
     return $ VkClearColorValue p
 
-createVkCommandBufferAllocateInfo :: Ptr Void -> VkCommandPool -> VkCommandBufferLevel -> Word32 -> VkCommandBufferAllocateInfo
+createVkCommandBufferAllocateInfo :: Next -> VkCommandPool -> VkCommandBufferLevel -> Word32 -> VkCommandBufferAllocateInfo
 createVkCommandBufferAllocateInfo = VkCommandBufferAllocateInfo structureTypeCommandBufferAllocateInfo
 
-createVkCommandBufferBeginInfo :: Ptr Void -> VkCommandBufferUsageFlags -> Maybe VkCommandBufferInheritanceInfo ->
+createVkCommandBufferBeginInfo :: Next -> VkCommandBufferUsageFlags -> Maybe VkCommandBufferInheritanceInfo ->
     IO VkCommandBufferBeginInfo
 createVkCommandBufferBeginInfo v f i = do
     p <- fromMaybeIO i
     return $ VkCommandBufferBeginInfo structureTypeCommandBufferBeginInfo v f p
 
-createVkCommandPoolInfo :: Ptr Void -> VkCommandPoolCreateFlags -> QueueFamilyIndex -> VkCommandPoolCreateInfo
+createVkCommandPoolInfo :: Next -> VkCommandPoolCreateFlags -> QueueFamilyIndex -> VkCommandPoolCreateInfo
 createVkCommandPoolInfo = VkCommandPoolCreateInfo structureTypeCommandPoolCreateInfo
 
 createVkImageSubresourceRange :: [VkImageAspectFlagBits] -> BaseMipLevel -> LevelCount -> BaseArrayLayer -> LayerCount ->
@@ -104,7 +104,7 @@ createVkImageSubresourceRange iAFB = VkImageSubresourceRange iAF
     where
         iAF = VkImageAspectFlags $ vkBits unVkImageAspectFlagBits iAFB
 
-createVkRenderPassBeginInfo :: Ptr Void -> VkRenderPass -> VkFramebuffer -> VkRect2D -> ClearValueCount -> [VkClearValue] -> IO VkRenderPassBeginInfo
+createVkRenderPassBeginInfo :: Next -> VkRenderPass -> VkFramebuffer -> VkRect2D -> ClearValueCount -> [VkClearValue] -> IO VkRenderPassBeginInfo
 createVkRenderPassBeginInfo v rP fB r2D cVC cV = allocaArray i $ \p -> do
     pokeArray p cV
     return $ VkRenderPassBeginInfo structureTypeRenderPassBeginInfo v rP fB r2D cVC p

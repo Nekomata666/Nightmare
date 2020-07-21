@@ -34,15 +34,15 @@ foreign import ccall unsafe "vkCreateInstance"
 foreign import ccall unsafe "vkDestroyInstance"
     c_vkDestroyInstance :: VkInstance -> Ptr VkAllocationCallbacks -> IO ()
 
-createVkApplicationInfo :: Ptr Void -> ApplicationName -> ApplicationVersion -> EngineName -> EngineVersion -> APIVersion ->
+createVkApplicationInfo :: Next -> ApplicationName -> ApplicationVersion -> EngineName -> EngineVersion -> APIVersion ->
     IO VkApplicationInfo
 createVkApplicationInfo v aN appV eN eV apiV = do
     aN' <- newCString aN
     eN' <- newCString eN
     return $ VkApplicationInfo structureTypeApplicationInfo v aN' appV eN' eV apiV
 
-createVkInstanceCreateInfo :: Ptr Void -> VkFlags -> Maybe VkApplicationInfo -> LayerCount -> Maybe LayerNames ->
-    ExtensionCount -> Maybe ExtensionNames -> IO VkInstanceCreateInfo
+createVkInstanceCreateInfo :: Next -> VkFlags -> Maybe VkApplicationInfo -> LayerCount -> Maybe LayerNames -> ExtensionCount ->
+    Maybe ExtensionNames -> IO VkInstanceCreateInfo
 createVkInstanceCreateInfo v f aI lC lN eC eN = do
     aI' <- fromMaybeIO aI
     lN' <- fromMaybeStringListIO lC lN

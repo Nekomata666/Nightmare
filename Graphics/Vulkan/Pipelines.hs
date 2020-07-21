@@ -59,7 +59,7 @@ foreign import ccall unsafe "vkDestroyPipelineCache"
 foreign import ccall unsafe "vkDestroyPipelineLayout"
     c_vkDestroyPipelineLayout :: VkDevice -> VkPipelineLayout -> Ptr VkAllocationCallbacks -> IO ()
 
-createVkPipelineCacheInfo :: Ptr Void -> VkPipelineCacheCreateFlags -> FilePath -> IO VkPipelineCacheCreateInfo
+createVkPipelineCacheInfo :: Next -> VkPipelineCacheCreateFlags -> FilePath -> IO VkPipelineCacheCreateInfo
 createVkPipelineCacheInfo v pCCF fP
     | null fP = return $ VkPipelineCacheCreateInfo structureTypePipelineCacheCreateInfo v pCCF (CSize 0) nullPtr
     | otherwise  = do
@@ -68,7 +68,7 @@ createVkPipelineCacheInfo v pCCF fP
             cs = snd r
         return $ VkPipelineCacheCreateInfo structureTypePipelineCacheCreateInfo v pCCF cs (castPtr p)
 
-createVkPipelineColorBlendStateCreateInfo :: Ptr Void -> VkPipelineColorBlendStateCreateFlags -> LogicOpEnable -> VkLogicOp ->
+createVkPipelineColorBlendStateCreateInfo :: Next -> VkPipelineColorBlendStateCreateFlags -> LogicOpEnable -> VkLogicOp ->
     AttachmentCount -> [VkPipelineColorBlendAttachmentState] -> BlendConstants -> IO VkPipelineColorBlendStateCreateInfo
 createVkPipelineColorBlendStateCreateInfo v pCBSCF lOE lO aC pCBAS bC = allocaArray i $ \p ->
     allocaArray 4 $ \pBC -> do
@@ -78,14 +78,14 @@ createVkPipelineColorBlendStateCreateInfo v pCBSCF lOE lO aC pCBAS bC = allocaAr
         where
             i = cast aC
 
-createVkPipelineDynamicStateCreateInfo :: Ptr Void -> VkPipelineDynamicStateCreateFlags -> DynamicStateCount -> [VkDynamicState] -> IO VkPipelineDynamicStateCreateInfo
+createVkPipelineDynamicStateCreateInfo :: Next -> VkPipelineDynamicStateCreateFlags -> DynamicStateCount -> [VkDynamicState] -> IO VkPipelineDynamicStateCreateInfo
 createVkPipelineDynamicStateCreateInfo v pDSCF dSC dS = allocaArray i $ \pDS -> do
     pokeArray pDS dS
     return $ VkPipelineDynamicStateCreateInfo structureTypePipelineDynamicStateCreateInfo v pDSCF dSC pDS
     where
         i = cast dSC
 
-createVkGraphicsPipelineCreateInfo :: Ptr Void -> VkPipelineCreateFlags -> StageCount -> [VkPipelineShaderStageCreateInfo] -> VkPipelineVertexInputStateCreateInfo -> VkPipelineInputAssemblyStateCreateInfo -> Maybe VkPipelineTessellationStateCreateInfo -> VkPipelineViewportStateCreateInfo -> VkPipelineRasterizationStateCreateInfo -> VkPipelineMultisampleStateCreateInfo -> Maybe VkPipelineDepthStencilStateCreateInfo -> VkPipelineColorBlendStateCreateInfo -> Maybe VkPipelineDynamicStateCreateInfo -> VkPipelineLayout -> VkRenderPass -> Subpass -> VkPipeline -> BasePipelineIndex -> IO VkGraphicsPipelineCreateInfo
+createVkGraphicsPipelineCreateInfo :: Next -> VkPipelineCreateFlags -> StageCount -> [VkPipelineShaderStageCreateInfo] -> VkPipelineVertexInputStateCreateInfo -> VkPipelineInputAssemblyStateCreateInfo -> Maybe VkPipelineTessellationStateCreateInfo -> VkPipelineViewportStateCreateInfo -> VkPipelineRasterizationStateCreateInfo -> VkPipelineMultisampleStateCreateInfo -> Maybe VkPipelineDepthStencilStateCreateInfo -> VkPipelineColorBlendStateCreateInfo -> Maybe VkPipelineDynamicStateCreateInfo -> VkPipelineLayout -> VkRenderPass -> Subpass -> VkPipeline -> BasePipelineIndex -> IO VkGraphicsPipelineCreateInfo
 createVkGraphicsPipelineCreateInfo v pCF sC pSSCI pVISCI pIASCI mPTSCI pVSCI pRSCI pMSCI mPDSSCI pCBSCI mPDSCI pL rP sP p bPI = allocaArray i $ \pPSSCI ->
     alloca $ \pPVISCI ->
         alloca $ \pPIASCI ->
@@ -107,21 +107,21 @@ createVkGraphicsPipelineCreateInfo v pCF sC pSSCI pVISCI pIASCI mPTSCI pVSCI pRS
                             where
                                 i = cast sC
 
-createVkPipelineLayoutCreateInfo :: Ptr Void -> VkPipelineLayoutCreateFlags -> SetLayoutCount -> Maybe [VkDescriptorSetLayout] ->
+createVkPipelineLayoutCreateInfo :: Next -> VkPipelineLayoutCreateFlags -> SetLayoutCount -> Maybe [VkDescriptorSetLayout] ->
     PushConstantRangeCount -> Maybe [VkPushConstantRange] -> IO VkPipelineLayoutCreateInfo
 createVkPipelineLayoutCreateInfo v pLCF sLC mDSL pCRC mPCR = do
     pDSL <- fromMaybeListIO sLC mDSL
     pPCR <- fromMaybeListIO pCRC mPCR
     return $ VkPipelineLayoutCreateInfo structureTypePipelineLayoutCreateInfo v pLCF sLC pDSL pCRC pPCR
 
-createVkPipelineShaderStageInfo :: Ptr Void -> VkPipelineShaderStageCreateFlags -> VkShaderStageFlagBits -> VkShaderModule ->
+createVkPipelineShaderStageInfo :: Next -> VkPipelineShaderStageCreateFlags -> VkShaderStageFlagBits -> VkShaderModule ->
     Name -> Maybe VkSpecializationInfo -> IO VkPipelineShaderStageCreateInfo
 createVkPipelineShaderStageInfo v pSSCF sSF sM n mVKSI = do
     n' <- newCString n
     pInfo <- fromMaybeIO mVKSI
     return $ VkPipelineShaderStageCreateInfo structureTypePipelineShaderStageCreateInfo v pSSCF sSF sM n' pInfo
 
-createVkPipelineVertexInputStateCreateInfo :: Ptr Void -> VkPipelineVertexInputStateCreateFlags -> VertexBindingDescriptionCount ->
+createVkPipelineVertexInputStateCreateInfo :: Next -> VkPipelineVertexInputStateCreateFlags -> VertexBindingDescriptionCount ->
     Maybe [VkVertexInputBindingDescription] -> VertexAttributeDescriptionCount -> Maybe [VkVertexInputAttributeDescription] ->
     IO VkPipelineVertexInputStateCreateInfo
 createVkPipelineVertexInputStateCreateInfo v pVISCF vBDC mVIBD vADC mVIAD = do
@@ -129,7 +129,7 @@ createVkPipelineVertexInputStateCreateInfo v pVISCF vBDC mVIBD vADC mVIAD = do
     pVIAD <- fromMaybeListIO vADC mVIAD
     return $ VkPipelineVertexInputStateCreateInfo structureTypePipelineVertexInputStateCreateInfo v pVISCF vBDC pVIBD vADC pVIAD
 
-createVkPipelineViewportStateCreateInfo :: Ptr Void -> VkPipelineViewportStateCreateFlags -> ViewportCount -> [VkViewport] ->
+createVkPipelineViewportStateCreateInfo :: Next -> VkPipelineViewportStateCreateFlags -> ViewportCount -> [VkViewport] ->
     ScissorCount -> [VkRect2D] -> IO VkPipelineViewportStateCreateInfo
 createVkPipelineViewportStateCreateInfo v pVSCF vC vVs sC sS = allocaArray i1 $ \pVVs ->
     allocaArray i2 $ \pSSs -> do

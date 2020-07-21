@@ -21,7 +21,7 @@ foreign import ccall unsafe "vkCreateShaderModule"
 foreign import ccall unsafe "vkDestroyShaderModule"
     c_vkDestroyShaderModule :: VkDevice -> VkShaderModule -> Ptr VkAllocationCallbacks -> IO ()
 
-createVkShaderModuleInfo :: Ptr Void -> VkShaderModuleCreateFlags -> FilePath -> IO VkShaderModuleCreateInfo
+createVkShaderModuleInfo :: Next -> VkShaderModuleCreateFlags -> FilePath -> IO VkShaderModuleCreateInfo
 createVkShaderModuleInfo v sMCF fP = do
     r <- openVulkanFile fP
     let p  = fst r

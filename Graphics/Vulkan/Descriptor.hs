@@ -48,7 +48,7 @@ foreign import ccall unsafe "vkDestroyDescriptorSetLayout"
 foreign import ccall unsafe "vkUpdateDescriptorSets"
     c_vkUpdateDescriptorSets :: VkDevice -> Word32 -> Ptr VkWriteDescriptorSet -> Word32 -> Ptr VkCopyDescriptorSet -> IO ()
 
-createVkDescriptorPoolCreateInfo :: Ptr Void -> VkDescriptorPoolCreateFlags -> MaxSets -> PoolSizeCount ->
+createVkDescriptorPoolCreateInfo :: Next -> VkDescriptorPoolCreateFlags -> MaxSets -> PoolSizeCount ->
     [VkDescriptorPoolSize] -> IO VkDescriptorPoolCreateInfo
 createVkDescriptorPoolCreateInfo v dPCF mS pSC dPS = allocaArray i $ \p -> do
     pokeArray p dPS
@@ -56,7 +56,7 @@ createVkDescriptorPoolCreateInfo v dPCF mS pSC dPS = allocaArray i $ \p -> do
     where
         i = cast pSC
 
-createVkDescriptorSetAllocateInfo :: Ptr Void -> VkDescriptorPool -> DescriptorSetCount -> [VkDescriptorSetLayout] ->
+createVkDescriptorSetAllocateInfo :: Next -> VkDescriptorPool -> DescriptorSetCount -> [VkDescriptorSetLayout] ->
     IO VkDescriptorSetAllocateInfo
 createVkDescriptorSetAllocateInfo v dP dSC dSL= allocaArray i $ \p -> do
     pokeArray p dSL
@@ -72,13 +72,13 @@ createVkDescriptorSetLayoutBinding b dT dC sSFB m = do
     where
         sSF = VkShaderStageFlags $ vkBits unVkShaderStageFlagBits sSFB
 
-createVkDescriptorSetLayoutCreateInfo :: Ptr Void -> VkDescriptorSetLayoutCreateFlags -> BindingCount ->
+createVkDescriptorSetLayoutCreateInfo :: Next -> VkDescriptorSetLayoutCreateFlags -> BindingCount ->
     Maybe [VkDescriptorSetLayoutBinding] -> IO VkDescriptorSetLayoutCreateInfo
 createVkDescriptorSetLayoutCreateInfo v dSLCF bC dSLB = do
     p <- fromMaybeListIO bC dSLB
     return $ VkDescriptorSetLayoutCreateInfo structureTypeDescriptorSetLayoutCreateInfo v dSLCF bC p
 
-createVkWriteDescriptorSet :: Ptr Void -> VkDescriptorSet -> Binding -> ArrayElement -> DescriptorCount -> VkDescriptorType ->
+createVkWriteDescriptorSet :: Next -> VkDescriptorSet -> Binding -> ArrayElement -> DescriptorCount -> VkDescriptorType ->
     Maybe VkDescriptorImageInfo -> Maybe VkDescriptorBufferInfo -> Maybe VkBufferView -> IO VkWriteDescriptorSet
 createVkWriteDescriptorSet v dS b aE dC dT dII dBI bV = do
     pDII <- fromMaybeIO dII

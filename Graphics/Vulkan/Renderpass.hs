@@ -37,7 +37,7 @@ foreign import ccall unsafe "vkCreateRenderPass"
 foreign import ccall unsafe "vkDestroyRenderPass"
     c_vkDestroyRenderPass :: VkDevice -> VkRenderPass -> Ptr VkAllocationCallbacks -> IO ()
 
-createVkRenderPassCreateInfo :: Ptr Void -> VkRenderPassCreateFlags -> AttachmentCount -> Maybe [VkAttachmentDescription] ->
+createVkRenderPassCreateInfo :: Next -> VkRenderPassCreateFlags -> AttachmentCount -> Maybe [VkAttachmentDescription] ->
     SubpassCount -> Maybe [VkSubpassDescription] -> DependencyCount -> Maybe [VkSubpassDependency] -> IO VkRenderPassCreateInfo
 createVkRenderPassCreateInfo v rPCF aC aD sC sDes dC sDep = do
     aD'   <- fromMaybeListIO aC aD
