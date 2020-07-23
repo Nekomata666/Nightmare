@@ -43,7 +43,7 @@ createDevice vkInst vkSurf = do
     vkPDF2  <- vkGetPhysicalDeviceFeatures2 vkPD0
     _       <- vkGetPhysicalDeviceSurfaceSupport vkPD0 0 vkSurf
     vkDQCI  <- createVkDeviceQueueCreateInfo nullPtr (VkDeviceQueueCreateFlags 0) 0 1 [1.0]
-    vkDCI   <- createVkDeviceCreateInfo (castPtr vkPDF2) (VkDeviceCreateFlags 0) 1 vkDQCI 2 ["VK_KHR_swapchain", "VK_KHR_timeline_semaphore"] Nothing
+    vkDCI   <- createVkDeviceCreateInfo (castPtr vkPDF2) (VkDeviceCreateFlags 0) 1 vkDQCI 1 ["VK_KHR_swapchain"] Nothing
     vkCreateDevice vkPD0 vkDCI
 
 createGraphicsPipeline :: VkDevice -> VkRenderPass -> IO (VkPipelineLayout, [VkPipeline])
@@ -182,6 +182,7 @@ initialize vkInst vkSurf = do
     ----------------------------------------------------------------------------------------------------------------------------
     _ <- vkQueueWaitIdle vkQue0
     _ <- vkDeviceWaitIdle vkDev0
+    vkDestroySemaphore vkDev0 vkSTim
     vkDestroyFramebuffer vkDev0 vkFram
     vkDestroyRenderPass vkDev0 vkRePa
     vkDestroyDescriptorPool vkDev0 vkDeP0
