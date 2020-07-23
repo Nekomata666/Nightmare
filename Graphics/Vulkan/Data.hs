@@ -382,7 +382,82 @@ data VkPhysicalDeviceFeatures = VkPhysicalDeviceFeatures{
     sparseResidencyAliased :: VkBool,
     variableMultisampleRate :: VkBool,
     inheritedQueries :: VkBool
-}
+} deriving (Show)
+
+data VkPhysicalDeviceFeatures2 = VkPhysicalDeviceFeatures2 {
+    sType :: VkStructureType,
+    pNext :: Ptr Void,
+    features :: VkPhysicalDeviceFeatures
+} deriving (Show)
+
+data VkPhysicalDeviceVulkan11Features = VkPhysicalDeviceVulkan11Features {
+    sType :: VkStructureType,
+    pNext :: Ptr Void,
+    storageBuffer16BitAccess :: VkBool,
+    uniformAndStorageBuffer16BitAccess :: VkBool,
+    storagePushConstant16 :: VkBool,
+    storageInputOutput16 :: VkBool,
+    multiview :: VkBool,
+    multiviewGeometryShader :: VkBool,
+    multiviewTessellationShader :: VkBool,
+    variablePointersStorageBuffer :: VkBool,
+    variablePointers :: VkBool,
+    protectedMemory :: VkBool,
+    samplerYcbcrConversion :: VkBool,
+    shaderDrawParameters :: VkBool
+} deriving (Show)
+
+data VkPhysicalDeviceVulkan12Features = VkPhysicalDeviceVulkan12Features {
+    sType :: VkStructureType,
+    pNext :: Ptr Void,
+    samplerMirrorClampToEdge :: VkBool,
+    drawIndirectCount :: VkBool,
+    storageBuffer8BitAccess :: VkBool,
+    uniformAndStorageBuffer8BitAccess :: VkBool,
+    storagePushConstant8 :: VkBool,
+    shaderBufferInt64Atomics :: VkBool,
+    shaderSharedInt64Atomics :: VkBool,
+    shaderFloat16 :: VkBool,
+    shaderInt8 :: VkBool,
+    descriptorIndexing :: VkBool,
+    shaderInputAttachmentArrayDynamicIndexing :: VkBool,
+    shaderUniformTexelBufferArrayDynamicIndexing :: VkBool,
+    shaderStorageTexelBufferArrayDynamicIndexing :: VkBool,
+    shaderUniformBufferArrayNonUniformIndexing :: VkBool,
+    shaderSampledImageArrayNonUniformIndexing :: VkBool,
+    shaderStorageBufferArrayNonUniformIndexing :: VkBool,
+    shaderStorageImageArrayNonUniformIndexing :: VkBool,
+    shaderInputAttachmentArrayNonUniformIndexing :: VkBool,
+    shaderUniformTexelBufferArrayNonUniformIndexing :: VkBool,
+    shaderStorageTexelBufferArrayNonUniformIndexing :: VkBool,
+    descriptorBindingUniformBufferUpdateAfterBind :: VkBool,
+    descriptorBindingSampledImageUpdateAfterBind :: VkBool,
+    descriptorBindingStorageImageUpdateAfterBind :: VkBool,
+    descriptorBindingStorageBufferUpdateAfterBind :: VkBool,
+    descriptorBindingUniformTexelBufferUpdateAfterBind :: VkBool,
+    descriptorBindingStorageTexelBufferUpdateAfterBind :: VkBool,
+    descriptorBindingUpdateUnusedWhilePending :: VkBool,
+    descriptorBindingPartiallyBound :: VkBool,
+    descriptorBindingVariableDescriptorCount :: VkBool,
+    runtimeDescriptorArray :: VkBool,
+    samplerFilterMinmax :: VkBool,
+    scalarBlockLayout :: VkBool,
+    imagelessFramebuffer :: VkBool,
+    uniformBufferStandardLayout :: VkBool,
+    shaderSubgroupExtendedTypes :: VkBool,
+    separateDepthStencilLayouts :: VkBool,
+    hostQueryReset :: VkBool,
+    timelineSemaphore :: VkBool,
+    bufferDeviceAddress :: VkBool,
+    bufferDeviceAddressCaptureReplay :: VkBool,
+    bufferDeviceAddressMultiDevice :: VkBool,
+    vulkanMemoryModel :: VkBool,
+    vulkanMemoryModelDeviceScope :: VkBool,
+    vulkanMemoryModelAvailabilityVisibilityChains :: VkBool,
+    shaderOutputViewportIndex :: VkBool,
+    shaderOutputLayer :: VkBool,
+    subgroupBroadcastDynamicId :: VkBool
+} deriving (Show)
 
 data VkPipelineCacheCreateInfo = VkPipelineCacheCreateInfo{
     sType :: VkStructureType,
@@ -1473,6 +1548,159 @@ instance Storable VkPhysicalDeviceFeatures where
         pokeByteOff p 208 v53
         pokeByteOff p 212 v54
         pokeByteOff p 216 v55
+
+instance Storable VkPhysicalDeviceFeatures2 where
+    sizeOf _    = 240
+    alignment _ = 8
+    peek p = do
+        v01 <- peekByteOff p 0
+        v02 <- peekByteOff p 8
+        v03 <- peekByteOff p 16
+        return (VkPhysicalDeviceFeatures2 v01 v02 v03)
+    poke p (VkPhysicalDeviceFeatures2 v01 v02 v03) = do
+        pokeByteOff p 0 v01
+        pokeByteOff p 8 v02
+        pokeByteOff p 16 v03
+
+instance Storable VkPhysicalDeviceVulkan11Features where
+    sizeOf _    = 64
+    alignment _ = 8
+    peek p = do
+        v01 <- peekByteOff p 0
+        v02 <- peekByteOff p 8
+        v03 <- peekByteOff p 16
+        v04 <- peekByteOff p 20
+        v05 <- peekByteOff p 24
+        v06 <- peekByteOff p 28
+        v07 <- peekByteOff p 32
+        v08 <- peekByteOff p 36
+        v09 <- peekByteOff p 40
+        v10 <- peekByteOff p 44
+        v11 <- peekByteOff p 48
+        v12 <- peekByteOff p 52
+        v13 <- peekByteOff p 56
+        v14 <- peekByteOff p 60
+        return (VkPhysicalDeviceVulkan11Features v01 v02 v03 v04 v05 v06 v07 v08 v09 v10 v11 v12 v13 v14)
+    poke p (VkPhysicalDeviceVulkan11Features v01 v02 v03 v04 v05 v06 v07 v08 v09 v10 v11 v12 v13 v14) = do
+        pokeByteOff p 0 v01
+        pokeByteOff p 8 v02
+        pokeByteOff p 16 v03
+        pokeByteOff p 20 v04
+        pokeByteOff p 24 v05
+        pokeByteOff p 28 v06
+        pokeByteOff p 32 v07
+        pokeByteOff p 36 v08
+        pokeByteOff p 40 v09
+        pokeByteOff p 44 v10
+        pokeByteOff p 48 v11
+        pokeByteOff p 52 v12
+        pokeByteOff p 56 v13
+        pokeByteOff p 60 v14
+
+instance Storable VkPhysicalDeviceVulkan12Features where
+    sizeOf _    = 200
+    alignment _ = 4
+    peek p = do
+        v01 <- peekByteOff p 0
+        v02 <- peekByteOff p 4
+        v03 <- peekByteOff p 12
+        v04 <- peekByteOff p 16
+        v05 <- peekByteOff p 20
+        v06 <- peekByteOff p 24
+        v07 <- peekByteOff p 28
+        v08 <- peekByteOff p 32
+        v09 <- peekByteOff p 36
+        v10 <- peekByteOff p 40
+        v11 <- peekByteOff p 44
+        v12 <- peekByteOff p 48
+        v13 <- peekByteOff p 52
+        v14 <- peekByteOff p 56
+        v15 <- peekByteOff p 60
+        v16 <- peekByteOff p 64
+        v17 <- peekByteOff p 68
+        v18 <- peekByteOff p 72
+        v19 <- peekByteOff p 76
+        v20 <- peekByteOff p 80
+        v21 <- peekByteOff p 84
+        v22 <- peekByteOff p 88
+        v23 <- peekByteOff p 92
+        v24 <- peekByteOff p 96
+        v25 <- peekByteOff p 100
+        v26 <- peekByteOff p 104
+        v27 <- peekByteOff p 108
+        v28 <- peekByteOff p 112
+        v29 <- peekByteOff p 116
+        v30 <- peekByteOff p 120
+        v31 <- peekByteOff p 124
+        v32 <- peekByteOff p 128
+        v33 <- peekByteOff p 132
+        v34 <- peekByteOff p 136
+        v35 <- peekByteOff p 140
+        v36 <- peekByteOff p 144
+        v37 <- peekByteOff p 148
+        v38 <- peekByteOff p 152
+        v39 <- peekByteOff p 156
+        v40 <- peekByteOff p 160
+        v41 <- peekByteOff p 164
+        v42 <- peekByteOff p 168
+        v43 <- peekByteOff p 172
+        v44 <- peekByteOff p 176
+        v45 <- peekByteOff p 180
+        v46 <- peekByteOff p 184
+        v47 <- peekByteOff p 188
+        v48 <- peekByteOff p 192
+        v49 <- peekByteOff p 196
+        return (VkPhysicalDeviceVulkan12Features v01 v02 v03 v04 v05 v06 v07 v08 v09 v10 v11 v12 v13 v14 v15 v16 v17 v18 v19 v20 v21 v22 v23 v24 v25 v26 v27 v28 v29 v30 v31 v32 v33 v34 v35 v36 v37 v38 v39 v40 v41 v42 v43 v44 v45 v46 v47 v48 v49)
+    poke p (VkPhysicalDeviceVulkan12Features v01 v02 v03 v04 v05 v06 v07 v08 v09 v10 v11 v12 v13 v14 v15 v16 v17 v18 v19 v20 v21 v22 v23 v24 v25 v26 v27 v28 v29 v30 v31 v32 v33 v34 v35 v36 v37 v38 v39 v40 v41 v42 v43 v44 v45 v46 v47 v48 v49) = do
+        pokeByteOff p 0 v01
+        pokeByteOff p 4 v02
+        pokeByteOff p 12 v03
+        pokeByteOff p 16 v04
+        pokeByteOff p 20 v05
+        pokeByteOff p 24 v06
+        pokeByteOff p 28 v07
+        pokeByteOff p 32 v08
+        pokeByteOff p 36 v09
+        pokeByteOff p 40 v10
+        pokeByteOff p 44 v11
+        pokeByteOff p 48 v12
+        pokeByteOff p 52 v13
+        pokeByteOff p 56 v14
+        pokeByteOff p 60 v15
+        pokeByteOff p 64 v16
+        pokeByteOff p 68 v17
+        pokeByteOff p 72 v18
+        pokeByteOff p 76 v19
+        pokeByteOff p 80 v20
+        pokeByteOff p 84 v21
+        pokeByteOff p 88 v22
+        pokeByteOff p 92 v23
+        pokeByteOff p 96 v24
+        pokeByteOff p 100 v25
+        pokeByteOff p 104 v26
+        pokeByteOff p 108 v27
+        pokeByteOff p 112 v28
+        pokeByteOff p 116 v29
+        pokeByteOff p 120 v30
+        pokeByteOff p 124 v31
+        pokeByteOff p 128 v32
+        pokeByteOff p 132 v33
+        pokeByteOff p 136 v34
+        pokeByteOff p 140 v35
+        pokeByteOff p 144 v36
+        pokeByteOff p 148 v37
+        pokeByteOff p 152 v38
+        pokeByteOff p 156 v39
+        pokeByteOff p 160 v40
+        pokeByteOff p 164 v41
+        pokeByteOff p 168 v42
+        pokeByteOff p 172 v43
+        pokeByteOff p 176 v44
+        pokeByteOff p 180 v45
+        pokeByteOff p 184 v46
+        pokeByteOff p 188 v47
+        pokeByteOff p 192 v48
+        pokeByteOff p 196 v49
 
 instance Storable VkPipelineCacheCreateInfo where
     sizeOf _    = 40

@@ -82,7 +82,7 @@ newtype VkSharingMode = VkSharingMode { unVkSharingMode :: Word32 }
 newtype VkStencilOp = VkStencilOp { unVkStencilOp :: Word32 }
     deriving (Eq)
 newtype VkStructureType = VkStructureType { unVkStructureType :: Int32 }
-    deriving (Eq)
+    deriving (Eq, Show)
 newtype VkSubpassContents = VkSubpassContents { unVkSubpassContents :: Word32 }
     deriving (Eq)
 newtype VkSubpassDescriptionFlagBits = VkSubpassDescriptionFlagBits { unVkSubpassDescriptionFlagBits :: Word32}
@@ -1125,6 +1125,14 @@ structureTypeLoaderInstanceCreateInfo                           :: VkStructureTy
 structureTypeLoaderInstanceCreateInfo                           = VkStructureType 47
 structureTypeLoaderDeviceCreateInfo                             :: VkStructureType
 structureTypeLoaderDeviceCreateInfo                             = VkStructureType 48
+structureTypePhysicalDeviceVulkan11Features                     :: VkStructureType
+structureTypePhysicalDeviceVulkan11Features                     = VkStructureType 49
+structureTypePhysicalDeviceVulkan11Properties                   :: VkStructureType
+structureTypePhysicalDeviceVulkan11Properties                   = VkStructureType 50
+structureTypePhysicalDeviceVulkan12Features                     :: VkStructureType
+structureTypePhysicalDeviceVulkan12Features                     = VkStructureType 51
+structureTypePhysicalDeviceVulkan12Properties                   :: VkStructureType
+structureTypePhysicalDeviceVulkan12Properties                   = VkStructureType 52
 -- Todo: Add more later --------------------------------------------------------------------
 structureTypeSwapchainCreateInfoKHR                             :: VkStructureType
 structureTypeSwapchainCreateInfoKHR                             = VkStructureType 1000001000
@@ -1150,6 +1158,10 @@ structureTypeExternalMemoryImageCreateInfoNV                    :: VkStructureTy
 structureTypeExternalMemoryImageCreateInfoNV                    = VkStructureType 1000056000
 structureTypeExportMemoryAllocateInfoNV                         :: VkStructureType
 structureTypeExportMemoryAllocateInfoNV                         = VkStructureType 1000056001
+structureTypePhysicalDeviceFeatures2                            :: VkStructureType
+structureTypePhysicalDeviceFeatures2                            = VkStructureType 1000059000
+structureTypePhysicalDeviceProperties2                          :: VkStructureType
+structureTypePhysicalDeviceProperties2                          = VkStructureType 1000059001
 structureTypeValidationFlagsEXT                                 :: VkStructureType
 structureTypeValidationFlagsEXT                                 = VkStructureType 1000061000
 structureTypeSemaphoreTypeCreateInfo                            :: VkStructureType

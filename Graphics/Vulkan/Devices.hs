@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Devices (createVkDeviceCreateInfo, createVkDeviceQueueCreateInfo, vkCreateDevice, vkDestroyDevice, vkDeviceWaitIdle, vkEnumeratePhysicalDevices, vkGetDeviceQueue, vkGetPhysicalDeviceFeatures, vkGetPhysicalDeviceSurfaceSupport) where
+module Graphics.Vulkan.Devices (createVkDeviceCreateInfo, createVkDeviceQueueCreateInfo, vkCreateDevice, vkDestroyDevice, vkDeviceWaitIdle, vkEnumeratePhysicalDevices, vkGetDeviceQueue, vkGetPhysicalDeviceFeatures2, vkGetPhysicalDeviceSurfaceSupport) where
 
 
 import Data.Void (Void)
@@ -11,6 +11,7 @@ import Foreign.C.String
 
 import Graphics.Utilities
 
+import Graphics.Vulkan.Constants
 import Graphics.Vulkan.Data
 import Graphics.Vulkan.Enumerations
 import Graphics.Vulkan.Types
@@ -39,8 +40,8 @@ foreign import ccall unsafe "vkEnumeratePhysicalDevices"
 foreign import ccall unsafe "vkGetDeviceQueue"
     c_vkGetDeviceQueue :: VkDevice -> Word32 -> Word32 -> Ptr VkQueue -> IO ()
 
-foreign import ccall unsafe "vkGetPhysicalDeviceFeatures"
-    c_vkGetPhysicalDeviceFeatures :: VkPhysicalDevice -> Ptr VkPhysicalDeviceFeatures -> IO ()
+foreign import ccall unsafe "vkGetPhysicalDeviceFeatures2"
+    c_vkGetPhysicalDeviceFeatures2 :: VkPhysicalDevice -> Ptr VkPhysicalDeviceFeatures2 -> IO ()
 
 foreign import ccall unsafe "vkGetPhysicalDeviceSurfaceSupportKHR"
     c_vkGetPhysicalDeviceSurfaceSupportKHR :: VkPhysicalDevice -> Word32 -> VkSurfaceKHR -> Ptr VkBool -> IO VkResult
@@ -54,18 +55,40 @@ createVkDeviceQueueCreateInfo v f fI c p = allocaArray i $ \pP -> do
         i = cast c
 
 createVkDeviceCreateInfo :: Next -> VkDeviceCreateFlags -> Word32 -> VkDeviceQueueCreateInfo -> Word32 -> [String] ->
-    VkPhysicalDeviceFeatures -> IO VkDeviceCreateInfo
+    Maybe VkPhysicalDeviceFeatures -> IO VkDeviceCreateInfo
 createVkDeviceCreateInfo v fl qC dQCI eC e fe =
     alloca $ \pQ ->
-        alloca $ \pF ->
-            allocaArray i $ \pE -> do
-                e' <- stringListToCStringList e
-                poke pQ dQCI
-                poke pF fe
-                pokeArray pE e'
-                return $ VkDeviceCreateInfo structureTypeDeviceCreateInfo v fl qC pQ 0 nullPtr eC pE pF
-                where
-                    i = cast eC
+        allocaArray i $ \pE -> do
+            e' <- stringListToCStringList e
+            poke pQ dQCI
+            pF <- fromMaybeIO fe
+            pokeArray pE e'
+            return $ VkDeviceCreateInfo structureTypeDeviceCreateInfo v fl qC pQ 0 nullPtr eC pE pF
+            where
+                i = cast eC
+
+createVkPhysicalDeviceFeatures2 :: IO (Ptr VkPhysicalDeviceFeatures2)
+createVkPhysicalDeviceFeatures2 = alloca $ \p -> do
+    pV11F <- createVkPhysicalDeviceVulkan11Features
+    poke p $ VkPhysicalDeviceFeatures2 structureTypePhysicalDeviceFeatures2 (castPtr pV11F) pDF
+    return p
+    where
+        pDF = VkPhysicalDeviceFeatures vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse
+
+createVkPhysicalDeviceVulkan11Features :: IO (Ptr VkPhysicalDeviceVulkan11Features)
+createVkPhysicalDeviceVulkan11Features = alloca $ \p -> do
+    n <- createVkPhysicalDeviceVulkan12Features
+    poke p $ pV11F n
+    return p
+    where
+        pV11F n = VkPhysicalDeviceVulkan11Features structureTypePhysicalDeviceVulkan11Features (castPtr n) vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse
+
+createVkPhysicalDeviceVulkan12Features:: IO (Ptr VkPhysicalDeviceVulkan12Features)
+createVkPhysicalDeviceVulkan12Features = alloca $ \p -> do
+    poke p pV12F
+    return p
+    where
+        pV12F = VkPhysicalDeviceVulkan12Features structureTypePhysicalDeviceVulkan12Features nullPtr vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse vkFalse
 
 vkCreateDevice :: VkPhysicalDevice -> VkDeviceCreateInfo -> IO VkDevice
 vkCreateDevice physical dCI = alloca $ \pDCI ->
@@ -101,10 +124,11 @@ vkGetDeviceQueue d qFI qI = alloca $ \p -> do
     c_vkGetDeviceQueue d qFI qI p
     peek p
 
-vkGetPhysicalDeviceFeatures :: VkPhysicalDevice -> IO VkPhysicalDeviceFeatures
-vkGetPhysicalDeviceFeatures pD = alloca $ \pF -> do
-    c_vkGetPhysicalDeviceFeatures pD pF
-    peek pF
+vkGetPhysicalDeviceFeatures2 :: VkPhysicalDevice -> IO (Ptr VkPhysicalDeviceFeatures2)
+vkGetPhysicalDeviceFeatures2 pD = do
+    pF <- createVkPhysicalDeviceFeatures2
+    c_vkGetPhysicalDeviceFeatures2 pD pF
+    return pF
 
 vkGetPhysicalDeviceSurfaceSupport :: VkPhysicalDevice -> Word32 -> VkSurfaceKHR -> IO VkBool
 vkGetPhysicalDeviceSurfaceSupport pD qIndex s = alloca $ \p -> do
