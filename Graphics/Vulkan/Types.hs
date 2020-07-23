@@ -25,6 +25,7 @@ nullHandle = 0
 -- Vulkan Types
 -- 0 = False, 1 = True
 newtype VkBool  = VkBool { unVkBool :: Word32 }
+     deriving (Show)
 newtype VkSampleMask = VkSampleMask { unVkSampleMask :: Word32 }
 
 -- Vulkan Flags
