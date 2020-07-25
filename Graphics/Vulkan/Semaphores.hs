@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Semaphores (createVkSemaphoreCreateInfo, createTimelineCreateInfo, vkCreateSemaphore, vkDestroySemaphore) where
+module Graphics.Vulkan.Semaphores (createVkSemaphoreCreateInfo, createVkSemaphoreTypeCreateInfo, vkCreateSemaphore, vkDestroySemaphore) where
 
 
 import Data.Void (Void)
@@ -23,9 +23,8 @@ foreign import ccall unsafe "vkCreateSemaphore"
 foreign import ccall unsafe "vkDestroySemaphore"
     c_vkDestroySemaphore :: VkDevice -> VkSemaphore -> Ptr VkAllocationCallbacks -> IO ()
 
--- Creates a timeline
-createTimelineCreateInfo :: Next -> VkSemaphoreType -> InitialValue -> IO VkSemaphoreCreateInfo
-createTimelineCreateInfo v sT iV = alloca $ \p -> do
+createVkSemaphoreTypeCreateInfo :: Next -> VkSemaphoreType -> InitialValue -> IO VkSemaphoreCreateInfo
+createVkSemaphoreTypeCreateInfo v sT iV = alloca $ \p -> do
     poke p t
     createVkSemaphoreCreateInfo (castPtr p) $ VkSemaphoreCreateFlags 0
     where
