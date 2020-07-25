@@ -121,8 +121,9 @@ initialize vkInst vkSurf = do
     vkCmdDraw vkCoB0 3 1 0 0
     vkCmdEndRenderPass vkCoB0
 
-    vkSTCI <- createTimelineCreateInfo nullPtr vkSemaphoreTypeTimeline 0
-    vkSTim <- vkCreateSemaphore vkDev0 vkSTCI
+    vkSTCI <- createVkSemaphoreTypeCreateInfo nullPtr vkSemaphoreTypeBinary 0
+    vkSema <- vkCreateSemaphore vkDev0 vkSTCI
+    nextIm <- vkAcquireNextImageKHR vkDev0 vkSC 6000000 vkSema $ VkFence nullHandle
 
     vkBCI   <- createVkBufferInfo nullPtr (VkBufferCreateFlags 0) (VkDeviceSize 2136746240)
         [bufferUsageStorageBufferBit, bufferUsageTransferDSTBit] sharingModeExclusive 3 [0]
@@ -182,7 +183,7 @@ initialize vkInst vkSurf = do
     ----------------------------------------------------------------------------------------------------------------------------
     _ <- vkQueueWaitIdle vkQue0
     _ <- vkDeviceWaitIdle vkDev0
-    vkDestroySemaphore vkDev0 vkSTim
+    vkDestroySemaphore vkDev0 vkSema
     vkDestroyFramebuffer vkDev0 vkFram
     vkDestroyRenderPass vkDev0 vkRePa
     vkDestroyDescriptorPool vkDev0 vkDeP0

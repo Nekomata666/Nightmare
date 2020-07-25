@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Surface (createVkSwapchainCreateInfo, vkCreateSwapchainKHR, vkDestroySurfaceKHR, vkDestroySwapchainKHR, vkGetSwapchainImagesKHR) where
+module Graphics.Vulkan.Surface (createVkSwapchainCreateInfo, vkAcquireNextImageKHR, vkCreateSwapchainKHR, vkDestroySurfaceKHR, vkDestroySwapchainKHR, vkGetSwapchainImagesKHR) where
 
 
 import Data.Void (Void)
@@ -18,10 +18,15 @@ import Graphics.Vulkan.Types
 -- Type aliases.
 type Clipped                = VkBool
 type ImageArrayLayers       = Word32
+type ImageIndex             = Word32
 type MinImageCount          = Word32
 type QueueFamilyIndexCount  = Word32
 type QueueFamilyIndices     = Word32
+type Timeout                = Word64
 
+
+foreign import ccall unsafe "vkAcquireNextImageKHR"
+    c_vkAcquireNextImageKHR :: VkDevice -> VkSwapchainKHR -> Word64 -> VkSemaphore -> VkFence -> Ptr Word32 -> IO VkResult
 
 foreign import ccall unsafe "vkCreateSwapchainKHR"
     c_vkCreateSwapchainKHR :: VkDevice -> Ptr VkSwapchainCreateInfoKHR -> Ptr VkAllocationCallbacks -> Ptr VkSwapchainKHR ->
@@ -47,6 +52,11 @@ createVkSwapchainCreateInfo v sCF s mIC f cS e iAL iUFB sM qFIC qFI sTF cAF pM b
         where
             i = cast qFIC
             u = VkImageUsageFlags $ unVkImageUsageFlagBits iUFB
+
+vkAcquireNextImageKHR :: VkDevice -> VkSwapchainKHR -> Timeout -> VkSemaphore -> VkFence -> IO ImageIndex
+vkAcquireNextImageKHR d sC t s f = alloca $ \p -> do
+    _ <- c_vkAcquireNextImageKHR d sC t s f p
+    peek p
 
 vkCreateSwapchainKHR :: VkDevice -> VkSwapchainCreateInfoKHR -> IO VkSwapchainKHR
 vkCreateSwapchainKHR d sCI = alloca $ \pSCI ->
