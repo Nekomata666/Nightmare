@@ -9,6 +9,10 @@ import Graphics.Vulkan.Types (VkDeviceSize(..), VkBool(..))
 
 
 
+
+subpassExternal :: Word32
+subpassExternal = 4294967295
+
 vkFalse :: VkBool
 vkFalse = VkBool 0
 vkTrue  :: VkBool

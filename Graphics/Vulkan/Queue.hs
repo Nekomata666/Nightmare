@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Queue (createVkSubmitInfo, vkQueueSubmit, vkQueueWaitIdle) where
+module Graphics.Vulkan.Queue (createVkPresentInfoKHR, createVkSubmitInfo, vkQueueSubmit, vkQueueWaitIdle) where
 
 
 import Control.DeepSeq
@@ -20,7 +20,12 @@ import Graphics.Vulkan.Types
 
 
 -- Type aliases.
-type SubmitCount        = Word32
+type CommandBufferCount     = Word32
+type ImageIndices           = Word32
+type SignalSemaphoreCount   = Word32
+type SubmitCount            = Word32
+type SwapchainCount         = Word32
+type WaitSemaphoreCount     = Word32
 
 foreign import ccall unsafe "vkQueueSubmit"
     c_vkQueueSubmit :: VkQueue -> Word32 -> Ptr VkSubmitInfo -> VkFence -> IO VkResult
@@ -28,9 +33,22 @@ foreign import ccall unsafe "vkQueueSubmit"
 foreign import ccall unsafe "vkQueueWaitIdle"
     c_vkQueueWaitIdle :: VkQueue -> IO VkResult
 
-createVkSubmitInfo :: Next -> Word32 -> Maybe [VkSemaphore] -> Maybe [VkPipelineStageFlags] -> Word32 -> [VkCommandBuffer] ->
-    Word32 -> Maybe [VkSemaphore] -> IO VkSubmitInfo
-createVkSubmitInfo v wSC wS f cBC cB sSC sS = allocaArray cBI $ \pCB -> do
+createVkPresentInfoKHR :: Next -> WaitSemaphoreCount -> [VkSemaphore] -> SwapchainCount -> [VkSwapchainKHR] -> [ImageIndices] -> IO VkPresentInfoKHR
+createVkPresentInfoKHR v wSC wS sC s iI = allocaArray iWSC $ \pWS ->
+    allocaArray iSC $ \pS ->
+        allocaArray iSC $ \pII ->
+            allocaArray iSC $ \pR -> do
+                pokeArray pWS wS
+                pokeArray pS s
+                pokeArray pII iI
+                return $ VkPresentInfoKHR structureTypePresentInfoKHR v wSC pWS sC pS pII pR
+                where
+                    iWSC = cast wSC
+                    iSC  = cast sC
+
+createVkSubmitInfo :: Next -> WaitSemaphoreCount -> Maybe [VkSemaphore] -> Maybe [VkPipelineStageFlagBits] ->
+    CommandBufferCount -> [VkCommandBuffer] -> SignalSemaphoreCount -> Maybe [VkSemaphore] -> IO VkSubmitInfo
+createVkSubmitInfo v wSC wS fB cBC cB sSC sS = allocaArray cBI $ \pCB -> do
     pWS <- fromMaybeListIO wSC wS
     pF  <- fromMaybeListIO wSC f
     pokeArray pCB cB
@@ -38,6 +56,7 @@ createVkSubmitInfo v wSC wS f cBC cB sSC sS = allocaArray cBI $ \pCB -> do
     return $ VkSubmitInfo structureTypeSubmitInfo v wSC pWS pF cBC pCB sSC pSS
     where
         cBI = cast cBC
+        f = Just $ map (VkPipelineStageFlags . unVkPipelineStageFlagBits) $ fromMaybe [VkPipelineStageFlagBits 0] fB
 
 vkQueueSubmit :: VkQueue -> SubmitCount -> [VkSubmitInfo] -> VkFence -> IO VkResult
 vkQueueSubmit q c info f = allocaArray i $ \p -> do

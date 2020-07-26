@@ -11,7 +11,7 @@ import Graphics.Utilities
 import Graphics.Vulkan.Buffers
 import Graphics.Vulkan.Command
 import Graphics.Vulkan.Constants
-import Graphics.Vulkan.Data (VkAttachmentDescription(..), VkAttachmentReference(..), VkClearValue(..), VkComponentMapping(..), VkComputePipelineCreateInfo(..), VkDescriptorBufferInfo(..), VkDescriptorPoolSize(..), VkExtent2D(..), VkExtent3D(..), VkImageSubresourceRange(..), VkImageViewCreateInfo(..), VkMemoryRequirements(..), VkOffset2D(..), VkPipelineColorBlendAttachmentState(..), VkPipelineInputAssemblyStateCreateInfo(..), VkPipelineMultisampleStateCreateInfo(..), VkPipelineRasterizationStateCreateInfo(..), VkRect2D(..), VkViewport(..))
+import Graphics.Vulkan.Data (VkAttachmentDescription(..), VkAttachmentReference(..), VkClearValue(..), VkComponentMapping(..), VkComputePipelineCreateInfo(..), VkDescriptorBufferInfo(..), VkDescriptorPoolSize(..), VkExtent2D(..), VkExtent3D(..), VkImageSubresourceRange(..), VkImageViewCreateInfo(..), VkMemoryRequirements(..), VkOffset2D(..), VkPipelineColorBlendAttachmentState(..), VkPipelineInputAssemblyStateCreateInfo(..), VkPipelineMultisampleStateCreateInfo(..), VkPipelineRasterizationStateCreateInfo(..), VkPresentInfoKHR(..), VkRect2D(..), VkSubpassDependency(..), VkViewport(..))
 import Graphics.Vulkan.Descriptor
 import Graphics.Vulkan.Devices
 import Graphics.Vulkan.Enumerations
@@ -78,12 +78,14 @@ createGraphicsPipeline vkDev0 vkRePa = do
 
 createRenderpass :: VkDevice -> IO VkRenderPass
 createRenderpass vkDev0 = do
-    let vkADCo = VkAttachmentDescription (VkAttachmentDescriptionFlags 0) formatB8G8R8A8SRGB sampleCount1Bit attachmentLoadOpClear attachmentStoreOpStore attachmentLoadOpDontCare attachmentStoreOpDontCare imageLayoutUndefined imageLayoutPresentSRCKHR
-        vkARCo = VkAttachmentReference 0 imageLayoutColorAttachmentOptimal
-
     vkSuD0 <- createVkSubpassDescription (VkSubpassDescriptionFlagBits 0) pipelineBindPointGraphics 0 Nothing 1 (Just [vkARCo]) Nothing Nothing 0 Nothing
-    vkRPCI <- createVkRenderPassCreateInfo nullPtr (VkRenderPassCreateFlags 0) 1 (Just [vkADCo]) 1 (Just [vkSuD0]) 0 Nothing
+    vkRPCI <- createVkRenderPassCreateInfo nullPtr (VkRenderPassCreateFlags 0) 1 (Just [vkADCo]) 1 (Just [vkSuD0]) 1 (Just [vkSuPa])
     vkCreateRenderPass vkDev0 vkRPCI
+    where
+        vkADCo = VkAttachmentDescription (VkAttachmentDescriptionFlags 0) formatB8G8R8A8SRGB sampleCount1Bit attachmentLoadOpClear attachmentStoreOpStore attachmentLoadOpDontCare attachmentStoreOpDontCare imageLayoutUndefined imageLayoutPresentSRCKHR
+        vkARCo = VkAttachmentReference 0 imageLayoutColorAttachmentOptimal
+        vkSuPa = VkSubpassDependency subpassExternal 0 subStageMask subStageMask (VkAccessFlags 0) (VkAccessFlags $ unVkAccessFlagBits accessColorAttachmentWriteBit) (VkDependencyFlags 0)
+        subStageMask = VkPipelineStageFlags $ unVkPipelineStageFlagBits pipelineStageColorAttachmentOutputBit
 
 initialize :: VkInstance -> VkSurfaceKHR -> IO ()
 initialize vkInst vkSurf = do
@@ -122,8 +124,9 @@ initialize vkInst vkSurf = do
     vkCmdEndRenderPass vkCoB0
 
     vkSTCI <- createVkSemaphoreTypeCreateInfo nullPtr vkSemaphoreTypeBinary 0
-    vkSema <- vkCreateSemaphore vkDev0 vkSTCI
-    nextIm <- vkAcquireNextImageKHR vkDev0 vkSC 6000000 vkSema $ VkFence nullHandle
+    vkSSCI <- vkCreateSemaphore vkDev0 vkSTCI
+    vkSePr <- vkCreateSemaphore vkDev0 vkSTCI
+    nextIm <- vkAcquireNextImageKHR vkDev0 vkSC 6000000 vkSSCI $ VkFence nullHandle
 
     vkBCI   <- createVkBufferInfo nullPtr (VkBufferCreateFlags 0) (VkDeviceSize 2136746240)
         [bufferUsageStorageBufferBit, bufferUsageTransferDSTBit] sharingModeExclusive 3 [0]
@@ -172,8 +175,9 @@ initialize vkInst vkSurf = do
     vkCmdBindDescriptorSets vkCoB0 pipelineBindPointCompute vkPLCo 0 1 vkAlDS 0 Nothing
     -- vkCmdPushConstants vkCoB0 vkPLCo [shaderStageComputeBit] 0 4 (0 :: Word)
     _ <- vkEndCommandBuffer vkCoB0
-    vkSuIn <- createVkSubmitInfo nullPtr 0 Nothing Nothing 1 vkCoBu 0 Nothing
+    vkSuIn <- createVkSubmitInfo nullPtr 1 (Just [vkSSCI]) (Just [pipelineStageColorAttachmentOutputBit]) 1 vkCoBu 1 $ Just [vkSePr]
     _ <- vkQueueSubmit vkQue0 1 [vkSuIn] (VkFence nullHandle)
+    vkPrIn <- createVkPresentInfoKHR nullPtr 1 [vkSePr] 1 [vkSC] [nextIm]
 
 
     ----------------------------------------------------------------------------------------------------------------------------
@@ -183,7 +187,8 @@ initialize vkInst vkSurf = do
     ----------------------------------------------------------------------------------------------------------------------------
     _ <- vkQueueWaitIdle vkQue0
     _ <- vkDeviceWaitIdle vkDev0
-    vkDestroySemaphore vkDev0 vkSema
+    vkDestroySemaphore vkDev0 vkSePr
+    vkDestroySemaphore vkDev0 vkSSCI
     vkDestroyFramebuffer vkDev0 vkFram
     vkDestroyRenderPass vkDev0 vkRePa
     vkDestroyDescriptorPool vkDev0 vkDeP0

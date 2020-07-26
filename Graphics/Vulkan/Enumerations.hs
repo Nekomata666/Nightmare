@@ -9,6 +9,8 @@ import Foreign
 
 
 -- Vulkan newtypes
+newtype VkAccessFlagBits = VkAccessFlagBits { unVkAccessFlagBits :: Word32 }
+    deriving (Eq)
 newtype VkAttachmentLoadOp = VkAttachmentLoadOp { unVkAttachmentLoadOp :: Word32 }
     deriving (Eq)
 newtype VkAttachmentStoreOp = VkAttachmentStoreOp { unVkAttachmentStoreOp :: Word32 }
@@ -63,6 +65,8 @@ newtype VkLogicOp = VkLogicOp { unVkLogicOp :: Word32 }
     deriving (Eq)
 newtype VkPipelineBindPoint = VkPipelineBindPoint { unVkPipelineBindPoint :: Word32 }
     deriving (Eq)
+newtype VkPipelineStageFlagBits = VkPipelineStageFlagBits { unVkPipelineStageFlagBits :: Word32 }
+    deriving (Eq)
 newtype VkPolygonMode = VkPolygonMode { unVkPolygonMode :: Word32 }
     deriving (Eq)
 newtype VkPresentModeKHR = VkPresentModeKHR { unVkPresentModeKHR :: Word32 }
@@ -96,6 +100,43 @@ newtype VkVertexInputRate = VkVertexInputRate { unVkVertexInputRate :: Word32 }
 
 
 -- Vulkan enumerations
+
+-- VkAccessFlagBits
+accessIndirectCommandReadBit             :: VkAccessFlagBits
+accessIndirectCommandReadBit             = VkAccessFlagBits 1
+accessIndexReadBit                       :: VkAccessFlagBits
+accessIndexReadBit                       = VkAccessFlagBits 2
+accessVertexAttributeReadBit             :: VkAccessFlagBits
+accessVertexAttributeReadBit             = VkAccessFlagBits 4
+accessUniformReadBit                     :: VkAccessFlagBits
+accessUniformReadBit                     = VkAccessFlagBits 8
+accessInputAttachmentReadBit             :: VkAccessFlagBits
+accessInputAttachmentReadBit             = VkAccessFlagBits 16
+accessShaderReadBit                      :: VkAccessFlagBits
+accessShaderReadBit                      = VkAccessFlagBits 32
+accessShaderWriteBit                     :: VkAccessFlagBits
+accessShaderWriteBit                     = VkAccessFlagBits 64
+accessColorAttachmentReadBit             :: VkAccessFlagBits
+accessColorAttachmentReadBit             = VkAccessFlagBits 128
+accessColorAttachmentWriteBit            :: VkAccessFlagBits
+accessColorAttachmentWriteBit            = VkAccessFlagBits 256
+accessDepthStencilAttachmentReadBit      :: VkAccessFlagBits
+accessDepthStencilAttachmentReadBit      = VkAccessFlagBits 512
+accessDepthStencilAttachmentWriteBit     :: VkAccessFlagBits
+accessDepthStencilAttachmentWriteBit     = VkAccessFlagBits 1024
+accessTransferReadBit                    :: VkAccessFlagBits
+accessTransferReadBit                    = VkAccessFlagBits 2048
+accessTransferWriteBit                   :: VkAccessFlagBits
+accessTransferWriteBit                   = VkAccessFlagBits 4096
+accessHostReadBit                        :: VkAccessFlagBits
+accessHostReadBit                        = VkAccessFlagBits 8192
+accessHostWriteBit                       :: VkAccessFlagBits
+accessHostWriteBit                       = VkAccessFlagBits 16384
+accessMemoryReadBit                      :: VkAccessFlagBits
+accessMemoryReadBit                      = VkAccessFlagBits 32768
+accessMemoryWriteBit                     :: VkAccessFlagBits
+accessMemoryWriteBit                     = VkAccessFlagBits 65536
+
 -- VkAttachmentLoadOp
 attachmentLoadOpLoad         :: VkAttachmentLoadOp
 attachmentLoadOpLoad         = VkAttachmentLoadOp 0
@@ -197,32 +238,32 @@ colorComponentABit               = VkColorComponentFlagBits 8
 -- VkColorSpaceKHR
 colorSpaceSRGBNonlinearKHR      :: VkColorSpaceKHR
 colorSpaceSRGBNonlinearKHR      = VkColorSpaceKHR 0
-colorSpaceDisplayP3NonLinearEXT :: VkColorSpaceKHR
-colorSpaceDisplayP3NonLinearEXT = VkColorSpaceKHR 1000104001
-colorSpaceExtendedSRGBLinearEXT :: VkColorSpaceKHR
-colorSpaceExtendedSRGBLinearEXT = VkColorSpaceKHR 1000104002
-colorSpaceDCIP3LinearEXT        :: VkColorSpaceKHR
-colorSpaceDCIP3LinearEXT        = VkColorSpaceKHR 1000104003
-colorSpaceDCIP3NonLinearEXT     :: VkColorSpaceKHR
-colorSpaceDCIP3NonLinearEXT     = VkColorSpaceKHR 1000104004
-colorSpaceBT709LinearEXT        :: VkColorSpaceKHR
-colorSpaceBT709LinearEXT        = VkColorSpaceKHR 1000104005
-colorSpaceBT709NonLinearEXT     :: VkColorSpaceKHR
-colorSpaceBT709NonLinearEXT     = VkColorSpaceKHR 1000104006
-colorSpaceBT2020LinearEXT       :: VkColorSpaceKHR
-colorSpaceBT2020LinearEXT       = VkColorSpaceKHR 1000104007
-colorSpaceHDR10ST2084EXT        :: VkColorSpaceKHR
-colorSpaceHDR10ST2084EXT        = VkColorSpaceKHR 1000104008
-colorSpaceDolbyVisionEXT        :: VkColorSpaceKHR
-colorSpaceDolbyVisionEXT        = VkColorSpaceKHR 1000104009
-colorSpaceHDR10HLGEXT           :: VkColorSpaceKHR
-colorSpaceHDR10HLGEXT           = VkColorSpaceKHR 1000104010
-colorSpaceAdobeRGBLinearEXT     :: VkColorSpaceKHR
-colorSpaceAdobeRGBLinearEXT     = VkColorSpaceKHR 1000104011
-colorSpaceAdobeRGBNonLinearEXT  :: VkColorSpaceKHR
-colorSpaceAdobeRGBNonLinearEXT  = VkColorSpaceKHR 1000104012
-colorSpacePassThroughEXT        :: VkColorSpaceKHR
-colorSpacePassThroughEXT        = VkColorSpaceKHR 1000104013
+colorSpaceDisplayP3NonLinearExt :: VkColorSpaceKHR
+colorSpaceDisplayP3NonLinearExt = VkColorSpaceKHR 1000104001
+colorSpaceExtendedSRGBLinearExt :: VkColorSpaceKHR
+colorSpaceExtendedSRGBLinearExt = VkColorSpaceKHR 1000104002
+colorSpaceDCIP3LinearExt        :: VkColorSpaceKHR
+colorSpaceDCIP3LinearExt        = VkColorSpaceKHR 1000104003
+colorSpaceDCIP3NonLinearExt     :: VkColorSpaceKHR
+colorSpaceDCIP3NonLinearExt     = VkColorSpaceKHR 1000104004
+colorSpaceBT709LinearExt        :: VkColorSpaceKHR
+colorSpaceBT709LinearExt        = VkColorSpaceKHR 1000104005
+colorSpaceBT709NonLinearExt     :: VkColorSpaceKHR
+colorSpaceBT709NonLinearExt     = VkColorSpaceKHR 1000104006
+colorSpaceBT2020LinearExt       :: VkColorSpaceKHR
+colorSpaceBT2020LinearExt       = VkColorSpaceKHR 1000104007
+colorSpaceHDR10ST2084Ext        :: VkColorSpaceKHR
+colorSpaceHDR10ST2084Ext        = VkColorSpaceKHR 1000104008
+colorSpaceDolbyVisionExt        :: VkColorSpaceKHR
+colorSpaceDolbyVisionExt        = VkColorSpaceKHR 1000104009
+colorSpaceHDR10HLGExt           :: VkColorSpaceKHR
+colorSpaceHDR10HLGExt           = VkColorSpaceKHR 1000104010
+colorSpaceAdobeRGBLinearExt     :: VkColorSpaceKHR
+colorSpaceAdobeRGBLinearExt     = VkColorSpaceKHR 1000104011
+colorSpaceAdobeRGBNonLinearExt  :: VkColorSpaceKHR
+colorSpaceAdobeRGBNonLinearExt  = VkColorSpaceKHR 1000104012
+colorSpacePassThroughExt        :: VkColorSpaceKHR
+colorSpacePassThroughExt        = VkColorSpaceKHR 1000104013
 
 -- VkCommandBufferLevel
 commandBufferLevelPrimary        :: VkCommandBufferLevel
@@ -868,6 +909,52 @@ pipelineBindPointCompute        = VkPipelineBindPoint 1
 pipelineBindPointRayTracingKHR  :: VkPipelineBindPoint
 pipelineBindPointRayTracingKHR  = VkPipelineBindPoint 1000165000
 
+-- VkPipelineStageFlagBits
+pipelineStageTopOfPipeBit                       :: VkPipelineStageFlagBits
+pipelineStageTopOfPipeBit                       = VkPipelineStageFlagBits 1
+pipelineStageDrawIndirectBit                    :: VkPipelineStageFlagBits
+pipelineStageDrawIndirectBit                    = VkPipelineStageFlagBits 2
+pipelineStageVertexInputBit                     :: VkPipelineStageFlagBits
+pipelineStageVertexInputBit                     = VkPipelineStageFlagBits 4
+pipelineStageVertexShaderBit                    :: VkPipelineStageFlagBits
+pipelineStageVertexShaderBit                    = VkPipelineStageFlagBits 8
+pipelineStageTesselationControlShaderBit        :: VkPipelineStageFlagBits
+pipelineStageTesselationControlShaderBit        = VkPipelineStageFlagBits 16
+pipelineStageTesselationEvaluationShaderBit     :: VkPipelineStageFlagBits
+pipelineStageTesselationEvaluationShaderBit     = VkPipelineStageFlagBits 32
+pipelineStageGeometryShaderBit                  :: VkPipelineStageFlagBits
+pipelineStageGeometryShaderBit                  = VkPipelineStageFlagBits 64
+pipelineStageFragmentShaderBit                  :: VkPipelineStageFlagBits
+pipelineStageFragmentShaderBit                  = VkPipelineStageFlagBits 128
+pipelineStageEarlyFragmentTestsBit              :: VkPipelineStageFlagBits
+pipelineStageEarlyFragmentTestsBit              = VkPipelineStageFlagBits 256
+pipelineStageLateFragmentTestsBit               :: VkPipelineStageFlagBits
+pipelineStageLateFragmentTestsBit               = VkPipelineStageFlagBits 512
+pipelineStageColorAttachmentOutputBit           :: VkPipelineStageFlagBits
+pipelineStageColorAttachmentOutputBit           = VkPipelineStageFlagBits 1024
+pipelineStageComputeShaderBit                   :: VkPipelineStageFlagBits
+pipelineStageComputeShaderBit                   = VkPipelineStageFlagBits 2048
+pipelineStageTransferBit                        :: VkPipelineStageFlagBits
+pipelineStageTransferBit                        = VkPipelineStageFlagBits 4096
+pipelineStageBottomOfPipeBit                    :: VkPipelineStageFlagBits
+pipelineStageBottomOfPipeBit                    = VkPipelineStageFlagBits 8192
+pipelineStageHostBit                            :: VkPipelineStageFlagBits
+pipelineStageHostBit                            = VkPipelineStageFlagBits 16384
+pipelineStageAllGraphicsBit                     :: VkPipelineStageFlagBits
+pipelineStageAllGraphicsBit                     = VkPipelineStageFlagBits 32768
+pipelineStageAllCommandsBit                     :: VkPipelineStageFlagBits
+pipelineStageAllCommandsBit                     = VkPipelineStageFlagBits 65536
+pipelineStageTransformFeedbackBitExt            :: VkPipelineStageFlagBits
+pipelineStageTransformFeedbackBitExt            = VkPipelineStageFlagBits 16777216
+pipelineStageConditionalRenderingBitExt         :: VkPipelineStageFlagBits
+pipelineStageConditionalRenderingBitExt         = VkPipelineStageFlagBits 262144
+pipelineStageRayTracingShaderBitKHR             :: VkPipelineStageFlagBits
+pipelineStageRayTracingShaderBitKHR             = VkPipelineStageFlagBits 2097152
+pipelineStageAccelerationStructureBuildBitKHR   :: VkPipelineStageFlagBits
+pipelineStageAccelerationStructureBuildBitKHR   = VkPipelineStageFlagBits 33554432
+pipelineStageFragmentDensityProcessBitExt       :: VkPipelineStageFlagBits
+pipelineStageFragmentDensityProcessBitExt       = VkPipelineStageFlagBits 8388608
+
 -- VkPolygonMode
 polygonModeFill          :: VkPolygonMode
 polygonModeFill          = VkPolygonMode 0
@@ -957,8 +1044,8 @@ errorOutOfDateKHR            :: VkResult
 errorOutOfDateKHR            = VkResult (-1000001004)
 errorIncompatibleDisplayKHR  :: VkResult
 errorIncompatibleDisplayKHR  = VkResult (-1000003001)
-errorValidationFailedEXT     :: VkResult
-errorValidationFailedEXT     = VkResult (-1000011001)
+errorValidationFailedExt     :: VkResult
+errorValidationFailedExt     = VkResult (-1000011001)
 errorInvalidShaderNV         :: VkResult
 errorInvalidShaderNV         = VkResult (-1000012000)
 
@@ -1144,16 +1231,16 @@ structureTypeDisplaySurfaceCreateInfoKHR                        :: VkStructureTy
 structureTypeDisplaySurfaceCreateInfoKHR                        = VkStructureType 1000002001
 structureTypeDisplayPresentInfoKHR                              :: VkStructureType
 structureTypeDisplayPresentInfoKHR                              = VkStructureType 1000003000
-structureTypeDebugReportCallbackCreateInfoEXT                   :: VkStructureType
-structureTypeDebugReportCallbackCreateInfoEXT                   = VkStructureType 1000011000
+structureTypeDebugReportCallbackCreateInfoExt                   :: VkStructureType
+structureTypeDebugReportCallbackCreateInfoExt                   = VkStructureType 1000011000
 structureTypePipelineRasterizationStateRasterizationOrderAMD    :: VkStructureType
 structureTypePipelineRasterizationStateRasterizationOrderAMD    = VkStructureType 1000018000
-structureTypeDebugMarkerObjectNameInfoEXT                       :: VkStructureType
-structureTypeDebugMarkerObjectNameInfoEXT                       = VkStructureType 1000022000
-structureTypeDebugMarkerObjectTagInfoEXT                        :: VkStructureType
-structureTypeDebugMarkerObjectTagInfoEXT                        = VkStructureType 1000022001
-structureTypeDebugMarkerMarkerInfoEXT                           :: VkStructureType
-structureTypeDebugMarkerMarkerInfoEXT                           = VkStructureType 1000022002
+structureTypeDebugMarkerObjectNameInfoExt                       :: VkStructureType
+structureTypeDebugMarkerObjectNameInfoExt                       = VkStructureType 1000022000
+structureTypeDebugMarkerObjectTagInfoExt                        :: VkStructureType
+structureTypeDebugMarkerObjectTagInfoExt                        = VkStructureType 1000022001
+structureTypeDebugMarkerMarkerInfoExt                           :: VkStructureType
+structureTypeDebugMarkerMarkerInfoExt                           = VkStructureType 1000022002
 structureTypeExternalMemoryImageCreateInfoNV                    :: VkStructureType
 structureTypeExternalMemoryImageCreateInfoNV                    = VkStructureType 1000056000
 structureTypeExportMemoryAllocateInfoNV                         :: VkStructureType
@@ -1162,8 +1249,8 @@ structureTypePhysicalDeviceFeatures2                            :: VkStructureTy
 structureTypePhysicalDeviceFeatures2                            = VkStructureType 1000059000
 structureTypePhysicalDeviceProperties2                          :: VkStructureType
 structureTypePhysicalDeviceProperties2                          = VkStructureType 1000059001
-structureTypeValidationFlagsEXT                                 :: VkStructureType
-structureTypeValidationFlagsEXT                                 = VkStructureType 1000061000
+structureTypeValidationFlagsExt                                 :: VkStructureType
+structureTypeValidationFlagsExt                                 = VkStructureType 1000061000
 structureTypeSemaphoreTypeCreateInfo                            :: VkStructureType
 structureTypeSemaphoreTypeCreateInfo                            = VkStructureType 1000207002
 
@@ -1223,6 +1310,14 @@ vertexInputRateInstance      = VkVertexInputRate 1
 
 
 -- Storable instances
+instance Storable VkAccessFlagBits where
+    sizeOf _    = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkAccessFlagBits v)
+    poke p (VkAccessFlagBits v) = pokeByteOff p 0 v
+
 instance Storable VkAttachmentLoadOp where
     sizeOf _    = 4
     alignment _ = 4
@@ -1439,6 +1534,14 @@ instance Storable VkPipelineBindPoint where
         return (VkPipelineBindPoint v)
     poke p (VkPipelineBindPoint v) = pokeByteOff p 0 v
 
+instance Storable VkPipelineStageFlagBits where
+    sizeOf _    = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkPipelineStageFlagBits v)
+    poke p (VkPipelineStageFlagBits v) = pokeByteOff p 0 v
+
 instance Storable VkPolygonMode where
     sizeOf _    = 4
     alignment _ = 4
@@ -1504,7 +1607,7 @@ instance Storable VkSharingMode where
     poke p (VkSharingMode v) = pokeByteOff p 0 v
 
 instance Storable VkStencilOp where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
