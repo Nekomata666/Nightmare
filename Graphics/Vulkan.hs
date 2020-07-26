@@ -178,6 +178,7 @@ initialize vkInst vkSurf = do
     vkSuIn <- createVkSubmitInfo nullPtr 1 (Just [vkSSCI]) (Just [pipelineStageColorAttachmentOutputBit]) 1 vkCoBu 1 $ Just [vkSePr]
     _ <- vkQueueSubmit vkQue0 1 [vkSuIn] (VkFence nullHandle)
     vkPrIn <- createVkPresentInfoKHR nullPtr 1 [vkSePr] 1 [vkSC] [nextIm]
+    _ <- vkQueuePresentKHR vkQue0 vkPrIn
 
 
     ----------------------------------------------------------------------------------------------------------------------------

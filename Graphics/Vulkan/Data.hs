@@ -1999,7 +1999,7 @@ instance Storable VkPipelineViewportStateCreateInfo where
         pokeByteOff p 40 v7
 
 instance Storable VkPresentInfoKHR where
-    sizeOf _ = 64
+    sizeOf _    = 64
     alignment _ = 8
     peek p = do
         v1 <- peekByteOff p 0
