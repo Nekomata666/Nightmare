@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Queue (createVkPresentInfoKHR, createVkSubmitInfo, vkQueueSubmit, vkQueueWaitIdle) where
+module Graphics.Vulkan.Queue (createVkPresentInfoKHR, createVkSubmitInfo, vkQueuePresentKHR, vkQueueSubmit, vkQueueWaitIdle) where
 
 
 import Control.DeepSeq
@@ -26,6 +26,9 @@ type SignalSemaphoreCount   = Word32
 type SubmitCount            = Word32
 type SwapchainCount         = Word32
 type WaitSemaphoreCount     = Word32
+
+foreign import ccall unsafe "vkQueuePresentKHR"
+    c_vkQueuePresentKHR :: VkQueue -> Ptr VkPresentInfoKHR -> IO VkResult
 
 foreign import ccall unsafe "vkQueueSubmit"
     c_vkQueueSubmit :: VkQueue -> Word32 -> Ptr VkSubmitInfo -> VkFence -> IO VkResult
@@ -57,6 +60,11 @@ createVkSubmitInfo v wSC wS fB cBC cB sSC sS = allocaArray cBI $ \pCB -> do
     where
         cBI = cast cBC
         f = Just $ map (VkPipelineStageFlags . unVkPipelineStageFlagBits) $ fromMaybe [VkPipelineStageFlagBits 0] fB
+
+vkQueuePresentKHR :: VkQueue -> VkPresentInfoKHR -> IO VkResult
+vkQueuePresentKHR q pI = alloca $ \p -> do
+    poke p pI
+    c_vkQueuePresentKHR q p
 
 vkQueueSubmit :: VkQueue -> SubmitCount -> [VkSubmitInfo] -> VkFence -> IO VkResult
 vkQueueSubmit q c info f = allocaArray i $ \p -> do
