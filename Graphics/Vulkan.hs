@@ -28,6 +28,13 @@ import Graphics.Vulkan.Surface
 import Graphics.Vulkan.Types
 
 
+data Pipeline = Pipeline{
+    cache :: VkPipelineCache,
+    descriptor :: VkDescriptorSetLayout,
+    handle :: VkPipeline,
+    layout :: VkPipelineLayout
+}
+
 createInstance :: IO VkInstance
 createInstance = do
     let api = makeAPI 1 2 141
@@ -45,6 +52,24 @@ createDevice vkInst vkSurf = do
     vkDQCI  <- createVkDeviceQueueCreateInfo nullPtr (VkDeviceQueueCreateFlags 0) 0 1 [1.0]
     vkDCI   <- createVkDeviceCreateInfo (castPtr vkPDF2) (VkDeviceCreateFlags 0) 1 vkDQCI 1 ["VK_KHR_swapchain"] Nothing
     vkCreateDevice vkPD0 vkDCI
+
+createComputePipeline :: VkDevice -> IO Pipeline
+createComputePipeline vkDev0 = do
+    vkSMIC  <- createVkShaderModuleInfo nullPtr (VkShaderModuleCreateFlags 0) "Shaders/Simple.c.spv"
+    vkSMoC  <- vkCreateShaderModule vkDev0 vkSMIC
+    vkPSIC  <- createVkPipelineShaderStageInfo nullPtr (VkPipelineShaderStageCreateFlags 0) shaderStageComputeBit vkSMoC "main" Nothing
+    vkDSLB  <- createVkDescriptorSetLayoutBinding 0 descriptorTypeStorageBuffer 1 [shaderStageComputeBit] Nothing
+    vDSLCI  <- createVkDescriptorSetLayoutCreateInfo nullPtr (VkDescriptorSetLayoutCreateFlags 0) 1 (Just [vkDSLB])
+    vkDSL0  <- vkCreateDescriptorSetLayout vkDev0 vDSLCI
+    vkPLCI  <- createVkPipelineLayoutCreateInfo nullPtr (VkPipelineLayoutCreateFlags 0) 1 (Just [vkDSL0]) 0 Nothing
+    vkPiLa  <- vkCreatePipelineLayout vkDev0 vkPLCI
+    vkPCCI  <- createVkPipelineCacheInfo nullPtr (VkPipelineCacheCreateFlags 0) ""
+    vkPiCa  <- vkCreatePipelineCache vkDev0 vkPCCI
+    let vkCPCI = VkComputePipelineCreateInfo structureTypeComputePipelineCreateInfo nullPtr (VkPipelineCreateFlags 0) vkPSIC vkPiLa (VkPipeline 0) 0
+    vkCoPi <- vkCreateComputePipelines vkDev0 vkPiCa 1 [vkCPCI]
+
+    vkDestroyShaderModule vkDev0 vkSMoC
+    return $ Pipeline vkPiCa vkDSL0 (head vkCoPi) vkPiLa
 
 createGraphicsPipeline :: VkDevice -> VkRenderPass -> IO (VkPipelineLayout, [VkPipeline])
 createGraphicsPipeline vkDev0 vkRePa = do
@@ -92,8 +117,13 @@ initialize vkInst vkSurf = do
     vkDev0 <- createDevice vkInst vkSurf
     vkRePa <- createRenderpass vkDev0
     graphs <- createGraphicsPipeline vkDev0 vkRePa
+    comput <- createComputePipeline vkDev0
     let vkPLGr = fst graphs
         graphP = head $ snd graphs
+        vkPiCa = cache comput
+        compPi = handle comput
+        vkPLCo = Graphics.Vulkan.layout comput
+        vkDSL0 = descriptor comput
 
     vkSCCI <- createVkSwapchainCreateInfo nullPtr (VkSwapchainCreateFlagsKHR 0) vkSurf 3 formatB8G8R8A8SRGB colorSpaceSRGBNonlinearKHR
                     (VkExtent2D 1600 900) 1 imageUsageColorAttachmentBit sharingModeExclusive 1 [0] surfaceTransformIdentityBitKHR
@@ -147,18 +177,7 @@ initialize vkInst vkSurf = do
     imagMB  <- vkBindImageMemory vkDev0 vkIma0 imagMe (alignment imagMR)
     imagSu  <- createVkImageSubresource [imageAspectColorBit] 4 0
     imagSL  <- vkGetImageSubresourceLayout vkDev0 vkIma0 imagSu
-    vkSMIC  <- createVkShaderModuleInfo nullPtr (VkShaderModuleCreateFlags 0) "Shaders/Simple.c.spv"
-    vkSMoC  <- vkCreateShaderModule vkDev0 vkSMIC
-    vkPSIC  <- createVkPipelineShaderStageInfo nullPtr (VkPipelineShaderStageCreateFlags 0) shaderStageComputeBit vkSMoC "main" Nothing
-    vkDSLB  <- createVkDescriptorSetLayoutBinding 0 descriptorTypeStorageBuffer 1 [shaderStageComputeBit] Nothing
-    vDSLCI  <- createVkDescriptorSetLayoutCreateInfo nullPtr (VkDescriptorSetLayoutCreateFlags 0) 1 (Just [vkDSLB])
-    vkDSL0  <- vkCreateDescriptorSetLayout vkDev0 vDSLCI
-    vkPLCI  <- createVkPipelineLayoutCreateInfo nullPtr (VkPipelineLayoutCreateFlags 0) 1 (Just [vkDSL0]) 0 Nothing
-    vkPLCo  <- vkCreatePipelineLayout vkDev0 vkPLCI
-    vkPCCI  <- createVkPipelineCacheInfo nullPtr (VkPipelineCacheCreateFlags 0) ""
-    vkPiCa  <- vkCreatePipelineCache vkDev0 vkPCCI
-    let vkCPCI = VkComputePipelineCreateInfo structureTypeComputePipelineCreateInfo nullPtr (VkPipelineCreateFlags 0) vkPSIC vkPLCo (VkPipeline 0) 0
-    vkCoPi <- vkCreateComputePipelines vkDev0 vkPiCa 1 [vkCPCI]
+
     let vkDPS0 = VkDescriptorPoolSize descriptorTypeStorageBuffer 1
     vkDPCI <- createVkDescriptorPoolCreateInfo nullPtr (VkDescriptorPoolCreateFlags 0) 1 1 [vkDPS0]
     vkDeP0 <- vkCreateDescriptorPool vkDev0 vkDPCI
@@ -171,7 +190,6 @@ initialize vkInst vkSurf = do
 
     -- vkCmdFillBuffer vkCoB0 vkBuff (VkDeviceSize 0) wholeSize 0
     -- vkCmdClearColorImage vkCoB0 vkIma0 imageLayoutGeneral vkCCVa 1 [vkISR0]
-    let vkCoP0 = head vkCoPi
     vkCmdBindDescriptorSets vkCoB0 pipelineBindPointCompute vkPLCo 0 1 vkAlDS 0 Nothing
     -- vkCmdPushConstants vkCoB0 vkPLCo [shaderStageComputeBit] 0 4 (0 :: Word)
     _ <- vkEndCommandBuffer vkCoB0
@@ -198,8 +216,7 @@ initialize vkInst vkSurf = do
     vkDestroyPipeline vkDev0 graphP
     vkDestroyPipelineLayout vkDev0 vkPLCo
     vkDestroyDescriptorSetLayout vkDev0 vkDSL0
-    vkDestroyPipeline vkDev0 vkCoP0
-    vkDestroyShaderModule vkDev0 vkSMoC
+    vkDestroyPipeline vkDev0 compPi
     vkDestroyCommandPool vkDev0 vkCPo0
     vkUnmapMemory vkDev0 imagMe
     vkFreeMemory vkDev0 imagMe
