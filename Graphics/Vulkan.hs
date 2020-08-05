@@ -112,29 +112,57 @@ createRenderpass vkDev0 = do
         vkSuPa = VkSubpassDependency subpassExternal 0 subStageMask subStageMask (VkAccessFlags 0) (VkAccessFlags $ unVkAccessFlagBits accessColorAttachmentWriteBit) (VkDependencyFlags 0)
         subStageMask = VkPipelineStageFlags $ unVkPipelineStageFlagBits pipelineStageColorAttachmentOutputBit
 
+createSwapChainSemaphores :: VkDevice -> IO (VkSemaphore, VkSemaphore)
+createSwapChainSemaphores vkDev0 = do
+    vkSTCI <- createVkSemaphoreTypeCreateInfo nullPtr vkSemaphoreTypeBinary 0
+    vkSem0 <- vkCreateSemaphore vkDev0 vkSTCI
+    vkSem1 <- vkCreateSemaphore vkDev0 vkSTCI
+    return (vkSem0, vkSem1)
+
+createSwapchain :: VkDevice -> VkSurfaceKHR -> IO (VkSwapchainKHR, [VkImageView])
+createSwapchain vkDev0 vkSurf = do
+    vkSCCI <- createVkSwapchainCreateInfo nullPtr (VkSwapchainCreateFlagsKHR 0) vkSurf 3 formatB8G8R8A8SRGB colorSpaceSRGBNonlinearKHR
+                    (VkExtent2D 1600 900) 1 imageUsageColorAttachmentBit sharingModeExclusive 1 [0] surfaceTransformIdentityBitKHR
+                    compositeAlphaOpaqueBitKHR presentModeFIFOKHR vkTrue (VkSwapchainKHR nullHandle)
+    vkSC    <- vkCreateSwapchainKHR vkDev0 vkSCCI
+    vkSCIs  <- vkGetSwapchainImagesKHR vkDev0 vkSC
+    let vkIVC0 = VkImageViewCreateInfo structureTypeImageViewCreateInfo nullPtr (VkImageViewCreateFlags 0) (vkSCIs !! 0)
+                    imageViewType2D formatB8G8R8A8SRGB vkCMId vkISR0
+        vkIVC1 = VkImageViewCreateInfo structureTypeImageViewCreateInfo nullPtr (VkImageViewCreateFlags 0) (vkSCIs !! 1)
+                    imageViewType2D formatB8G8R8A8SRGB vkCMId vkISR0
+        vkIVC2 = VkImageViewCreateInfo structureTypeImageViewCreateInfo nullPtr (VkImageViewCreateFlags 0) (vkSCIs !! 2)
+                    imageViewType2D formatB8G8R8A8SRGB vkCMId vkISR0
+    vkIV0   <- vkCreateImageView vkDev0 vkIVC0
+    vkIV1   <- vkCreateImageView vkDev0 vkIVC1
+    vkIV2   <- vkCreateImageView vkDev0 vkIVC2
+
+    return (vkSC, [vkIV0, vkIV1, vkIV2])
+    where
+        vkISR0 = createVkImageSubresourceRange [imageAspectColorBit] 0 1 0 1
+        vkCMId = VkComponentMapping componentSwizzleIdentity componentSwizzleIdentity componentSwizzleIdentity componentSwizzleIdentity
+
 initialize :: VkInstance -> VkSurfaceKHR -> IO ()
 initialize vkInst vkSurf = do
     vkDev0 <- createDevice vkInst vkSurf
     vkRePa <- createRenderpass vkDev0
     graphs <- createGraphicsPipeline vkDev0 vkRePa
     comput <- createComputePipeline vkDev0
+    swapCh <- createSwapchain vkDev0 vkSurf
+    (semaIm, semaPr) <- createSwapChainSemaphores vkDev0
     let vkPLGr = fst graphs
         graphP = head $ snd graphs
         vkPiCa = cache comput
         compPi = handle comput
         vkPLCo = Graphics.Vulkan.layout comput
         vkDSL0 = descriptor comput
+        vkSC   = fst swapCh
+        swapIV = snd swapCh
+        vkIV0  = swapIV !! 0
+        vkIV1  = swapIV !! 1
+        vkIV2  = swapIV !! 2
 
-    vkSCCI <- createVkSwapchainCreateInfo nullPtr (VkSwapchainCreateFlagsKHR 0) vkSurf 3 formatB8G8R8A8SRGB colorSpaceSRGBNonlinearKHR
-                    (VkExtent2D 1600 900) 1 imageUsageColorAttachmentBit sharingModeExclusive 1 [0] surfaceTransformIdentityBitKHR
-                    compositeAlphaOpaqueBitKHR presentModeFIFOKHR vkTrue (VkSwapchainKHR nullHandle)
-    vkSC    <- vkCreateSwapchainKHR vkDev0 vkSCCI
-    vkSCIs  <- vkGetSwapchainImagesKHR vkDev0 vkSC
-    let vkIVCI = VkImageViewCreateInfo structureTypeImageViewCreateInfo nullPtr (VkImageViewCreateFlags 0) (head vkSCIs)
-                    imageViewType2D formatB8G8R8A8SRGB vkCMId vkISR0
-    vkIV0   <- vkCreateImageView vkDev0 vkIVCI
 
-    vkFCI0  <- createVkFramebufferCreateInfo nullPtr (VkFramebufferCreateFlags 0) vkRePa 1 [vkIV0] 1600 900 1
+    vkFCI0  <- createVkFramebufferCreateInfo nullPtr (VkFramebufferCreateFlags 0) vkRePa 1 swapIV 1600 900 1
     vkFram  <- vkCreateFramebuffer vkDev0 vkFCI0
 
     let vkCPIn = createVkCommandPoolInfo nullPtr (VkCommandPoolCreateFlags 0) 0
@@ -153,10 +181,7 @@ initialize vkInst vkSurf = do
     vkCmdDraw vkCoB0 3 1 0 0
     vkCmdEndRenderPass vkCoB0
 
-    vkSTCI <- createVkSemaphoreTypeCreateInfo nullPtr vkSemaphoreTypeBinary 0
-    vkSSCI <- vkCreateSemaphore vkDev0 vkSTCI
-    vkSePr <- vkCreateSemaphore vkDev0 vkSTCI
-    nextIm <- vkAcquireNextImageKHR vkDev0 vkSC 6000000 vkSSCI $ VkFence nullHandle
+    nextIm <- vkAcquireNextImageKHR vkDev0 vkSC 6000000 semaIm $ VkFence nullHandle
 
     vkBCI   <- createVkBufferInfo nullPtr (VkBufferCreateFlags 0) (VkDeviceSize 2136746240)
         [bufferUsageStorageBufferBit, bufferUsageTransferDSTBit] sharingModeExclusive 3 [0]
@@ -193,9 +218,9 @@ initialize vkInst vkSurf = do
     vkCmdBindDescriptorSets vkCoB0 pipelineBindPointCompute vkPLCo 0 1 vkAlDS 0 Nothing
     -- vkCmdPushConstants vkCoB0 vkPLCo [shaderStageComputeBit] 0 4 (0 :: Word)
     _ <- vkEndCommandBuffer vkCoB0
-    vkSuIn <- createVkSubmitInfo nullPtr 1 (Just [vkSSCI]) (Just [pipelineStageColorAttachmentOutputBit]) 1 vkCoBu 1 $ Just [vkSePr]
+    vkSuIn <- createVkSubmitInfo nullPtr 1 (Just [semaIm]) (Just [pipelineStageColorAttachmentOutputBit]) 1 vkCoBu 1 $ Just [semaPr]
     _ <- vkQueueSubmit vkQue0 1 [vkSuIn] (VkFence nullHandle)
-    vkPrIn <- createVkPresentInfoKHR nullPtr 1 [vkSePr] 1 [vkSC] [nextIm]
+    vkPrIn <- createVkPresentInfoKHR nullPtr 1 [semaPr] 1 [vkSC] [nextIm]
     _ <- vkQueuePresentKHR vkQue0 vkPrIn
 
 
@@ -206,8 +231,8 @@ initialize vkInst vkSurf = do
     ----------------------------------------------------------------------------------------------------------------------------
     _ <- vkQueueWaitIdle vkQue0
     _ <- vkDeviceWaitIdle vkDev0
-    vkDestroySemaphore vkDev0 vkSePr
-    vkDestroySemaphore vkDev0 vkSSCI
+    vkDestroySemaphore vkDev0 semaPr
+    vkDestroySemaphore vkDev0 semaIm
     vkDestroyFramebuffer vkDev0 vkFram
     vkDestroyRenderPass vkDev0 vkRePa
     vkDestroyDescriptorPool vkDev0 vkDeP0
@@ -225,12 +250,11 @@ initialize vkInst vkSurf = do
     vkFreeMemory vkDev0 vkDeMe
     vkDestroyBuffer vkDev0 vkBuff
     vkDestroyImageView vkDev0 vkIV0
+    vkDestroyImageView vkDev0 vkIV1
+    vkDestroyImageView vkDev0 vkIV2
     vkDestroySwapchainKHR vkDev0 vkSC
     vkDestroyDevice vkDev0
     vkDestroySurfaceKHR vkInst vkSurf
     vkDestroyInstance vkInst
 
     return ()
-    where
-        vkISR0 = createVkImageSubresourceRange [imageAspectColorBit] 0 1 0 1
-        vkCMId = VkComponentMapping componentSwizzleIdentity componentSwizzleIdentity componentSwizzleIdentity componentSwizzleIdentity
