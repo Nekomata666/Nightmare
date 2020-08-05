@@ -141,6 +141,15 @@ createSwapchain vkDev0 vkSurf = do
         vkISR0 = createVkImageSubresourceRange [imageAspectColorBit] 0 1 0 1
         vkCMId = VkComponentMapping componentSwizzleIdentity componentSwizzleIdentity componentSwizzleIdentity componentSwizzleIdentity
 
+draw :: VkDevice -> VkSwapchainKHR -> (VkSemaphore, VkSemaphore) -> [VkCommandBuffer] -> VkQueue -> IO ()
+draw vkDev0 vkSC (semaIm, semaPr) vkCoBu vkQue0 = do
+    nextIm <- vkAcquireNextImageKHR vkDev0 vkSC 6000000 semaIm $ VkFence nullHandle
+    vkSuIn <- createVkSubmitInfo nullPtr 1 (Just [semaIm]) (Just [pipelineStageColorAttachmentOutputBit]) 1 vkCoBu 1 $ Just [semaPr]
+    _ <- vkQueueSubmit vkQue0 1 [vkSuIn] (VkFence nullHandle)
+    vkPrIn <- createVkPresentInfoKHR nullPtr 1 [semaPr] 1 [vkSC] [nextIm]
+    _ <- vkQueuePresentKHR vkQue0 vkPrIn
+    return ()
+
 initialize :: VkInstance -> VkSurfaceKHR -> IO ()
 initialize vkInst vkSurf = do
     vkDev0 <- createDevice vkInst vkSurf
@@ -148,7 +157,7 @@ initialize vkInst vkSurf = do
     graphs <- createGraphicsPipeline vkDev0 vkRePa
     comput <- createComputePipeline vkDev0
     swapCh <- createSwapchain vkDev0 vkSurf
-    (semaIm, semaPr) <- createSwapChainSemaphores vkDev0
+    s@(semaIm, semaPr) <- createSwapChainSemaphores vkDev0
     let vkPLGr = fst graphs
         graphP = head $ snd graphs
         vkPiCa = cache comput
@@ -181,7 +190,6 @@ initialize vkInst vkSurf = do
     vkCmdDraw vkCoB0 3 1 0 0
     vkCmdEndRenderPass vkCoB0
 
-    nextIm <- vkAcquireNextImageKHR vkDev0 vkSC 6000000 semaIm $ VkFence nullHandle
 
     vkBCI   <- createVkBufferInfo nullPtr (VkBufferCreateFlags 0) (VkDeviceSize 2136746240)
         [bufferUsageStorageBufferBit, bufferUsageTransferDSTBit] sharingModeExclusive 3 [0]
@@ -218,10 +226,8 @@ initialize vkInst vkSurf = do
     vkCmdBindDescriptorSets vkCoB0 pipelineBindPointCompute vkPLCo 0 1 vkAlDS 0 Nothing
     -- vkCmdPushConstants vkCoB0 vkPLCo [shaderStageComputeBit] 0 4 (0 :: Word)
     _ <- vkEndCommandBuffer vkCoB0
-    vkSuIn <- createVkSubmitInfo nullPtr 1 (Just [semaIm]) (Just [pipelineStageColorAttachmentOutputBit]) 1 vkCoBu 1 $ Just [semaPr]
-    _ <- vkQueueSubmit vkQue0 1 [vkSuIn] (VkFence nullHandle)
-    vkPrIn <- createVkPresentInfoKHR nullPtr 1 [semaPr] 1 [vkSC] [nextIm]
-    _ <- vkQueuePresentKHR vkQue0 vkPrIn
+
+    draw vkDev0 vkSC s vkCoBu vkQue0
 
 
     ----------------------------------------------------------------------------------------------------------------------------
