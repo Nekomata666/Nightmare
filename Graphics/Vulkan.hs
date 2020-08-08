@@ -148,16 +148,17 @@ draw vkDev0 vkSC (semaIm, semaPr) vkCoBu vkQue0 = do
     _ <- vkQueueSubmit vkQue0 1 [vkSuIn] (VkFence nullHandle)
     vkPrIn <- createVkPresentInfoKHR nullPtr 1 [semaPr] 1 [vkSC] [nextIm]
     _ <- vkQueuePresentKHR vkQue0 vkPrIn
+    _ <- vkQueueWaitIdle vkQue0
     return ()
 
-initialize :: VkInstance -> VkSurfaceKHR -> IO ()
+initialize :: VkInstance -> VkSurfaceKHR -> IO (VkBuffer, VkCommandPool, VkDescriptorPool, VkDescriptorSetLayout, VkDevice, [VkDeviceMemory], VkFramebuffer, VkImage, [VkImageView], [VkPipeline], VkPipelineCache, [VkPipelineLayout], VkQueue, VkRenderPass, (VkSemaphore, VkSemaphore), VkSwapchainKHR)
 initialize vkInst vkSurf = do
     vkDev0 <- createDevice vkInst vkSurf
     vkRePa <- createRenderpass vkDev0
     graphs <- createGraphicsPipeline vkDev0 vkRePa
     comput <- createComputePipeline vkDev0
     swapCh <- createSwapchain vkDev0 vkSurf
-    s@(semaIm, semaPr) <- createSwapChainSemaphores vkDev0
+    semaph <- createSwapChainSemaphores vkDev0
     let vkPLGr = fst graphs
         graphP = head $ snd graphs
         vkPiCa = cache comput
@@ -166,9 +167,6 @@ initialize vkInst vkSurf = do
         vkDSL0 = descriptor comput
         vkSC   = fst swapCh
         swapIV = snd swapCh
-        vkIV0  = swapIV !! 0
-        vkIV1  = swapIV !! 1
-        vkIV2  = swapIV !! 2
 
 
     vkFCI0  <- createVkFramebufferCreateInfo nullPtr (VkFramebufferCreateFlags 0) vkRePa 1 swapIV 1600 900 1
@@ -227,14 +225,17 @@ initialize vkInst vkSurf = do
     -- vkCmdPushConstants vkCoB0 vkPLCo [shaderStageComputeBit] 0 4 (0 :: Word)
     _ <- vkEndCommandBuffer vkCoB0
 
-    draw vkDev0 vkSC s vkCoBu vkQue0
+    draw vkDev0 vkSC semaph vkCoBu vkQue0
 
+    return (vkBuff, vkCPo0, vkDeP0, vkDSL0, vkDev0, [imagMe, vkDeMe], vkFram, vkIma0, swapIV, [graphP, compPi], vkPiCa, [vkPLGr, vkPLCo], vkQue0, vkRePa, semaph, vkSC)
 
-    ----------------------------------------------------------------------------------------------------------------------------
-    --
-    -- Shutdown
-    --
-    ----------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------
+--
+-- Shutdown
+--
+--------------------------------------------------------------------------------------------------------------------------------
+shutdown :: VkBuffer -> VkCommandPool -> VkDescriptorPool -> VkDescriptorSetLayout -> VkDevice -> [VkDeviceMemory] -> VkFramebuffer -> VkImage -> [VkImageView] -> VkInstance -> [VkPipeline] -> VkPipelineCache -> [VkPipelineLayout] -> VkQueue -> VkRenderPass -> (VkSemaphore, VkSemaphore) -> VkSurfaceKHR -> VkSwapchainKHR -> IO ()
+shutdown vkBuff vkCPo0 vkDeP0 vkDSL0 vkDev0 [mem0, mem1] vkFram vkIma0 [vkIV0, vkIV1, vkIV2] vkInst [pipe0, pipe1] vkPiCa [pipeL0, pipeL1] vkQue0 vkRePa (semaIm, semaPr) vkSurf vkSC = do
     _ <- vkQueueWaitIdle vkQue0
     _ <- vkDeviceWaitIdle vkDev0
     vkDestroySemaphore vkDev0 semaPr
@@ -243,17 +244,17 @@ initialize vkInst vkSurf = do
     vkDestroyRenderPass vkDev0 vkRePa
     vkDestroyDescriptorPool vkDev0 vkDeP0
     vkDestroyPipelineCache vkDev0 vkPiCa
-    vkDestroyPipelineLayout vkDev0 vkPLGr
-    vkDestroyPipeline vkDev0 graphP
-    vkDestroyPipelineLayout vkDev0 vkPLCo
+    vkDestroyPipelineLayout vkDev0 pipeL0
+    vkDestroyPipeline vkDev0 pipe0
+    vkDestroyPipelineLayout vkDev0 pipeL1
     vkDestroyDescriptorSetLayout vkDev0 vkDSL0
-    vkDestroyPipeline vkDev0 compPi
+    vkDestroyPipeline vkDev0 pipe1
     vkDestroyCommandPool vkDev0 vkCPo0
-    vkUnmapMemory vkDev0 imagMe
-    vkFreeMemory vkDev0 imagMe
+    vkUnmapMemory vkDev0 mem0
+    vkFreeMemory vkDev0 mem0
     vkDestroyImage vkDev0 vkIma0
-    vkUnmapMemory vkDev0 vkDeMe
-    vkFreeMemory vkDev0 vkDeMe
+    vkUnmapMemory vkDev0 mem1
+    vkFreeMemory vkDev0 mem1
     vkDestroyBuffer vkDev0 vkBuff
     vkDestroyImageView vkDev0 vkIV0
     vkDestroyImageView vkDev0 vkIV1
@@ -262,5 +263,3 @@ initialize vkInst vkSurf = do
     vkDestroyDevice vkDev0
     vkDestroySurfaceKHR vkInst vkSurf
     vkDestroyInstance vkInst
-
-    return ()
