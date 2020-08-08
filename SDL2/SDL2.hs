@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module SDL2.SDL2 (sdl2CreateWindow, sdl2DestroyWindow, sdl2Init, sdl2VulkanCreateSurface, sdl2Quit) where
+module SDL2.SDL2 (sdl2CreateWindow, sdl2DestroyWindow, sdl2Init, sdl2PollEvent, sdl2VulkanCreateSurface, sdl2Quit) where
 
 
 import Data.Int     (Int32)
@@ -10,6 +10,8 @@ import Foreign
 import Foreign.C.String
 
 import Graphics.Vulkan.Types (VkInstance(..), VkSurfaceKHR(..))
+
+import SDL2.Data
 
 
 data SDL_Window
@@ -29,6 +31,9 @@ foreign import ccall unsafe "SDL_DestroyWindow"
 foreign import ccall unsafe "SDL_Init"
     c_SDL_Init :: Word32 -> IO Int32
 
+foreign import ccall unsafe "SDL_PollEvent"
+    c_SDL_PollEvent :: Ptr SDLEvent -> IO Int32
+
 foreign import ccall unsafe "SDL_Vulkan_CreateSurface"
     c_SDL_Vulkan_CreateSurface :: HWindow -> VkInstance -> Ptr VkSurfaceKHR -> IO Bool
 
@@ -45,6 +50,12 @@ sdl2DestroyWindow = c_SDL_DestroyWindow
 
 sdl2Init :: Word32 -> IO Int32
 sdl2Init = c_SDL_Init
+
+sdl2PollEvent :: IO (Bool, SDLEvent)
+sdl2PollEvent = alloca $ \p -> do
+    r <- c_SDL_PollEvent p
+    e <- peek p
+    return (r == 1, e)
 
 sdl2VulkanCreateSurface :: HWindow -> VkInstance -> IO VkSurfaceKHR
 sdl2VulkanCreateSurface hW vI = alloca $ \p -> do
