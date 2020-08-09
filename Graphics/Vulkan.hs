@@ -11,7 +11,7 @@ import Graphics.Utilities
 import Graphics.Vulkan.Buffers
 import Graphics.Vulkan.Command
 import Graphics.Vulkan.Constants
-import Graphics.Vulkan.Data (VkAttachmentDescription(..), VkAttachmentReference(..), VkClearValue(..), VkComponentMapping(..), VkComputePipelineCreateInfo(..), VkDescriptorBufferInfo(..), VkDescriptorPoolSize(..), VkExtent2D(..), VkExtent3D(..), VkImageSubresourceRange(..), VkImageViewCreateInfo(..), VkMemoryRequirements(..), VkOffset2D(..), VkPipelineColorBlendAttachmentState(..), VkPipelineInputAssemblyStateCreateInfo(..), VkPipelineMultisampleStateCreateInfo(..), VkPipelineRasterizationStateCreateInfo(..), VkPresentInfoKHR(..), VkRect2D(..), VkSubpassDependency(..), VkViewport(..))
+import Graphics.Vulkan.Data (VkAttachmentDescription(..), VkAttachmentReference(..), VkClearValue(..), VkComponentMapping(..), VkComputePipelineCreateInfo(..), VkDescriptorBufferInfo(..), VkDescriptorPoolSize(..), VkExtent2D(..), VkExtent3D(..), VkFenceCreateInfo(..), VkImageSubresourceRange(..), VkImageViewCreateInfo(..), VkMemoryRequirements(..), VkOffset2D(..), VkPipelineColorBlendAttachmentState(..), VkPipelineInputAssemblyStateCreateInfo(..), VkPipelineMultisampleStateCreateInfo(..), VkPipelineRasterizationStateCreateInfo(..), VkPresentInfoKHR(..), VkRect2D(..), VkSubpassDependency(..), VkViewport(..))
 import Graphics.Vulkan.Descriptor
 import Graphics.Vulkan.Devices
 import Graphics.Vulkan.Enumerations
@@ -113,6 +113,11 @@ createRenderpass vkDev0 = do
         vkSuPa = VkSubpassDependency subpassExternal 0 subStageMask subStageMask (VkAccessFlags 0) (VkAccessFlags $ unVkAccessFlagBits accessColorAttachmentWriteBit) (VkDependencyFlags 0)
         subStageMask = VkPipelineStageFlags $ unVkPipelineStageFlagBits pipelineStageColorAttachmentOutputBit
 
+createSwapchainFence :: VkDevice -> IO VkFence
+createSwapchainFence vkDev0 = vkCreateFence vkDev0 vkFCI
+    where
+        vkFCI = VkFenceCreateInfo structureTypeFenceCreateInfo nullPtr $ VkFenceCreateFlags 0
+
 createSwapchainSemaphores :: VkDevice -> IO (VkSemaphore, VkSemaphore)
 createSwapchainSemaphores vkDev0 = do
     vkSTCI <- createVkSemaphoreTypeCreateInfo nullPtr vkSemaphoreTypeBinary 0
@@ -142,17 +147,17 @@ createSwapchain vkDev0 vkSurf = do
         vkISR0 = createVkImageSubresourceRange [imageAspectColorBit] 0 1 0 1
         vkCMId = VkComponentMapping componentSwizzleIdentity componentSwizzleIdentity componentSwizzleIdentity componentSwizzleIdentity
 
-draw :: VkDevice -> VkSwapchainKHR -> (VkSemaphore, VkSemaphore) -> [VkCommandBuffer] -> VkQueue -> IO ()
-draw vkDev0 vkSC (semaIm, semaPr) vkCoBu vkQue0 = do
+draw :: VkDevice -> VkFence -> VkSwapchainKHR -> (VkSemaphore, VkSemaphore) -> [VkCommandBuffer] -> VkQueue -> IO ()
+draw vkDev0 fence0 vkSC (semaIm, semaPr) vkCoBu vkQue0 = do
     nextIm <- vkAcquireNextImageKHR vkDev0 vkSC 6000000 semaIm $ VkFence nullHandle
     vkSuIn <- createVkSubmitInfo nullPtr 1 (Just [semaIm]) (Just [pipelineStageColorAttachmentOutputBit]) 1 vkCoBu 1 $ Just [semaPr]
-    _ <- vkQueueSubmit vkQue0 1 [vkSuIn] (VkFence nullHandle)
+    _ <- vkQueueSubmit vkQue0 1 [vkSuIn] fence0
     vkPrIn <- createVkPresentInfoKHR nullPtr 1 [semaPr] 1 [vkSC] [nextIm]
     _ <- vkQueuePresentKHR vkQue0 vkPrIn
     _ <- vkQueueWaitIdle vkQue0
     return ()
 
-initialize :: VkInstance -> VkSurfaceKHR -> IO (VkBuffer, [VkCommandBuffer], VkCommandPool, VkDescriptorPool, VkDescriptorSetLayout, VkDevice, [VkDeviceMemory], VkFramebuffer, VkImage, [VkImageView], [VkPipeline], VkPipelineCache, [VkPipelineLayout], VkQueue, VkRenderPass, (VkSemaphore, VkSemaphore), VkSwapchainKHR)
+initialize :: VkInstance -> VkSurfaceKHR -> IO (VkBuffer, [VkCommandBuffer], VkCommandPool, VkDescriptorPool, VkDescriptorSetLayout, VkDevice, [VkDeviceMemory], VkFence, VkFramebuffer, VkImage, [VkImageView], [VkPipeline], VkPipelineCache, [VkPipelineLayout], VkQueue, VkRenderPass, (VkSemaphore, VkSemaphore), VkSwapchainKHR)
 initialize vkInst vkSurf = do
     vkDev0 <- createDevice vkInst vkSurf
     vkRePa <- createRenderpass vkDev0
@@ -160,6 +165,7 @@ initialize vkInst vkSurf = do
     comput <- createComputePipeline vkDev0
     swapCh <- createSwapchain vkDev0 vkSurf
     semaph <- createSwapchainSemaphores vkDev0
+    fence0 <- createSwapchainFence vkDev0
     let vkPLGr = fst graphs
         graphP = head $ snd graphs
         vkPiCa = cache comput
@@ -226,9 +232,9 @@ initialize vkInst vkSurf = do
     -- vkCmdPushConstants vkCoB0 vkPLCo [shaderStageComputeBit] 0 4 (0 :: Word)
     _ <- vkEndCommandBuffer vkCoB0
 
-    draw vkDev0 vkSC semaph vkCoBu vkQue0
+    draw vkDev0 fence0 vkSC semaph vkCoBu vkQue0
 
-    return (vkBuff, vkCoBu, vkCPo0, vkDeP0, vkDSL0, vkDev0, [imagMe, vkDeMe], vkFram, vkIma0, swapIV, [graphP, compPi], vkPiCa, [vkPLGr, vkPLCo], vkQue0, vkRePa, semaph, vkSC)
+    return (vkBuff, vkCoBu, vkCPo0, vkDeP0, vkDSL0, vkDev0, [imagMe, vkDeMe], fence0, vkFram, vkIma0, swapIV, [graphP, compPi], vkPiCa, [vkPLGr, vkPLCo], vkQue0, vkRePa, semaph, vkSC)
 
 --------------------------------------------------------------------------------------------------------------------------------
 --

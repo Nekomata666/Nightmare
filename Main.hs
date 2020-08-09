@@ -27,9 +27,9 @@ main = do
     -- Vulkan
     --
     ----------------------------------------------------------------------------------------------------------------------------
-    (vkBuff, vkCPo0, vkDeP0, vkDSL0, vkDev0, memory, vkFram, vkIma0, swapIV, pipe, vkPiCa, pipeLa, vkQue0, vkRePa, sema, vkSC) <- initialize vkInst vkSurf
+    (vkBuff, vkCoBu, vkCPo0, vkDeP0, vkDSL0, vkDev0, memory, fence0, vkFram, vkIma0, swapIV, pipe, vkPiCa, pipeLa, vkQue0, vkRePa, sema, vkSC) <- initialize vkInst vkSurf
 
-    loop False sdlFirstEvent
+    loop False sdlFirstEvent vkDev0 vkSC sema vkCoBu vkQue0
 
 
     ----------------------------------------------------------------------------------------------------------------------------
@@ -41,9 +41,9 @@ main = do
     sdl2DestroyWindow hW
     sdl2Quit
 
-loop :: Bool -> SDLEventType -> IO ()
-loop True (SDLEventType 256) = return ()
-loop _ _ = do
+loop :: Bool -> SDLEventType -> VkDevice -> VkSwapchainKHR -> (VkSemaphore, VkSemaphore) -> [VkCommandBuffer] -> VkQueue -> IO ()
+loop True (SDLEventType 256) _ _ _ _ _ = return ()
+loop _ _ vkDev0 vkSC sema vkCoBu vkQue0 = do
     a@(r, e) <- sdl2PollEvent
     when r $ print a
-    loop r $ SDLEventType $ eType e
+    loop r (SDLEventType $ eType e) vkDev0 vkSC sema vkCoBu vkQue0

@@ -42,6 +42,7 @@ newtype VkDescriptorPoolCreateFlags = VkDescriptorPoolCreateFlags { unVkDescript
 newtype VkDescriptorSetLayoutCreateFlags = VkDescriptorSetLayoutCreateFlags { unVkDescriptorSetLayoutCreateFlags :: VkFlags }
 newtype VkDeviceCreateFlags = VkDeviceCreateFlags { unVkDeviceCreateFlags :: VkFlags }
 newtype VkDeviceQueueCreateFlags = VkDeviceQueueCreateFlags { unVkDeviceQueueCreateFlags :: VkFlags }
+newtype VkFenceCreateFlags = VkFenceCreateFlags { unVkFenceCreateFlags :: VkFlags }
 newtype VkFramebufferCreateFlags = VkFramebufferCreateFlags { unVkFramebufferCreateFlags :: VkFlags }
 newtype VkImageAspectFlags = VkImageAspectFlags { unVkImageAspectFlags :: VkFlags }
 newtype VkImageCreateFlags = VkImageCreateFlags { unVkImageCreateFlags :: VkFlags }
@@ -240,6 +241,14 @@ instance Storable VkDeviceQueueCreateFlags where
         v <- peekByteOff p 0
         return (VkDeviceQueueCreateFlags v)
     poke p (VkDeviceQueueCreateFlags v) = pokeByteOff p 0 v
+
+instance Storable VkFenceCreateFlags where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkFenceCreateFlags v)
+    poke p (VkFenceCreateFlags v) = pokeByteOff p 0 v
 
 instance Storable VkFramebufferCreateFlags where
     sizeOf _    = 4
