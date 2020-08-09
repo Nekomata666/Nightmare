@@ -155,6 +155,7 @@ draw vkDev0 fence0 vkSC (semaIm, semaPr) vkCoBu vkQue0 = do
     vkPrIn <- createVkPresentInfoKHR nullPtr 1 [semaPr] 1 [vkSC] [nextIm]
     _ <- vkQueuePresentKHR vkQue0 vkPrIn
     _ <- vkQueueWaitIdle vkQue0
+    _ <- vkWaitForFences vkDev0 1 [fence0] vkTrue 18446744073709551615
     return ()
 
 initialize :: VkInstance -> VkSurfaceKHR -> IO (VkBuffer, [VkCommandBuffer], VkCommandPool, VkDescriptorPool, VkDescriptorSetLayout, VkDevice, [VkDeviceMemory], VkFence, VkFramebuffer, VkImage, [VkImageView], [VkPipeline], VkPipelineCache, [VkPipelineLayout], VkQueue, VkRenderPass, (VkSemaphore, VkSemaphore), VkSwapchainKHR)
