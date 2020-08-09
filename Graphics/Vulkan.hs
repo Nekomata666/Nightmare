@@ -15,6 +15,7 @@ import Graphics.Vulkan.Data (VkAttachmentDescription(..), VkAttachmentReference(
 import Graphics.Vulkan.Descriptor
 import Graphics.Vulkan.Devices
 import Graphics.Vulkan.Enumerations
+import Graphics.Vulkan.Fences
 import Graphics.Vulkan.Framebuffer
 import Graphics.Vulkan.Images
 import Graphics.Vulkan.Instance
@@ -112,8 +113,8 @@ createRenderpass vkDev0 = do
         vkSuPa = VkSubpassDependency subpassExternal 0 subStageMask subStageMask (VkAccessFlags 0) (VkAccessFlags $ unVkAccessFlagBits accessColorAttachmentWriteBit) (VkDependencyFlags 0)
         subStageMask = VkPipelineStageFlags $ unVkPipelineStageFlagBits pipelineStageColorAttachmentOutputBit
 
-createSwapChainSemaphores :: VkDevice -> IO (VkSemaphore, VkSemaphore)
-createSwapChainSemaphores vkDev0 = do
+createSwapchainSemaphores :: VkDevice -> IO (VkSemaphore, VkSemaphore)
+createSwapchainSemaphores vkDev0 = do
     vkSTCI <- createVkSemaphoreTypeCreateInfo nullPtr vkSemaphoreTypeBinary 0
     vkSem0 <- vkCreateSemaphore vkDev0 vkSTCI
     vkSem1 <- vkCreateSemaphore vkDev0 vkSTCI
@@ -151,14 +152,14 @@ draw vkDev0 vkSC (semaIm, semaPr) vkCoBu vkQue0 = do
     _ <- vkQueueWaitIdle vkQue0
     return ()
 
-initialize :: VkInstance -> VkSurfaceKHR -> IO (VkBuffer, VkCommandPool, VkDescriptorPool, VkDescriptorSetLayout, VkDevice, [VkDeviceMemory], VkFramebuffer, VkImage, [VkImageView], [VkPipeline], VkPipelineCache, [VkPipelineLayout], VkQueue, VkRenderPass, (VkSemaphore, VkSemaphore), VkSwapchainKHR)
+initialize :: VkInstance -> VkSurfaceKHR -> IO (VkBuffer, [VkCommandBuffer], VkCommandPool, VkDescriptorPool, VkDescriptorSetLayout, VkDevice, [VkDeviceMemory], VkFramebuffer, VkImage, [VkImageView], [VkPipeline], VkPipelineCache, [VkPipelineLayout], VkQueue, VkRenderPass, (VkSemaphore, VkSemaphore), VkSwapchainKHR)
 initialize vkInst vkSurf = do
     vkDev0 <- createDevice vkInst vkSurf
     vkRePa <- createRenderpass vkDev0
     graphs <- createGraphicsPipeline vkDev0 vkRePa
     comput <- createComputePipeline vkDev0
     swapCh <- createSwapchain vkDev0 vkSurf
-    semaph <- createSwapChainSemaphores vkDev0
+    semaph <- createSwapchainSemaphores vkDev0
     let vkPLGr = fst graphs
         graphP = head $ snd graphs
         vkPiCa = cache comput
@@ -227,7 +228,7 @@ initialize vkInst vkSurf = do
 
     draw vkDev0 vkSC semaph vkCoBu vkQue0
 
-    return (vkBuff, vkCPo0, vkDeP0, vkDSL0, vkDev0, [imagMe, vkDeMe], vkFram, vkIma0, swapIV, [graphP, compPi], vkPiCa, [vkPLGr, vkPLCo], vkQue0, vkRePa, semaph, vkSC)
+    return (vkBuff, vkCoBu, vkCPo0, vkDeP0, vkDSL0, vkDev0, [imagMe, vkDeMe], vkFram, vkIma0, swapIV, [graphP, compPi], vkPiCa, [vkPLGr, vkPLCo], vkQue0, vkRePa, semaph, vkSC)
 
 --------------------------------------------------------------------------------------------------------------------------------
 --
