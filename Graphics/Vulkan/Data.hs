@@ -220,6 +220,12 @@ data VkExtent3D = VkExtent3D{
     depth :: Word32
 }
 
+data VkFenceCreateInfo = VkFenceCreateInfo{
+    sType :: VkStructureType,
+    next :: Ptr Void,
+    flags :: VkFenceCreateFlags
+}
+
 data VkFramebufferCreateInfo = VkFramebufferCreateInfo{
     sType :: VkStructureType,
     next :: Ptr Void,
@@ -1220,6 +1226,19 @@ instance Storable VkExtent3D where
         pokeByteOff p 0 v1
         pokeByteOff p 4 v2
         pokeByteOff p 8 v3
+
+instance Storable VkFenceCreateInfo where
+    sizeOf _ = 24
+    alignment _ = 8
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 8
+        v3 <- peekByteOff p 16
+        return (VkFenceCreateInfo v1 v2 v3)
+    poke p (VkFenceCreateInfo v1 v2 v3) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 8 v2
+        pokeByteOff p 16 v3
 
 instance Storable VkFramebufferCreateInfo where
     sizeOf _    = 64

@@ -39,6 +39,8 @@ newtype VkDescriptorType = VkDescriptorType { unVkDescriptorType :: Word32 }
     deriving (Eq)
 newtype VkDynamicState = VkDynamicState { unVkDynamicState :: Word32 }
     deriving (Eq)
+newtype VkFenceCreateFlagBits = VkFenceCreateFlagBits { unVkFenceCreateFlagBits :: Word32 }
+    deriving (Eq)
 newtype VkFormat = VkFormat { unVkFormat :: Word32 }
     deriving (Eq)
 newtype VkFrontFace = VkFrontFace { unVkFrontFace :: Word32 }
@@ -368,6 +370,10 @@ dynamicStateStencilWriteMask     :: VkDynamicState
 dynamicStateStencilWriteMask     = VkDynamicState 7
 dynamicStateStencilReference     :: VkDynamicState
 dynamicStateStencilReference     = VkDynamicState 8
+
+-- VkFenceCreateFlagBits
+fenceCreateSignaledBit       :: VkFenceCreateFlagBits
+fenceCreateSignaledBit       = VkFenceCreateFlagBits 1
 
 -- VkFormat
 -- Todo: Remove unwanted formats, like: SRGB, SFloat, UFloat, UNorm
@@ -1429,6 +1435,14 @@ instance Storable VkDynamicState where
         v <- peekByteOff p 0
         return (VkDynamicState v)
     poke p (VkDynamicState v) = pokeByteOff p 0 v
+
+instance Storable VkFenceCreateFlagBits where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkFenceCreateFlagBits v)
+    poke p (VkFenceCreateFlagBits v) = pokeByteOff p 0 v
 
 instance Storable VkFormat where
     sizeOf _    = 4
