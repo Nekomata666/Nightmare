@@ -242,10 +242,11 @@ initialize vkInst vkSurf = do
 -- Shutdown
 --
 --------------------------------------------------------------------------------------------------------------------------------
-shutdown :: VkBuffer -> VkCommandPool -> VkDescriptorPool -> VkDescriptorSetLayout -> VkDevice -> [VkDeviceMemory] -> VkFramebuffer -> VkImage -> [VkImageView] -> VkInstance -> [VkPipeline] -> VkPipelineCache -> [VkPipelineLayout] -> VkQueue -> VkRenderPass -> (VkSemaphore, VkSemaphore) -> VkSurfaceKHR -> VkSwapchainKHR -> IO ()
-shutdown vkBuff vkCPo0 vkDeP0 vkDSL0 vkDev0 [mem0, mem1] vkFram vkIma0 [vkIV0, vkIV1, vkIV2] vkInst [pipe0, pipe1] vkPiCa [pipeL0, pipeL1] vkQue0 vkRePa (semaIm, semaPr) vkSurf vkSC = do
+shutdown :: VkBuffer -> VkCommandPool -> VkDescriptorPool -> VkDescriptorSetLayout -> VkDevice -> [VkDeviceMemory] -> VkFence -> VkFramebuffer -> VkImage -> [VkImageView] -> VkInstance -> [VkPipeline] -> VkPipelineCache -> [VkPipelineLayout] -> VkQueue -> VkRenderPass -> (VkSemaphore, VkSemaphore) -> VkSurfaceKHR -> VkSwapchainKHR -> IO ()
+shutdown vkBuff vkCPo0 vkDeP0 vkDSL0 vkDev0 [mem0, mem1] fence0 vkFram vkIma0 [vkIV0, vkIV1, vkIV2] vkInst [pipe0, pipe1] vkPiCa [pipeL0, pipeL1] vkQue0 vkRePa (semaIm, semaPr) vkSurf vkSC = do
     _ <- vkQueueWaitIdle vkQue0
     _ <- vkDeviceWaitIdle vkDev0
+    vkDestroyFence vkDev0 fence0
     vkDestroySemaphore vkDev0 semaPr
     vkDestroySemaphore vkDev0 semaIm
     vkDestroyFramebuffer vkDev0 vkFram

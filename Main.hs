@@ -37,7 +37,7 @@ main = do
     -- Shutdown
     --
     ----------------------------------------------------------------------------------------------------------------------------
-    shutdown vkBuff vkCPo0 vkDeP0 vkDSL0 vkDev0 memory vkFram vkIma0 swapIV vkInst pipe vkPiCa pipeLa vkQue0 vkRePa sema vkSurf vkSC
+    shutdown vkBuff vkCPo0 vkDeP0 vkDSL0 vkDev0 memory fence0 vkFram vkIma0 swapIV vkInst pipe vkPiCa pipeLa vkQue0 vkRePa sema vkSurf vkSC
     sdl2DestroyWindow hW
     sdl2Quit
 

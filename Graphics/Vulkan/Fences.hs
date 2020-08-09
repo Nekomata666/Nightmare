@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Fences (vkCreateFence, vkWaitForFences) where
+module Graphics.Vulkan.Fences (vkCreateFence, vkDestroyFence, vkWaitForFences) where
 
 
 import Data.Word (Word32, Word64)
@@ -21,6 +21,9 @@ type TimeOut    = Word64
 foreign import ccall unsafe "vkCreateFence"
     c_vkCreateFence :: VkDevice -> Ptr VkFenceCreateInfo -> Ptr VkAllocationCallbacks -> Ptr VkFence -> IO VkResult
 
+foreign import ccall unsafe "vkDestroyFence"
+    c_vkDestroyFence :: VkDevice -> VkFence -> Ptr VkAllocationCallbacks -> IO ()
+
 foreign import ccall unsafe "vkWaitForFences"
     c_vkWaitForFences :: VkDevice -> Word32 -> Ptr VkFence -> VkBool -> Word64 -> IO VkResult
 
@@ -30,6 +33,9 @@ vkCreateFence d fCI = alloca $ \pFCI ->
         poke pFCI fCI
         _ <- c_vkCreateFence d pFCI nullPtr pF
         peek pF
+
+vkDestroyFence :: VkDevice -> VkFence -> IO ()
+vkDestroyFence d f = c_vkDestroyFence d f nullPtr
 
 vkWaitForFences :: VkDevice -> FenceCount -> [VkFence] -> VkBool -> TimeOut -> IO VkResult
 vkWaitForFences d fC f b tO = allocaArray i $ \p -> do
