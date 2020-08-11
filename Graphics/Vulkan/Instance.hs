@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Instance (createVkApplicationInfo, createVkInstanceCreateInfo, vkCreateInstance) where
+module Graphics.Vulkan.Instance (createVkApplicationInfo, createVkInstanceCreateInfo, vkCreateInstance, vkDestroyInstance) where
 
 
 import Data.Void (Void)
@@ -31,25 +31,30 @@ type LayerNames         = [String]
 foreign import ccall unsafe "vkCreateInstance"
     c_vkCreateInstance :: Ptr VkInstanceCreateInfo -> Ptr VkAllocationCallbacks -> Ptr VkInstance -> IO VkResult
 
-createVkApplicationInfo :: Ptr Void -> ApplicationName -> ApplicationVersion -> EngineName -> EngineVersion -> APIVersion ->
+foreign import ccall unsafe "vkDestroyInstance"
+    c_vkDestroyInstance :: VkInstance -> Ptr VkAllocationCallbacks -> IO ()
+
+createVkApplicationInfo :: Next -> ApplicationName -> ApplicationVersion -> EngineName -> EngineVersion -> APIVersion ->
     IO VkApplicationInfo
 createVkApplicationInfo v aN appV eN eV apiV = do
     aN' <- newCString aN
     eN' <- newCString eN
     return $ VkApplicationInfo structureTypeApplicationInfo v aN' appV eN' eV apiV
 
-createVkInstanceCreateInfo :: Ptr Void -> VkFlags -> Maybe VkApplicationInfo -> LayerCount -> Maybe LayerNames ->
-    ExtensionCount -> Maybe ExtensionNames -> IO VkInstanceCreateInfo
+createVkInstanceCreateInfo :: Next -> VkFlags -> Maybe VkApplicationInfo -> LayerCount -> Maybe LayerNames -> ExtensionCount ->
+    Maybe ExtensionNames -> IO VkInstanceCreateInfo
 createVkInstanceCreateInfo v f aI lC lN eC eN = do
     aI' <- fromMaybeIO aI
     lN' <- fromMaybeStringListIO lC lN
     eN' <- fromMaybeStringListIO eC eN
     return $ VkInstanceCreateInfo structureTypeInstanceCreateInfo v f aI' lC lN' eC eN'
 
-vkCreateInstance :: VkInstanceCreateInfo -> IO (VkInstance, VkResult)
+vkCreateInstance :: VkInstanceCreateInfo -> IO VkInstance
 vkCreateInstance vkInfo = alloca $ \pVkInfo ->
     alloca $ \pVkInstance -> do
         poke pVkInfo vkInfo
-        vkR <- c_vkCreateInstance pVkInfo nullPtr pVkInstance
-        inst <- peek pVkInstance
-        return (inst, vkR)
+        _ <- c_vkCreateInstance pVkInfo nullPtr pVkInstance
+        peek pVkInstance
+
+vkDestroyInstance :: VkInstance -> IO ()
+vkDestroyInstance i = c_vkDestroyInstance i nullPtr
