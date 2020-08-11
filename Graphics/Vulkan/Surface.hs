@@ -22,7 +22,7 @@ type ImageIndex             = Word32
 type MinImageCount          = Word32
 type QueueFamilyIndexCount  = Word32
 type QueueFamilyIndices     = Word32
-type Timeout                = Word64
+type TimeOut                = Word64
 
 
 foreign import ccall unsafe "vkAcquireNextImageKHR"
@@ -53,7 +53,7 @@ createVkSwapchainCreateInfo v sCF s mIC f cS e iAL iUFB sM qFIC qFI sTF cAF pM b
             i = cast qFIC
             u = VkImageUsageFlags $ unVkImageUsageFlagBits iUFB
 
-vkAcquireNextImageKHR :: VkDevice -> VkSwapchainKHR -> Timeout -> VkSemaphore -> VkFence -> IO ImageIndex
+vkAcquireNextImageKHR :: VkDevice -> VkSwapchainKHR -> TimeOut -> VkSemaphore -> VkFence -> IO ImageIndex
 vkAcquireNextImageKHR d sC t s f = alloca $ \p -> do
     _ <- c_vkAcquireNextImageKHR d sC t s f p
     peek p

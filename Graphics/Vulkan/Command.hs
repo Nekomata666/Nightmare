@@ -20,6 +20,7 @@ import Graphics.Vulkan.Types
 type BaseArrayLayer             = Word32
 type BaseMipLevel               = Word32
 type ClearValueCount            = Word32
+type CommandBufferCount         = Word32
 type Data                       = Word32
 type DescriptorSetCount         = Word32
 type DynamicOffsetCount         = Word32
@@ -86,7 +87,7 @@ createVkClearColorValue v = allocaArray 4 $ \p -> do
     pokeArray p v
     return $ VkClearColorValue p
 
-createVkCommandBufferAllocateInfo :: Next -> VkCommandPool -> VkCommandBufferLevel -> Word32 -> VkCommandBufferAllocateInfo
+createVkCommandBufferAllocateInfo :: Next -> VkCommandPool -> VkCommandBufferLevel -> CommandBufferCount -> VkCommandBufferAllocateInfo
 createVkCommandBufferAllocateInfo = VkCommandBufferAllocateInfo structureTypeCommandBufferAllocateInfo
 
 createVkCommandBufferBeginInfo :: Next -> VkCommandBufferUsageFlags -> Maybe VkCommandBufferInheritanceInfo ->
