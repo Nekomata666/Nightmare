@@ -15,6 +15,12 @@ import Graphics.Vulkan.Enumerations
 import Graphics.Vulkan.Types
 
 
+-- Type aliases.
+type AllocationSize     = VkDeviceSize
+type MemoryTypeIndex    = Word32
+type Offset             = VkDeviceSize
+type Size               = VkDeviceSize
+
 foreign import ccall unsafe "vkAllocateMemory"
     c_vkAllocateMemory :: VkDevice -> Ptr VkMemoryAllocateInfo -> Ptr VkAllocationCallbacks -> Ptr
         VkDeviceMemory -> IO VkResult
@@ -29,7 +35,7 @@ foreign import ccall unsafe "vkMapMemory"
 foreign import ccall unsafe "vkUnmapMemory"
     c_vkUnmapMemory :: VkDevice -> VkDeviceMemory -> IO ()
 
-createVkMemoryAllocateInfo :: Next -> VkDeviceSize -> Word32 -> VkMemoryAllocateInfo
+createVkMemoryAllocateInfo :: Next -> AllocationSize -> MemoryTypeIndex -> VkMemoryAllocateInfo
 createVkMemoryAllocateInfo = VkMemoryAllocateInfo structureTypeMemoryAllocateInfo
 
 vkAllocateMemory :: VkDevice -> VkMemoryAllocateInfo -> IO VkDeviceMemory
@@ -42,7 +48,7 @@ vkAllocateMemory d i = alloca $ \pInfo ->
 vkFreeMemory :: VkDevice -> VkDeviceMemory -> IO ()
 vkFreeMemory d m = c_vkFreeMemory d m nullPtr
 
-vkMapMemory :: VkDevice -> VkDeviceMemory -> VkDeviceSize -> VkDeviceSize -> VkMemoryMapFlags -> IO (Ptr Void)
+vkMapMemory :: VkDevice -> VkDeviceMemory -> Offset -> Size -> VkMemoryMapFlags -> IO (Ptr Void)
 vkMapMemory d dm o s f = alloca $ \p -> do
     _ <- c_vkMapMemory d dm o s f p
     peek p

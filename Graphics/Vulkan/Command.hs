@@ -106,11 +106,13 @@ createVkClearColorValue v = allocaArray 4 $ \p -> do
 createVkCommandBufferAllocateInfo :: Next -> VkCommandPool -> VkCommandBufferLevel -> CommandBufferCount -> VkCommandBufferAllocateInfo
 createVkCommandBufferAllocateInfo = VkCommandBufferAllocateInfo structureTypeCommandBufferAllocateInfo
 
-createVkCommandBufferBeginInfo :: Next -> VkCommandBufferUsageFlags -> Maybe VkCommandBufferInheritanceInfo ->
+createVkCommandBufferBeginInfo :: Next -> VkCommandBufferUsageFlagBits -> Maybe VkCommandBufferInheritanceInfo ->
     IO VkCommandBufferBeginInfo
-createVkCommandBufferBeginInfo v f i = do
+createVkCommandBufferBeginInfo v cBUFB i = do
     p <- fromMaybeIO i
-    return $ VkCommandBufferBeginInfo structureTypeCommandBufferBeginInfo v f p
+    return $ VkCommandBufferBeginInfo structureTypeCommandBufferBeginInfo v cBUF p
+    where
+        cBUF = VkCommandBufferUsageFlags $ unVkCommandBufferUsageFlagBits cBUFB
 
 createVkCommandPoolInfo :: Next -> VkCommandPoolCreateFlags -> QueueFamilyIndex -> VkCommandPoolCreateInfo
 createVkCommandPoolInfo = VkCommandPoolCreateInfo structureTypeCommandPoolCreateInfo

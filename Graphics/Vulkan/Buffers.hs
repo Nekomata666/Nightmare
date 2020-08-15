@@ -15,6 +15,11 @@ import Graphics.Vulkan.Enumerations
 import Graphics.Vulkan.Types
 
 
+-- Type aliases.
+type MemoryOffset           = VkDeviceSize
+type QueueFamilyIndexCount  = Word32
+type QueueFamilyIndices     = Word32
+
 foreign import ccall unsafe "vkBindBufferMemory"
     c_vkBindBufferMemory :: VkDevice  -> VkBuffer -> VkDeviceMemory -> VkDeviceSize -> IO VkResult
 
@@ -28,7 +33,7 @@ foreign import ccall unsafe "vkGetBufferMemoryRequirements"
     c_vkGetBufferMemoryRequirements :: VkDevice -> VkBuffer -> Ptr VkMemoryRequirements -> IO ()
 
 createVkBufferInfo :: Next -> VkBufferCreateFlags -> VkDeviceSize -> [VkBufferUsageFlagBits] -> VkSharingMode ->
-    Word32 -> [Word32] -> IO VkBufferCreateInfo
+    QueueFamilyIndexCount -> [QueueFamilyIndices] -> IO VkBufferCreateInfo
 createVkBufferInfo v bCF dS bUFB sM iC ind = allocaArray i $ \p -> do
     pokeArray p ind
     return $ VkBufferCreateInfo structureTypeBufferCreateInfo v bCF dS u sM iC p
@@ -36,7 +41,7 @@ createVkBufferInfo v bCF dS bUFB sM iC ind = allocaArray i $ \p -> do
             i = cast iC
             u = VkBufferUsageFlags $ vkBits unVkBufferUsageFlagBits bUFB
 
-vkBindBufferMemory :: VkDevice  -> VkBuffer -> VkDeviceMemory -> VkDeviceSize -> IO VkResult
+vkBindBufferMemory :: VkDevice  -> VkBuffer -> VkDeviceMemory -> MemoryOffset -> IO VkResult
 vkBindBufferMemory = c_vkBindBufferMemory
 
 vkCreateBuffer :: VkDevice -> VkBufferCreateInfo -> IO VkBuffer

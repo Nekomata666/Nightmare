@@ -27,6 +27,8 @@ newtype VkColorSpaceKHR = VkColorSpaceKHR { unVkColorSpaceKHR :: Word32 }
     deriving (Eq)
 newtype VkCommandBufferLevel = VkCommandBufferLevel { unVkCommandBufferLevel :: Word32 }
     deriving (Eq)
+newtype VkCommandBufferUsageFlagBits = VkCommandBufferUsageFlagBits { unVkCommandBufferUsageFlagBits :: Word32 }
+    deriving (Eq)
 newtype VkCompareOp = VkCompareOp { unVkCompareOp :: Word32 }
     deriving (Eq)
 newtype VkComponentSwizzle = VkComponentSwizzle { unVkComponentSwizzle :: Word32 }
@@ -273,6 +275,14 @@ commandBufferLevelPrimary        = VkCommandBufferLevel 0
 commandBufferLevelSecondary      :: VkCommandBufferLevel
 commandBufferLevelSecondary      = VkCommandBufferLevel 1
 
+-- VkCommandBufferUsageFlagBits
+commandBufferUsageOneSubmitBit           :: VkCommandBufferUsageFlagBits
+commandBufferUsageOneSubmitBit           = VkCommandBufferUsageFlagBits 1
+commandBufferUsageRenderPassContinueBit  :: VkCommandBufferUsageFlagBits
+commandBufferUsageRenderPassContinueBit  = VkCommandBufferUsageFlagBits 2
+commandBufferUsageSimultaneousUseBit     :: VkCommandBufferUsageFlagBits
+commandBufferUsageSimultaneousUseBit     = VkCommandBufferUsageFlagBits 4
+
 -- VkCompareOp
 compareOpNever           :: VkCompareOp
 compareOpNever           = VkCompareOp 0
@@ -376,7 +386,7 @@ fenceCreateSignaledBit       :: VkFenceCreateFlagBits
 fenceCreateSignaledBit       = VkFenceCreateFlagBits 1
 
 -- VkFormat
--- Todo: Remove unwanted formats, like: SRGB, SFloat, UFloat, UNorm
+-- Todo: Remove unwanted formats, like: SRGB, SFloat, UFloat, UNorm; need some of these for other stuff
 -- Todo: Remove lossy compressed formats, like: BC1-7, ETC2, EAC, ASTC
 formatUndefined                  :: VkFormat
 formatUndefined                  = VkFormat 0
@@ -1387,6 +1397,14 @@ instance Storable VkCommandBufferLevel where
         v <- peekByteOff p 0
         return (VkCommandBufferLevel v)
     poke p (VkCommandBufferLevel v) = pokeByteOff p 0 v
+
+instance Storable VkCommandBufferUsageFlagBits where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkCommandBufferUsageFlagBits v)
+    poke p (VkCommandBufferUsageFlagBits v) = pokeByteOff p 0 v
 
 instance Storable VkCompareOp where
     sizeOf _    = 4

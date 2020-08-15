@@ -3,8 +3,13 @@
 module Graphics.Vulkan where
 
 
-import Data.Bits ((.|.))
+import Data.Bits ((.|.), shiftR)
+import Data.ByteString (ByteString, hPut, pack)
+import GHC.IO.Handle.Text (memcpy)
+import Data.Word (Word8, Word32)
 
+import Foreign (allocaArray, pokeArray)
+import Foreign.C.Types (CSize(..))
 import Foreign.Ptr (castPtr, nullPtr)
 
 import Graphics.Utilities
@@ -12,7 +17,7 @@ import Graphics.Utilities
 import Graphics.Vulkan.Buffers
 import Graphics.Vulkan.Command
 import Graphics.Vulkan.Constants
-import Graphics.Vulkan.Data (VkAttachmentDescription(..), VkAttachmentReference(..), VkClearValue(..), VkCommandBufferBeginInfo(..), VkComponentMapping(..), VkComputePipelineCreateInfo(..), VkDescriptorBufferInfo(..), VkDescriptorPoolSize(..), VkExtent2D(..), VkExtent3D(..), VkFenceCreateInfo(..), VkImageSubresourceRange(..), VkImageViewCreateInfo(..), VkMemoryRequirements(..), VkOffset2D(..), VkPipelineColorBlendAttachmentState(..), VkPipelineInputAssemblyStateCreateInfo(..), VkPipelineMultisampleStateCreateInfo(..), VkPipelineRasterizationStateCreateInfo(..), VkPresentInfoKHR(..), VkRect2D(..), VkRenderPassBeginInfo(..), VkSubpassDependency(..), VkViewport(..))
+import Graphics.Vulkan.Data (VkAttachmentDescription(..), VkAttachmentReference(..), VkBufferCopy(VkBufferCopy), VkClearValue(..), VkCommandBufferBeginInfo(..), VkComponentMapping(..), VkComputePipelineCreateInfo(..), VkDescriptorBufferInfo(..), VkDescriptorPoolSize(..), VkExtent2D(..), VkExtent3D(..), VkFenceCreateInfo(..), VkImageSubresourceRange(..), VkImageViewCreateInfo(..), VkMemoryRequirements(..), VkOffset2D(..), VkPipelineColorBlendAttachmentState(..), VkPipelineInputAssemblyStateCreateInfo(..), VkPipelineMultisampleStateCreateInfo(..), VkPipelineRasterizationStateCreateInfo(..), VkPresentInfoKHR(..), VkRect2D(..), VkRenderPassBeginInfo(..), VkSubpassDependency(..), VkVertexInputAttributeDescription(..), VkVertexInputBindingDescription(..), VkViewport(..))
 import Graphics.Vulkan.Descriptor
 import Graphics.Vulkan.Devices
 import Graphics.Vulkan.Enumerations
@@ -40,23 +45,52 @@ data Pipeline = Pipeline{
     layout :: VkPipelineLayout
 }
 
-createInstance :: IO VkInstance
-createInstance = do
-    let api = makeAPI 1 2 141
-    vkApIn  <- createVkApplicationInfo nullPtr "Nightmare" 0 "Nightmare" 0 api
-    vkInCI  <- createVkInstanceCreateInfo nullPtr 0 (Just vkApIn) 1 (Just ["VK_LAYER_KHRONOS_validation"]) 3
-        (Just ["VK_EXT_debug_report", "VK_KHR_surface", "VK_KHR_xlib_surface"])
-    vkCreateInstance vkInCI
+data Vertex = Vertex{
+    x :: Float,
+    y :: Float,
+    z :: Float
+}
 
-createDevice :: VkInstance -> VkSurfaceKHR -> IO VkDevice
-createDevice vkInst vkSurf = do
-    vkPDs   <- vkEnumeratePhysicalDevices vkInst
-    let vkPD0  = head vkPDs
-    vkPDF2  <- vkGetPhysicalDeviceFeatures2 vkPD0
-    _       <- vkGetPhysicalDeviceSurfaceSupport vkPD0 0 vkSurf
-    vkDQCI  <- createVkDeviceQueueCreateInfo nullPtr (VkDeviceQueueCreateFlags 0) 0 1 [1.0]
-    vkDCI   <- createVkDeviceCreateInfo (castPtr vkPDF2) (VkDeviceCreateFlags 0) 1 vkDQCI 1 ["VK_KHR_swapchain"] Nothing
-    vkCreateDevice vkPD0 vkDCI
+vertexToFloat :: Vertex -> [Float]
+vertexToFloat (Vertex x y z) = [x,y,z]
+
+triangle :: [Vertex]
+triangle = [Vertex 0.0 (-0.5) 0.0, Vertex 0.5 0.5 0.0, Vertex (-0.5) 0.5 0.0]
+
+triangleToFloatList :: [Float]
+triangleToFloatList = concatMap vertexToFloat triangle
+
+allocateCommandBuffer :: VkDevice -> VkCommandPool -> IO VkCommandBuffer
+allocateCommandBuffer vkDev0 cmdPo0 = do
+    vkCoBu  <- vkAllocateCommandBuffers vkDev0 vkCBAI
+    return $ head vkCoBu
+    where
+        vkCBAI = createVkCommandBufferAllocateInfo nullPtr cmdPo0 commandBufferLevelPrimary 1
+
+copyBuffer :: VkDevice -> VkBuffer -> VkBuffer -> VkCommandPool -> VkDeviceSize -> VkQueue -> IO ()
+copyBuffer vkDev0 src dst cmdPo0 s q = do
+    cmdBuf  <- allocateCommandBuffer vkDev0 cmdPo0
+    cmdBBI  <- createVkCommandBufferBeginInfo nullPtr commandBufferUsageOneSubmitBit Nothing
+    _ <- vkBeginCommandBuffer cmdBuf cmdBBI
+    vkCmdCopyBuffer cmdBuf src dst 1 [buffCo]
+    _ <- vkEndCommandBuffer cmdBuf
+    vkSuIn <- createVkSubmitInfo nullPtr 0 Nothing Nothing 1 [cmdBuf] 0 Nothing
+    _ <- vkQueueSubmit q 1 [vkSuIn] $ VkFence nullHandle
+    _ <- vkQueueWaitIdle q
+    vkFreeCommandBuffers vkDev0 cmdPo0 1 [cmdBuf]
+    where
+        zero    = VkDeviceSize 0
+        buffCo  = VkBufferCopy zero zero s
+
+createBuffer :: VkDevice -> [VkBufferUsageFlagBits] -> VkDeviceSize -> Word32 -> IO (VkBuffer, VkDeviceMemory)
+createBuffer vkDev0 f dS i = do
+    vkBCI   <- createVkBufferInfo  nullPtr (VkBufferCreateFlags 0) dS f sharingModeExclusive 0 [0]
+    buffer  <- vkCreateBuffer vkDev0 vkBCI
+    vkBuMR  <- vkGetBufferMemoryRequirements vkDev0 buffer
+    let vkMAI = createVkMemoryAllocateInfo nullPtr (size vkBuMR) i
+    bufMem  <- vkAllocateMemory vkDev0 vkMAI
+    _  <- vkBindBufferMemory vkDev0 buffer bufMem (VkDeviceSize 0)
+    return (buffer, bufMem)
 
 createComputePipeline :: VkDevice -> IO Pipeline
 createComputePipeline vkDev0 = do
@@ -76,29 +110,38 @@ createComputePipeline vkDev0 = do
     vkDestroyShaderModule vkDev0 vkSMoC
     return $ Pipeline vkPiCa vkDSL0 (head vkCoPi) vkPiLa
 
+createDevice :: VkInstance -> VkSurfaceKHR -> IO VkDevice
+createDevice vkInst vkSurf = do
+    vkPDs   <- vkEnumeratePhysicalDevices vkInst
+    let vkPD0  = head vkPDs
+    vkPDF2  <- vkGetPhysicalDeviceFeatures2 vkPD0
+    _       <- vkGetPhysicalDeviceSurfaceSupport vkPD0 0 vkSurf
+    vkDQCI  <- createVkDeviceQueueCreateInfo nullPtr (VkDeviceQueueCreateFlags 0) 0 1 [1.0]
+    vkDCI   <- createVkDeviceCreateInfo (castPtr vkPDF2) (VkDeviceCreateFlags 0) 1 vkDQCI 1 ["VK_KHR_swapchain"] Nothing
+    vkCreateDevice vkPD0 vkDCI
+
 createFramebuffer :: VkDevice -> VkRenderPass -> VkImageView -> IO VkFramebuffer
 createFramebuffer vkDev0 rendPa imageV = do
     fraCIn  <- createVkFramebufferCreateInfo nullPtr (VkFramebufferCreateFlags 0) rendPa 1 [imageV] 1600 900 1
     vkCreateFramebuffer vkDev0 fraCIn
 
-createGraphicsCommandBuffer :: VkDevice -> VkCommandPool -> VkPipeline -> VkRenderPass -> VkFramebuffer -> IO VkCommandBuffer
-createGraphicsCommandBuffer vkDev0 cmdPo0 graphP rendPa frameB = do
-    vkCoBu  <- vkAllocateCommandBuffers vkDev0 vkCBAI
-    cmdBBI  <- createVkCommandBufferBeginInfo nullPtr (VkCommandBufferUsageFlags 0) Nothing
+createGraphicsCommandBuffer :: VkDevice -> VkBuffer -> VkCommandPool -> VkPipeline -> VkRenderPass -> VkFramebuffer -> IO VkCommandBuffer
+createGraphicsCommandBuffer vkDev0 verBuf cmdPo0 graphP rendPa frameB = do
+    cmdBuf  <- allocateCommandBuffer vkDev0 cmdPo0
+    cmdBBI  <- createVkCommandBufferBeginInfo nullPtr (VkCommandBufferUsageFlagBits 0) Nothing
     vkCCVa  <- createVkClearColorValue [0,0,0,0]
-    let cmdBuf = head vkCoBu
-        vkClVa = VkClearValueC vkCCVa
+    let vkClVa = VkClearValueC vkCCVa
     renPBI  <- createVkRenderPassBeginInfo nullPtr rendPa frameB rendAr 1 [vkClVa]
 
     _ <- vkBeginCommandBuffer cmdBuf cmdBBI
     vkCmdBeginRenderPass cmdBuf renPBI subpassContentsInline
     vkCmdBindPipeline cmdBuf pipelineBindPointGraphics graphP
+    vkCmdBindVertexBuffers cmdBuf 0 1 verBuf $ VkDeviceSize 0
     vkCmdDraw cmdBuf 3 1 0 0
     vkCmdEndRenderPass cmdBuf
     _ <- vkEndCommandBuffer cmdBuf
     return cmdBuf
     where
-        vkCBAI = createVkCommandBufferAllocateInfo nullPtr cmdPo0 commandBufferLevelPrimary 1
         rendAr = VkRect2D (VkOffset2D 0 0) (VkExtent2D 1600 900)
 
 createGraphicsPipeline :: VkDevice -> VkRenderPass -> IO (VkPipelineLayout, [VkPipeline])
@@ -109,7 +152,9 @@ createGraphicsPipeline vkDev0 vkRePa = do
     vkSMoF  <- vkCreateShaderModule vkDev0 vkSMIF
     vkPSIV  <- createVkPipelineShaderStageInfo nullPtr (VkPipelineShaderStageCreateFlags 0) shaderStageVertexBit vkSMoV "main" Nothing
     vkPSIF  <- createVkPipelineShaderStageInfo nullPtr (VkPipelineShaderStageCreateFlags 0) shaderStageFragmentBit vkSMoF "main" Nothing
-    vPVICI  <- createVkPipelineVertexInputStateCreateInfo nullPtr (VkPipelineVertexInputStateCreateFlags 0) 0 Nothing 0 Nothing
+    let vkVIBD = VkVertexInputBindingDescription 0 (3*4) vertexInputRateVertex
+        vkVIAD = VkVertexInputAttributeDescription 0 0 formatR32G32B32SFloat 0
+    vPVICI  <- createVkPipelineVertexInputStateCreateInfo nullPtr (VkPipelineVertexInputStateCreateFlags 0) 1 (Just [vkVIBD]) 1 (Just [vkVIAD])
     let vPISCI = VkPipelineInputAssemblyStateCreateInfo structureTypePipelineInputAssembyStateCreateInfo nullPtr (VkPipelineInputAssemblyStateCreateFlags 0) primitiveTopologyTriangleList vkFalse
         vkView = VkViewport 0 0 1600 900 0 1
         scisso = VkRect2D (VkOffset2D 0 0) (VkExtent2D 1600 900)
@@ -131,6 +176,14 @@ createGraphicsPipeline vkDev0 vkRePa = do
     where
         colorComponentRGBA = VkColorComponentFlags $ unVkColorComponentFlagBits colorComponentRBit .|. unVkColorComponentFlagBits colorComponentGBit .|. unVkColorComponentFlagBits colorComponentBBit .|. unVkColorComponentFlagBits colorComponentABit
 
+createInstance :: IO VkInstance
+createInstance = do
+    let api = makeAPI 1 2 141
+    vkApIn  <- createVkApplicationInfo nullPtr "Nightmare" 0 "Nightmare" 0 api
+    vkInCI  <- createVkInstanceCreateInfo nullPtr 0 (Just vkApIn) 1 (Just ["VK_LAYER_KHRONOS_validation"]) 3
+        (Just ["VK_EXT_debug_report", "VK_KHR_surface", "VK_KHR_xlib_surface"])
+    vkCreateInstance vkInCI
+
 createRenderpass :: VkDevice -> IO VkRenderPass
 createRenderpass vkDev0 = do
     vkSuD0 <- createVkSubpassDescription (VkSubpassDescriptionFlagBits 0) pipelineBindPointGraphics 0 Nothing 1 (Just [vkARCo]) Nothing Nothing 0 Nothing
@@ -142,21 +195,19 @@ createRenderpass vkDev0 = do
         vkSuPa = VkSubpassDependency subpassExternal 0 subStageMask subStageMask (VkAccessFlags 0) (VkAccessFlags $ unVkAccessFlagBits accessColorAttachmentWriteBit) (VkDependencyFlags 0)
         subStageMask = VkPipelineStageFlags $ unVkPipelineStageFlagBits pipelineStageColorAttachmentOutputBit
 
-createSwapchainFence :: VkDevice -> IO VkFence
-createSwapchainFence vkDev0 = vkCreateFence vkDev0 vkFCI
-    where
-        vkFCI = VkFenceCreateInfo structureTypeFenceCreateInfo nullPtr $ VkFenceCreateFlags $ unVkFenceCreateFlagBits fenceCreateSignaledBit
+createStagingVertexBuffer :: VkDevice -> IO (VkBuffer, VkDeviceMemory)
+createStagingVertexBuffer vkDev0 = allocaArray l $ \p -> do
+    pokeArray p triangleToFloatList
+    (stage, stagMe) <- createBuffer vkDev0 [bufferUsageTransferSRCBit] s 2
+    buffMa <- vkMapMemory vkDev0 stagMe (VkDeviceSize 0) s (VkMemoryMapFlags 0)
+    _ <- memcpy (castPtr buffMa) p $ CSize $ 4 * w
+    vkUnmapMemory vkDev0 stagMe
 
-createSwapchainSemaphores :: VkDevice -> IO ([VkSemaphore], [VkSemaphore])
-createSwapchainSemaphores vkDev0 = do
-    vkSTCI <- createVkSemaphoreTypeCreateInfo nullPtr vkSemaphoreTypeBinary 0
-    vkSem0 <- vkCreateSemaphore vkDev0 vkSTCI
-    vkSem1 <- vkCreateSemaphore vkDev0 vkSTCI
-    vkSem2 <- vkCreateSemaphore vkDev0 vkSTCI
-    vkSem3 <- vkCreateSemaphore vkDev0 vkSTCI
-    vkSem4 <- vkCreateSemaphore vkDev0 vkSTCI
-    vkSem5 <- vkCreateSemaphore vkDev0 vkSTCI
-    return ([vkSem0, vkSem1, vkSem2],[vkSem3, vkSem4, vkSem5])
+    return (stage, stagMe)
+    where
+        s = VkDeviceSize $ 4 * w
+        l = length triangleToFloatList
+        w = cast l
 
 createSwapchain :: VkDevice -> VkSurfaceKHR -> IO (VkSwapchainKHR, [VkImageView])
 createSwapchain vkDev0 vkSurf = do
@@ -174,6 +225,22 @@ createSwapchain vkDev0 vkSurf = do
         vkISR0 = createVkImageSubresourceRange [imageAspectColorBit] 0 1 0 1
         vkCMId = VkComponentMapping componentSwizzleIdentity componentSwizzleIdentity componentSwizzleIdentity componentSwizzleIdentity
 
+createSwapchainFence :: VkDevice -> IO VkFence
+createSwapchainFence vkDev0 = vkCreateFence vkDev0 vkFCI
+    where
+        vkFCI = VkFenceCreateInfo structureTypeFenceCreateInfo nullPtr $ VkFenceCreateFlags $ unVkFenceCreateFlagBits fenceCreateSignaledBit
+
+createSwapchainSemaphores :: VkDevice -> IO ([VkSemaphore], [VkSemaphore])
+createSwapchainSemaphores vkDev0 = do
+    vkSTCI <- createVkSemaphoreTypeCreateInfo nullPtr vkSemaphoreTypeBinary 0
+    vkSem0 <- vkCreateSemaphore vkDev0 vkSTCI
+    vkSem1 <- vkCreateSemaphore vkDev0 vkSTCI
+    vkSem2 <- vkCreateSemaphore vkDev0 vkSTCI
+    vkSem3 <- vkCreateSemaphore vkDev0 vkSTCI
+    vkSem4 <- vkCreateSemaphore vkDev0 vkSTCI
+    vkSem5 <- vkCreateSemaphore vkDev0 vkSTCI
+    return ([vkSem0, vkSem1, vkSem2],[vkSem3, vkSem4, vkSem5])
+
 draw :: VkDevice -> [VkFence] -> VkSwapchainKHR -> ([VkSemaphore], [VkSemaphore]) -> [VkCommandBuffer] -> VkQueue -> Frame -> IO Frame
 draw vkDev0 fences vkSC (semaIm, semaPr) vkCoBu vkQue0 f = do
     _ <- vkWaitForFences vkDev0 1 [fences !! f] vkTrue 18446744073709551615
@@ -188,7 +255,7 @@ draw vkDev0 fences vkSC (semaIm, semaPr) vkCoBu vkQue0 f = do
     _ <- vkWaitForFences vkDev0 1 [fences !! f] vkTrue 18446744073709551615
     return $ mod (f + 1) 3
 
-initialize :: VkInstance -> VkSurfaceKHR -> IO (VkBuffer, [VkCommandBuffer], VkCommandPool, VkDescriptorPool, VkDescriptorSetLayout, VkDevice, [VkDeviceMemory], [VkFence], [VkFramebuffer], VkImage, [VkImageView], [VkPipeline], VkPipelineCache, [VkPipelineLayout], VkQueue, VkRenderPass, ([VkSemaphore], [VkSemaphore]), VkSwapchainKHR)
+initialize :: VkInstance -> VkSurfaceKHR -> IO ([VkBuffer], [VkCommandBuffer], VkCommandPool, VkDescriptorPool, VkDescriptorSetLayout, VkDevice, [VkDeviceMemory], [VkFence], [VkFramebuffer], VkImage, [VkImageView], [VkPipeline], VkPipelineCache, [VkPipelineLayout], VkQueue, VkRenderPass, ([VkSemaphore], [VkSemaphore]), VkSwapchainKHR)
 initialize vkInst vkSurf = do
     vkDev0 <- createDevice vkInst vkSurf
     vkRePa <- createRenderpass vkDev0
@@ -213,17 +280,20 @@ initialize vkInst vkSurf = do
 
     let vkCPIn = createVkCommandPoolInfo nullPtr (VkCommandPoolCreateFlags 0) 0
     vkCPo0  <- vkCreateCommandPool vkDev0 vkCPIn
+    vkQue0 <- vkGetDeviceQueue vkDev0 0 0
+    (stageV, stageM) <- createStagingVertexBuffer vkDev0
+    (vertex, vertMe) <- createBuffer vkDev0 [bufferUsageTransferDSTBit, bufferUsageVertexBufferBit] s 0
+    copyBuffer vkDev0 stageV vertex vkCPo0 s vkQue0
+    vkCoBu  <- mapM (createGraphicsCommandBuffer vkDev0 vertex vkCPo0 graphP vkRePa) vFrame
 
-    vkCoBu  <- mapM (createGraphicsCommandBuffer vkDev0 vkCPo0 graphP vkRePa) vFrame
-
-    vkBCI   <- createVkBufferInfo nullPtr (VkBufferCreateFlags 0) (VkDeviceSize 2136746240)
-        [bufferUsageStorageBufferBit, bufferUsageTransferDSTBit] sharingModeExclusive 3 [0]
-    vkBuff  <- vkCreateBuffer vkDev0 vkBCI
-    vkBuMR  <- vkGetBufferMemoryRequirements vkDev0 vkBuff
-    let vkMAI = createVkMemoryAllocateInfo nullPtr (VkDeviceSize $ 2136746240 + 16) 1
-    vkDeMe  <- vkAllocateMemory vkDev0 vkMAI
-    buffMa  <- vkMapMemory vkDev0 vkDeMe (VkDeviceSize 0) wholeSize (VkMemoryMapFlags 0)
-    buffMB  <- vkBindBufferMemory vkDev0 vkBuff vkDeMe (alignment vkBuMR)
+    -- vkBCI   <- createVkBufferInfo nullPtr (VkBufferCreateFlags 0) (VkDeviceSize 2136746240)
+    --     [bufferUsageStorageBufferBit, bufferUsageTransferDSTBit] sharingModeExclusive 3 [0]
+    -- vkBuff  <- vkCreateBuffer vkDev0 vkBCI
+    -- vkBuMR  <- vkGetBufferMemoryRequirements vkDev0 vkBuff
+    -- let vkMAI = createVkMemoryAllocateInfo nullPtr (VkDeviceSize $ 2136746240 + 16) 1
+    -- vkDeMe  <- vkAllocateMemory vkDev0 vkMAI
+    -- buffMa  <- vkMapMemory vkDev0 vkDeMe (VkDeviceSize 0) wholeSize (VkMemoryMapFlags 0)
+    -- buffMB  <- vkBindBufferMemory vkDev0 vkBuff vkDeMe (alignment vkBuMR)
     vkICIn  <- createVkImageCreateInfo nullPtr [imageCreateMutableFormatBit] imageType2D formatR16G16B16A16UInt
                 (VkExtent3D 256 256 1) 8 1 sampleCount1Bit imageTilingLinear
                 [imageUsageColorAttachmentBit, imageUsageTransferDSTBit] sharingModeExclusive 1 [0] imageLayoutUndefined
@@ -233,6 +303,7 @@ initialize vkInst vkSurf = do
     imagMe  <- vkAllocateMemory vkDev0 imagMI
     imagMa  <- vkMapMemory vkDev0 imagMe (VkDeviceSize 0) wholeSize (VkMemoryMapFlags 0)
     imagMB  <- vkBindImageMemory vkDev0 vkIma0 imagMe (alignment imagMR)
+    vkUnmapMemory vkDev0 imagMe
     imagSu  <- createVkImageSubresource [imageAspectColorBit] 4 0
     imagSL  <- vkGetImageSubresourceLayout vkDev0 vkIma0 imagSu
 
@@ -241,10 +312,9 @@ initialize vkInst vkSurf = do
     vkDeP0 <- vkCreateDescriptorPool vkDev0 vkDPCI
     vkDSAI <- createVkDescriptorSetAllocateInfo nullPtr vkDeP0 1 [vkDSL0]
     vkAlDS <- vkAllocateDescriptorSets vkDev0 vkDSAI
-    let vkDBIn = VkDescriptorBufferInfo vkBuff (VkDeviceSize 0) wholeSize
-    vkWDS0 <- createVkWriteDescriptorSet nullPtr (head vkAlDS) 0 0 1 descriptorTypeStorageBuffer Nothing (Just vkDBIn) Nothing
-    vkUpdateDescriptorSets vkDev0 1 (Just [vkWDS0]) 0 Nothing
-    vkQue0 <- vkGetDeviceQueue vkDev0 0 0
+    -- let vkDBIn = VkDescriptorBufferInfo vkBuff (VkDeviceSize 0) wholeSize
+    -- vkWDS0 <- createVkWriteDescriptorSet nullPtr (head vkAlDS) 0 0 1 descriptorTypeStorageBuffer Nothing (Just vkDBIn) Nothing
+    -- vkUpdateDescriptorSets vkDev0 1 (Just [vkWDS0]) 0 Nothing
 
     -- vkCmdFillBuffer vkCoB0 vkBuff (VkDeviceSize 0) wholeSize 0
     -- vkCmdClearColorImage vkCoB0 vkIma0 imageLayoutGeneral vkCCVa 1 [vkISR0]
@@ -253,15 +323,17 @@ initialize vkInst vkSurf = do
     -- _ <- vkEndCommandBuffer vkCoB0
 
 
-    return (vkBuff, vkCoBu, vkCPo0, vkDeP0, vkDSL0, vkDev0, [imagMe, vkDeMe], [fence0, fence1, fence2], vFrame, vkIma0, swapIV, [graphP, compPi], vkPiCa, [vkPLGr, vkPLCo], vkQue0, vkRePa, semaph, vkSC)
+    return ([stageV, vertex], vkCoBu, vkCPo0, vkDeP0, vkDSL0, vkDev0, [imagMe, stageM, vertMe], [fence0, fence1, fence2], vFrame, vkIma0, swapIV, [graphP, compPi], vkPiCa, [vkPLGr, vkPLCo], vkQue0, vkRePa, semaph, vkSC)
+    where
+        s = VkDeviceSize $ 4 * cast (length triangleToFloatList)
 
 --------------------------------------------------------------------------------------------------------------------------------
 --
 -- Shutdown
 --
 --------------------------------------------------------------------------------------------------------------------------------
-shutdown :: VkBuffer -> VkCommandPool -> VkDescriptorPool -> VkDescriptorSetLayout -> VkDevice -> [VkDeviceMemory] -> [VkFence] -> [VkFramebuffer] -> VkImage -> [VkImageView] -> VkInstance -> [VkPipeline] -> VkPipelineCache -> [VkPipelineLayout] -> VkQueue -> VkRenderPass -> ([VkSemaphore], [VkSemaphore]) -> VkSurfaceKHR -> VkSwapchainKHR -> IO ()
-shutdown vkBuff vkCPo0 vkDeP0 vkDSL0 vkDev0 [mem0, mem1] fences vFrame vkIma0 [vkIV0, vkIV1, vkIV2] vkInst [pipe0, pipe1] vkPiCa [pipeL0, pipeL1] vkQue0 vkRePa (semaIm, semaPr) vkSurf vkSC = do
+shutdown :: [VkBuffer] -> VkCommandPool -> VkDescriptorPool -> VkDescriptorSetLayout -> VkDevice -> [VkDeviceMemory] -> [VkFence] -> [VkFramebuffer] -> VkImage -> [VkImageView] -> VkInstance -> [VkPipeline] -> VkPipelineCache -> [VkPipelineLayout] -> VkQueue -> VkRenderPass -> ([VkSemaphore], [VkSemaphore]) -> VkSurfaceKHR -> VkSwapchainKHR -> IO ()
+shutdown buffer vkCPo0 vkDeP0 vkDSL0 vkDev0 memory fences vFrame vkIma0 imageV vkInst pipeli vkPiCa pipeLa vkQue0 vkRePa (semaIm, semaPr) vkSurf vkSC = do
     _ <- vkQueueWaitIdle vkQue0
     _ <- vkDeviceWaitIdle vkDev0
     mapM_ (vkDestroyFence vkDev0) fences
@@ -271,21 +343,14 @@ shutdown vkBuff vkCPo0 vkDeP0 vkDSL0 vkDev0 [mem0, mem1] fences vFrame vkIma0 [v
     vkDestroyRenderPass vkDev0 vkRePa
     vkDestroyDescriptorPool vkDev0 vkDeP0
     vkDestroyPipelineCache vkDev0 vkPiCa
-    vkDestroyPipelineLayout vkDev0 pipeL0
-    vkDestroyPipeline vkDev0 pipe0
-    vkDestroyPipelineLayout vkDev0 pipeL1
+    mapM_ (vkDestroyPipelineLayout vkDev0) pipeLa
     vkDestroyDescriptorSetLayout vkDev0 vkDSL0
-    vkDestroyPipeline vkDev0 pipe1
+    mapM_ (vkDestroyPipeline vkDev0) pipeli
     vkDestroyCommandPool vkDev0 vkCPo0
-    vkUnmapMemory vkDev0 mem0
-    vkFreeMemory vkDev0 mem0
     vkDestroyImage vkDev0 vkIma0
-    vkUnmapMemory vkDev0 mem1
-    vkFreeMemory vkDev0 mem1
-    vkDestroyBuffer vkDev0 vkBuff
-    vkDestroyImageView vkDev0 vkIV0
-    vkDestroyImageView vkDev0 vkIV1
-    vkDestroyImageView vkDev0 vkIV2
+    mapM_ (vkDestroyBuffer vkDev0) buffer
+    mapM_ (vkFreeMemory vkDev0) memory
+    mapM_ (vkDestroyImageView vkDev0) imageV
     vkDestroySwapchainKHR vkDev0 vkSC
     vkDestroyDevice vkDev0
     vkDestroySurfaceKHR vkInst vkSurf

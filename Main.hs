@@ -17,17 +17,17 @@ import SDL2.SDL2
 
 main :: IO ()
 main = do
-    _   <- sdl2Init init_Videos
-    hW  <- sdl2CreateWindow "Nightmare" windowPos_Undefined windowPos_Undefined 1600 900 window_Vulkan
-    vkInst <- createInstance
-    vkSurf <- sdl2VulkanCreateSurface hW vkInst
+    _       <- sdl2Init init_Videos
+    hW      <- sdl2CreateWindow "Nightmare" windowPos_Undefined windowPos_Undefined 1600 900 window_Vulkan
+    vkInst  <- createInstance
+    vkSurf  <- sdl2VulkanCreateSurface hW vkInst
 
     ----------------------------------------------------------------------------------------------------------------------------
     --
     -- Vulkan
     --
     ----------------------------------------------------------------------------------------------------------------------------
-    (vkBuff, vkCoBu, vkCPo0, vkDeP0, vkDSL0, vkDev0, memory, fences, vFrame, vkIma0, swapIV, pipe, vkPiCa, pipeLa, vkQue0, vkRePa, sema, vkSC) <- initialize vkInst vkSurf
+    (buffer, vkCoBu, vkCPo0, vkDeP0, vkDSL0, vkDev0, memory, fences, vFrame, vkIma0, swapIV, pipe, vkPiCa, pipeLa, vkQue0, vkRePa, sema, vkSC) <- initialize vkInst vkSurf
 
     loop False sdlFirstEvent vkDev0 fences vkSC sema vkCoBu vkQue0 0
 
@@ -37,7 +37,7 @@ main = do
     -- Shutdown
     --
     ----------------------------------------------------------------------------------------------------------------------------
-    shutdown vkBuff vkCPo0 vkDeP0 vkDSL0 vkDev0 memory fences vFrame vkIma0 swapIV vkInst pipe vkPiCa pipeLa vkQue0 vkRePa sema vkSurf vkSC
+    shutdown buffer vkCPo0 vkDeP0 vkDSL0 vkDev0 memory fences vFrame vkIma0 swapIV vkInst pipe vkPiCa pipeLa vkQue0 vkRePa sema vkSurf vkSC
     sdl2DestroyWindow hW
     sdl2Quit
 
