@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Command (createVkClearColorValue, createVkCommandBufferAllocateInfo, createVkCommandBufferBeginInfo, createVkCommandPoolInfo, createVkImageSubresourceRange, createVkRenderPassBeginInfo, vkAllocateCommandBuffers, vkBeginCommandBuffer, vkCmdBeginRenderPass, vkCmdBindDescriptorSets, vkCmdBindPipeline, vkCmdBindVertexBuffers, vkCmdClearColorImage, vkCmdDraw, vkCmdFillBuffer, vkCmdPushConstants, vkCreateCommandPool, vkDestroyCommandPool, vkEndCommandBuffer, vkCmdEndRenderPass) where
+module Graphics.Vulkan.Command (createVkClearColorValue, createVkCommandBufferAllocateInfo, createVkCommandBufferBeginInfo, createVkCommandPoolInfo, createVkImageSubresourceRange, createVkRenderPassBeginInfo, vkAllocateCommandBuffers, vkBeginCommandBuffer, vkCmdBeginRenderPass, vkCmdBindDescriptorSets, vkCmdBindPipeline, vkCmdBindVertexBuffers, vkCmdClearColorImage, vkCmdCopyBuffer, vkCmdDraw, vkCmdFillBuffer, vkCmdPushConstants, vkCreateCommandPool, vkDestroyCommandPool, vkEndCommandBuffer, vkCmdEndRenderPass) where
 
 
 import Data.Maybe   (Maybe)
@@ -24,6 +24,7 @@ type ClearValueCount            = Word32
 type CommandBufferCount         = Word32
 type Data                       = Word32
 type DescriptorSetCount         = Word32
+type DstBuffer                  = VkBuffer
 type DynamicOffsetCount         = Word32
 type DynamicOffsets             = Word32
 type FirstBinding               = Word32
@@ -38,8 +39,12 @@ type PushOffset                 = Word32
 type PushSize                   = Word32
 type QueueFamilyIndex           = Word32
 type RangeCount                 = Word32
+type RegionCount                = Word32
+type Regions                    = [VkBufferCopy]
 type Size                       = VkDeviceSize
+type SrcBuffer                  = VkBuffer
 type VertexCount                = Word32
+
 
 foreign import ccall unsafe "vkAllocateCommandBuffers"
     c_vkAllocateCommandBuffers :: VkDevice -> Ptr VkCommandBufferAllocateInfo -> Ptr VkCommandBuffer -> IO VkResult
@@ -63,6 +68,9 @@ foreign import ccall unsafe "vkCmdBindVertexBuffers"
 foreign import ccall unsafe "vkCmdClearColorImage"
     c_vkCmdClearColorImage :: VkCommandBuffer -> VkImage -> VkImageLayout -> Ptr VkClearColorValue -> Word32 ->
         Ptr VkImageSubresourceRange -> IO ()
+
+foreign import ccall unsafe "vkCmdCopyBuffer"
+    c_vkCmdCopyBuffer :: VkCommandBuffer -> VkBuffer -> VkBuffer -> Word32 -> Ptr VkBufferCopy -> IO ()
 
 foreign import ccall unsafe "vkCmdDraw"
     c_vkCmdDraw :: VkCommandBuffer -> Word32 -> Word32 -> Word32 -> Word32 -> IO ()
@@ -164,6 +172,13 @@ vkCmdClearColorImage cB vkI iL cCV rC iSR = alloca $ \pCCV ->
         c_vkCmdClearColorImage cB vkI iL pCCV rC pISR
         where
             i = cast rC
+
+vkCmdCopyBuffer :: VkCommandBuffer -> SrcBuffer -> DstBuffer -> RegionCount -> Regions -> IO ()
+vkCmdCopyBuffer cB src dst c ls = allocaArray i $ \p -> do
+    pokeArray p ls
+    c_vkCmdCopyBuffer cB src dst c p
+    where
+        i = cast c
 
 vkCmdDraw :: VkCommandBuffer -> VertexCount -> InstanceCount -> FirstVertex -> FirstInstance -> IO ()
 vkCmdDraw = c_vkCmdDraw
