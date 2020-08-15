@@ -63,6 +63,8 @@ newtype VkImageViewCreateFlagBits = VkImageViewCreateFlagBits { unVkImageViewCre
     deriving (Eq)
 newtype VkImageViewType = VkImageViewType { unVkImageViewType :: Word32 }
     deriving (Eq)
+newtype VkIndexType = VkIndexType { unVkIndexType :: Word32 }
+    deriving (Eq)
 newtype VkInternalAllocationType = VkInternalAllocationType { unVkInternalAllocationType :: Word32 }
     deriving (Eq)
 newtype VkLogicOp = VkLogicOp { unVkLogicOp :: Word32 }
@@ -879,6 +881,14 @@ imageViewType2DArray     = VkImageViewType 5
 imageViewTypeCubeArray   :: VkImageViewType
 imageViewTypeCubeArray   = VkImageViewType 6
 
+-- VkIndexType
+indexTypeUInt16     :: VkIndexType
+indexTypeUInt16     = VkIndexType 0
+indexTypeUInt32     :: VkIndexType
+indexTypeUInt32     = VkIndexType 1
+indexTypeNoneKHR    :: VkIndexType
+indexTypeNoneKHR    = VkIndexType 1000165000
+
 -- VkInternalAllocationType
 internalAllocationTypeExecutable     :: VkInternalAllocationType
 internalAllocationTypeExecutable     = VkInternalAllocationType 0
@@ -1541,6 +1551,14 @@ instance Storable VkImageViewType where
         v <- peekByteOff p 0
         return (VkImageViewType v)
     poke p (VkImageViewType v) = pokeByteOff p 0 v
+
+instance Storable VkIndexType where
+    sizeOf _ = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkIndexType v)
+    poke p (VkIndexType v) = pokeByteOff p 0 v
 
 instance Storable VkInternalAllocationType where
     sizeOf _    = 4

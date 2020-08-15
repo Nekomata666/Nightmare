@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Command (createVkClearColorValue, createVkCommandBufferAllocateInfo, createVkCommandBufferBeginInfo, createVkCommandPoolInfo, createVkImageSubresourceRange, createVkRenderPassBeginInfo, vkAllocateCommandBuffers, vkBeginCommandBuffer, vkCmdBeginRenderPass, vkCmdBindDescriptorSets, vkCmdBindPipeline, vkCmdBindVertexBuffers, vkCmdClearColorImage, vkCmdCopyBuffer, vkCmdDraw, vkCmdEndRenderPass, vkCmdFillBuffer, vkCmdPushConstants, vkCreateCommandPool, vkDestroyCommandPool, vkEndCommandBuffer, vkFreeCommandBuffers) where
+module Graphics.Vulkan.Command (createVkClearColorValue, createVkCommandBufferAllocateInfo, createVkCommandBufferBeginInfo, createVkCommandPoolInfo, createVkImageSubresourceRange, createVkRenderPassBeginInfo, vkAllocateCommandBuffers, vkBeginCommandBuffer, vkCmdBeginRenderPass, vkCmdBindDescriptorSets, vkCmdBindIndexBuffer, vkCmdBindPipeline, vkCmdBindVertexBuffers, vkCmdClearColorImage, vkCmdCopyBuffer, vkCmdDraw, vkCmdEndRenderPass, vkCmdFillBuffer, vkCmdPushConstants, vkCreateCommandPool, vkDestroyCommandPool, vkEndCommandBuffer, vkFreeCommandBuffers) where
 
 
 import Data.Maybe   (Maybe)
@@ -58,6 +58,9 @@ foreign import ccall unsafe "vkCmdBeginRenderPass"
 foreign import ccall unsafe "vkCmdBindDescriptorSets"
     c_vkCmdBindDescriptorSets :: VkCommandBuffer -> VkPipelineBindPoint -> VkPipelineLayout -> Word32 -> Word32 ->
         Ptr VkDescriptorSet -> Word32 -> Ptr Word32 -> IO ()
+
+foreign import ccall unsafe "vkCmdBindIndexBuffer"
+    c_vkCmdBindIndexBuffer :: VkCommandBuffer -> VkBuffer -> VkDeviceSize -> VkIndexType -> IO ()
 
 foreign import ccall unsafe "vkCmdBindPipeline"
     c_vkCmdBindPipeline :: VkCommandBuffer -> VkPipelineBindPoint -> VkPipeline -> IO ()
@@ -157,6 +160,9 @@ vkCmdBindDescriptorSets cB pBP pL fS dSC dS dOC dO = allocaArray i $ \pDS -> do
     c_vkCmdBindDescriptorSets cB pBP pL fS dSC pDS dOC pDO
     where
         i = cast dSC
+
+vkCmdBindIndexBuffer :: VkCommandBuffer -> VkBuffer -> Offset -> VkIndexType -> IO ()
+vkCmdBindIndexBuffer = c_vkCmdBindIndexBuffer
 
 vkCmdBindPipeline :: VkCommandBuffer -> VkPipelineBindPoint -> VkPipeline -> IO ()
 vkCmdBindPipeline = c_vkCmdBindPipeline
