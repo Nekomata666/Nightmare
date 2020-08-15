@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Command (createVkClearColorValue, createVkCommandBufferAllocateInfo, createVkCommandBufferBeginInfo, createVkCommandPoolInfo, createVkImageSubresourceRange, createVkRenderPassBeginInfo, vkAllocateCommandBuffers, vkBeginCommandBuffer, vkCmdBeginRenderPass, vkCmdBindDescriptorSets, vkCmdBindIndexBuffer, vkCmdBindPipeline, vkCmdBindVertexBuffers, vkCmdClearColorImage, vkCmdCopyBuffer, vkCmdDraw, vkCmdEndRenderPass, vkCmdFillBuffer, vkCmdPushConstants, vkCreateCommandPool, vkDestroyCommandPool, vkEndCommandBuffer, vkFreeCommandBuffers) where
+module Graphics.Vulkan.Command (createVkClearColorValue, createVkCommandBufferAllocateInfo, createVkCommandBufferBeginInfo, createVkCommandPoolInfo, createVkImageSubresourceRange, createVkRenderPassBeginInfo, vkAllocateCommandBuffers, vkBeginCommandBuffer, vkCmdBeginRenderPass, vkCmdBindDescriptorSets, vkCmdBindIndexBuffer, vkCmdBindPipeline, vkCmdBindVertexBuffers, vkCmdClearColorImage, vkCmdCopyBuffer, vkCmdDraw, vkCmdDrawIndexed, vkCmdEndRenderPass, vkCmdFillBuffer, vkCmdPushConstants, vkCreateCommandPool, vkDestroyCommandPool, vkEndCommandBuffer, vkFreeCommandBuffers) where
 
 
 import Data.Maybe   (Maybe)
@@ -28,9 +28,11 @@ type DstBuffer                  = VkBuffer
 type DynamicOffsetCount         = Word32
 type DynamicOffsets             = Word32
 type FirstBinding               = Word32
+type FirstIndex                 = Word32
 type FirstInstance              = Word32
 type FirstSet                   = Word32
 type FirstVertex                = Word32
+type IndexCount                 = Word32
 type InstanceCount              = Word32
 type LayerCount                 = Word32
 type LevelCount                 = Word32
@@ -44,6 +46,7 @@ type Regions                    = [VkBufferCopy]
 type Size                       = VkDeviceSize
 type SrcBuffer                  = VkBuffer
 type VertexCount                = Word32
+type VertexOffset               = Int32
 
 
 foreign import ccall unsafe "vkAllocateCommandBuffers"
@@ -77,6 +80,9 @@ foreign import ccall unsafe "vkCmdCopyBuffer"
 
 foreign import ccall unsafe "vkCmdDraw"
     c_vkCmdDraw :: VkCommandBuffer -> Word32 -> Word32 -> Word32 -> Word32 -> IO ()
+
+foreign import ccall unsafe "vkCmdDrawIndexed"
+    c_vkCmdDrawIndexed :: VkCommandBuffer -> Word32 -> Word32 -> Word32 -> Int32 -> Word32 -> IO ()
 
 foreign import ccall unsafe "vkCmdEndRenderPass"
     c_vkCmdEndRenderPass :: VkCommandBuffer -> IO ()
@@ -193,6 +199,9 @@ vkCmdCopyBuffer cB src dst c ls = allocaArray i $ \p -> do
 
 vkCmdDraw :: VkCommandBuffer -> VertexCount -> InstanceCount -> FirstVertex -> FirstInstance -> IO ()
 vkCmdDraw = c_vkCmdDraw
+
+vkCmdDrawIndexed :: VkCommandBuffer -> IndexCount -> InstanceCount -> FirstIndex -> VertexOffset -> FirstInstance -> IO ()
+vkCmdDrawIndexed = c_vkCmdDrawIndexed
 
 vkCmdEndRenderPass :: VkCommandBuffer -> IO ()
 vkCmdEndRenderPass = c_vkCmdEndRenderPass
