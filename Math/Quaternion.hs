@@ -1,12 +1,15 @@
 {-# LANGUAGE Safe #-}
 
-module Math.Quaternion (conjugate, multiply, normalize) where
+module Math.Quaternion (conjugate, multiply, normalize, quaternion) where
 
 
 import Math.Data
 
 import Prelude hiding (length)
 
+
+-- Type aliases.
+type Radians a = a
 
 conjugate :: Floating a => Quaternion a -> Quaternion a
 conjugate (Quaternion x y z w) = Quaternion x' y' z' w
@@ -39,3 +42,13 @@ normalize q@(Quaternion x y z w) = Quaternion x' y' z' w'
         y'  = y / l
         z'  = z / l
         w'  = w / l
+
+quaternion :: Floating a => Vertex3 a -> Radians a -> Quaternion a
+quaternion (Vertex3 x y z) r = Quaternion x' y' z' w
+    where
+        r'  = r / 2
+        s   = sin r'
+        w   = cos r'
+        x'  = x * s
+        y'  = y * s
+        z'  = z * s
