@@ -1,6 +1,6 @@
 {-# LANGUAGE Safe #-}
 
-module Math.Quaternion (conjugate, multiply, normalize, quaternion) where
+module Math.Quaternion (conjugate, multiply, normalize, quaternion, rotate) where
 
 
 import Math.Data
@@ -52,3 +52,8 @@ quaternion (Vertex3 x y z) r = Quaternion x' y' z' w
         x'  = x * s
         y'  = y * s
         z'  = z * s
+
+rotate :: Floating a => Quaternion a -> Quaternion a -> Quaternion a
+rotate r v  = multiply (multiply r v) r'
+    where
+        r'  = conjugate r
