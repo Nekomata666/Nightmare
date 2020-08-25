@@ -1,14 +1,15 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module SDL2.SDL2 (sdl2CreateWindow, sdl2DestroyWindow, sdl2Init, sdl2PollEvent, sdl2VulkanCreateSurface, sdl2Quit) where
+module SDL2.SDL2 (sdl2CreateWindow, sdl2DestroyWindow, sdl2GetKeyboardState, sdl2Init, sdl2PollEvent, sdl2VulkanCreateSurface, sdl2Quit) where
 
 
 import Data.Int     (Int32)
-import Data.Word    (Word32)
+import Data.Word    (Word8, Word32)
 
 import Foreign
 import Foreign.C.String
 
+import Graphics.Utilities (cast)
 import Graphics.Vulkan.Types (VkInstance(..), VkSurfaceKHR(..))
 
 import SDL2.Data
@@ -19,6 +20,7 @@ data SDL_Window
 -- Type aliases.
 type Height     = Int32
 type HWindow    = Ptr SDL_Window
+type State      = Word8
 type Width      = Int32
 
 
@@ -27,6 +29,9 @@ foreign import ccall unsafe "SDL_CreateWindow"
 
 foreign import ccall unsafe "SDL_DestroyWindow"
     c_SDL_DestroyWindow :: HWindow -> IO ()
+
+foreign import ccall unsafe "SDL_GetKeyboardState"
+    c_SDL_GetKeyboardState :: Ptr Int32 -> IO (Ptr Word8)
 
 foreign import ccall unsafe "SDL_Init"
     c_SDL_Init :: Word32 -> IO Int32
@@ -47,6 +52,20 @@ sdl2CreateWindow n x0 y0 x1 y1 f = do
 
 sdl2DestroyWindow :: HWindow -> IO ()
 sdl2DestroyWindow = c_SDL_DestroyWindow
+
+sdl2GetKeyboardState :: IO [State]
+sdl2GetKeyboardState = do
+    n <- first
+    second n
+    where
+        first = alloca $ \p -> do
+            _ <- c_SDL_GetKeyboardState p
+            peek p
+        second n = do
+            p <- c_SDL_GetKeyboardState nullPtr
+            peekArray i p
+            where
+                i = cast n
 
 sdl2Init :: Word32 -> IO Int32
 sdl2Init = c_SDL_Init
