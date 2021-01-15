@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Pipelines (createVkGraphicsPipelineCreateInfo, createVkPipelineCacheInfo, createVkPipelineColorBlendStateCreateInfo, createVkPipelineDynamicStateCreateInfo, createVkPipelineLayoutCreateInfo, createVkPipelineShaderStageInfo, createVkPipelineVertexInputStateCreateInfo, createVkPipelineViewportStateCreateInfo, vkCreateComputePipelines, vkCreateGraphicsPipelines, vkCreatePipelineCache, vkCreatePipelineLayout, vkDestroyPipeline, vkDestroyPipelineCache, vkDestroyPipelineLayout) where
+module Graphics.Vulkan.Pipelines (createVkGraphicsPipelineCreateInfo, createVkPipelineCacheInfo, createVkPipelineColorBlendStateCreateInfo, createVkPipelineDynamicStateCreateInfo, createVkPipelineLayoutCreateInfo, createVkPipelineShaderStageCreateInfo, createVkPipelineVertexInputStateCreateInfo, createVkPipelineViewportStateCreateInfo, vkCreateComputePipelines, vkCreateGraphicsPipelines, vkCreatePipelineCache, vkCreatePipelineLayout, vkDestroyPipeline, vkDestroyPipelineCache, vkDestroyPipelineLayout) where
 
 
 import Data.Maybe
@@ -114,9 +114,9 @@ createVkPipelineLayoutCreateInfo v pLCF sLC mDSL pCRC mPCR = do
     pPCR <- fromMaybeListIO pCRC mPCR
     return $ VkPipelineLayoutCreateInfo structureTypePipelineLayoutCreateInfo v pLCF sLC pDSL pCRC pPCR
 
-createVkPipelineShaderStageInfo :: Next -> VkPipelineShaderStageCreateFlags -> VkShaderStageFlagBits -> VkShaderModule ->
+createVkPipelineShaderStageCreateInfo :: Next -> VkPipelineShaderStageCreateFlags -> VkShaderStageFlagBits -> VkShaderModule ->
     Name -> Maybe VkSpecializationInfo -> IO VkPipelineShaderStageCreateInfo
-createVkPipelineShaderStageInfo v pSSCF sSF sM n mVKSI = do
+createVkPipelineShaderStageCreateInfo v pSSCF sSF sM n mVKSI = do
     n' <- newCString n
     pInfo <- fromMaybeIO mVKSI
     return $ VkPipelineShaderStageCreateInfo structureTypePipelineShaderStageCreateInfo v pSSCF sSF sM n' pInfo
