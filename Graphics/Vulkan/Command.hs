@@ -1,7 +1,7 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
 -- Todo: Return when RayTracing is available.
-module Graphics.Vulkan.Command (createVkClearColorValue, createVkCommandBufferAllocateInfo, createVkCommandBufferBeginInfo, createVkCommandPoolInfo, createVkRenderPassBeginInfo, vkAllocateCommandBuffers, vkBeginCommandBuffer, vkCmdBeginRenderPass, vkCmdBindDescriptorSets, vkCmdBindIndexBuffer, vkCmdBindPipeline, vkCmdPipelineBarrier, vkCmdBindVertexBuffers, vkCmdBlitImage, {-vkCmdBuildAccelerationStructureKHR,-} vkCmdClearColorImage, vkCmdCopyBuffer, vkCmdDispatch, vkCmdDraw, vkCmdDrawIndexed, vkCmdEndRenderPass, vkCmdFillBuffer, vkCmdPushConstants, vkCreateCommandPool, vkDestroyCommandPool, vkEndCommandBuffer, vkFreeCommandBuffers) where
+module Graphics.Vulkan.Command (createVkClearColorValue, createVkCommandBufferAllocateInfo, createVkCommandBufferBeginInfo, createVkCommandPoolInfo, createVkRenderPassBeginInfo, vkAllocateCommandBuffers, vkBeginCommandBuffer, vkCmdBeginRenderPass, vkCmdBindDescriptorSets, vkCmdBindIndexBuffer, vkCmdBindPipeline, vkCmdPipelineBarrier, vkCmdBindVertexBuffers, vkCmdBlitImage, {-vkCmdBuildAccelerationStructureKHR,-} vkCmdClearColorImage, vkCmdCopyBuffer, vkCmdDispatch, vkCmdDraw, vkCmdDrawIndexed, vkCmdEndRenderPass, vkCmdFillBuffer, vkCmdPushConstants, vkCmdResolveImage, vkCreateCommandPool, vkDestroyCommandPool, vkEndCommandBuffer, vkFreeCommandBuffers) where
 
 
 import Data.Maybe   (Maybe)
@@ -115,6 +115,9 @@ foreign import ccall unsafe "vkCmdPipelineBarrier"
 
 foreign import ccall unsafe "vkCmdPushConstants"
     c_vkCmdPushConstants :: VkCommandBuffer -> VkPipelineLayout -> VkShaderStageFlags -> Word32 -> Word32 -> Ptr Void -> IO ()
+
+foreign import ccall unsafe "vkCmdResolveImage"
+    c_vkCmdResolveImage :: VkCommandBuffer -> VkImage -> VkImageLayout -> VkImage -> VkImageLayout -> Word32 -> Ptr VkImageResolve -> IO ()
 
 foreign import ccall unsafe "vkCreateCommandPool"
     c_vkCreateCommandPool :: VkDevice -> Ptr VkCommandPoolCreateInfo -> Ptr VkAllocationCallbacks -> Ptr VkCommandPool ->
@@ -263,6 +266,13 @@ vkCmdPushConstants cB pL sSFB o s v = alloca $ \p -> do
     c_vkCmdPushConstants cB pL sSF o s (castPtr p)
     where
         sSF = VkShaderStageFlags $ vkBits unVkShaderStageFlagBits sSFB
+
+vkCmdResolveImage :: VkCommandBuffer -> VkImage -> VkImageLayout -> VkImage -> VkImageLayout -> Word32 -> [VkImageResolve] -> IO ()
+vkCmdResolveImage cB sI sIL dI dIL iRC iR = allocaArray i $ \p -> do
+    pokeArray p iR
+    c_vkCmdResolveImage cB sI sIL dI dIL iRC p
+    where
+        i = cast iRC
 
 vkCreateCommandPool :: VkDevice -> VkCommandPoolCreateInfo -> IO VkCommandPool
 vkCreateCommandPool d info = alloca $ \pInfo ->
