@@ -41,17 +41,17 @@ foreign import ccall unsafe "vkDestroySwapchainKHR"
 foreign import ccall unsafe "vkGetSwapchainImagesKHR"
     c_vkGetSwapchainImagesKHR :: VkDevice -> VkSwapchainKHR -> Ptr Word32 -> Ptr VkImage -> IO ()
 
-createVkSwapchainCreateInfo :: Next -> VkSwapchainCreateFlagsKHR -> VkSurfaceKHR -> MinImageCount -> VkFormat ->
-    VkColorSpaceKHR -> VkExtent2D -> ImageArrayLayers -> VkImageUsageFlagBits -> VkSharingMode -> QueueFamilyIndexCount ->
+createVkSwapchainCreateInfo :: Next -> VkSwapchainCreateFlagBitsKHR -> VkSurfaceKHR -> MinImageCount -> VkFormat ->
+    VkColorSpaceKHR -> VkExtent2D -> ImageArrayLayers -> [VkImageUsageFlagBits] -> VkSharingMode -> QueueFamilyIndexCount ->
     [QueueFamilyIndices] -> VkSurfaceTransformFlagBitsKHR -> VkCompositeAlphaFlagBitsKHR -> VkPresentModeKHR -> Clipped ->
     VkSwapchainKHR -> IO VkSwapchainCreateInfoKHR
-createVkSwapchainCreateInfo v sCF s mIC f cS e iAL iUFB sM qFIC qFI sTF cAF pM b sc =
+createVkSwapchainCreateInfo v sCFB s mIC f cS e iAL iUFB sM qFIC qFI sTF cAF pM b sc =
     allocaArray i $ \p -> do
         pokeArray p qFI
-        return $ VkSwapchainCreateInfoKHR structureTypeSwapchainCreateInfoKHR v sCF s mIC f cS e iAL u sM qFIC p sTF cAF pM b sc
+        return $ VkSwapchainCreateInfoKHR structureTypeSwapchainCreateInfoKHR v sCFB s mIC f cS e iAL u sM qFIC p sTF cAF pM b sc
         where
             i = cast qFIC
-            u = VkImageUsageFlags $ unVkImageUsageFlagBits iUFB
+            u = VkImageUsageFlags $ vkBits unVkImageUsageFlagBits iUFB
 
 vkAcquireNextImageKHR :: VkDevice -> VkSwapchainKHR -> TimeOut -> VkSemaphore -> VkFence -> IO ImageIndex
 vkAcquireNextImageKHR d sC t s f = alloca $ \p -> do
