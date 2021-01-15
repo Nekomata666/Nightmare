@@ -1,7 +1,7 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
 -- Todo: Return when RayTracing is available.
-module Graphics.Vulkan.Command (createVkClearColorValue, createVkCommandBufferAllocateInfo, createVkCommandBufferBeginInfo, createVkCommandPoolInfo, createVkRenderPassBeginInfo, vkAllocateCommandBuffers, vkBeginCommandBuffer, vkCmdBeginRenderPass, vkCmdBindDescriptorSets, vkCmdBindIndexBuffer, vkCmdBindPipeline, vkCmdPipelineBarrier, vkCmdBindVertexBuffers, vkCmdBlitImage, {-vkCmdBuildAccelerationStructureKHR,-} vkCmdClearColorImage, vkCmdCopyBuffer, vkCmdDraw, vkCmdDrawIndexed, vkCmdEndRenderPass, vkCmdFillBuffer, vkCmdPushConstants, vkCreateCommandPool, vkDestroyCommandPool, vkEndCommandBuffer, vkFreeCommandBuffers) where
+module Graphics.Vulkan.Command (createVkClearColorValue, createVkCommandBufferAllocateInfo, createVkCommandBufferBeginInfo, createVkCommandPoolInfo, createVkRenderPassBeginInfo, vkAllocateCommandBuffers, vkBeginCommandBuffer, vkCmdBeginRenderPass, vkCmdBindDescriptorSets, vkCmdBindIndexBuffer, vkCmdBindPipeline, vkCmdPipelineBarrier, vkCmdBindVertexBuffers, vkCmdBlitImage, {-vkCmdBuildAccelerationStructureKHR,-} vkCmdClearColorImage, vkCmdCopyBuffer, vkCmdDispatch, vkCmdDraw, vkCmdDrawIndexed, vkCmdEndRenderPass, vkCmdFillBuffer, vkCmdPushConstants, vkCreateCommandPool, vkDestroyCommandPool, vkEndCommandBuffer, vkFreeCommandBuffers) where
 
 
 import Data.Maybe   (Maybe)
@@ -93,6 +93,9 @@ foreign import ccall unsafe "vkCmdClearColorImage"
 
 foreign import ccall unsafe "vkCmdCopyBuffer"
     c_vkCmdCopyBuffer :: VkCommandBuffer -> VkBuffer -> VkBuffer -> Word32 -> Ptr VkBufferCopy -> IO ()
+
+foreign import ccall unsafe "vkCmdDispatch"
+    c_vkCmdDispatch :: VkCommandBuffer -> Word32 -> Word32 -> Word32 -> IO ()
 
 foreign import ccall unsafe "vkCmdDraw"
     c_vkCmdDraw :: VkCommandBuffer -> Word32 -> Word32 -> Word32 -> Word32 -> IO ()
@@ -224,6 +227,9 @@ vkCmdCopyBuffer cB src dst c ls = allocaArray i $ \p -> do
     c_vkCmdCopyBuffer cB src dst c p
     where
         i = cast c
+
+vkCmdDispatch :: VkCommandBuffer -> GroupCountX -> GroupCountY -> GroupCountZ -> IO ()
+vkCmdDispatch = c_vkCmdDispatch
 
 vkCmdDraw :: VkCommandBuffer -> VertexCount -> InstanceCount -> FirstVertex -> FirstInstance -> IO ()
 vkCmdDraw = c_vkCmdDraw
