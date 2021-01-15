@@ -8,7 +8,8 @@ import Data.Word (Word32, Word64)
 import Graphics.Vulkan.Types (VkDeviceSize(..), VkBool(..))
 
 
-
+queueFamilyIgnored :: Word32
+queueFamilyIgnored = 4294967295
 
 subpassExternal :: Word32
 subpassExternal = 4294967295

@@ -1,6 +1,7 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Command (createVkClearColorValue, createVkCommandBufferAllocateInfo, createVkCommandBufferBeginInfo, createVkCommandPoolInfo, createVkImageSubresourceRange, createVkRenderPassBeginInfo, vkAllocateCommandBuffers, vkBeginCommandBuffer, vkCmdBeginRenderPass, vkCmdBindDescriptorSets, vkCmdBindIndexBuffer, vkCmdBindPipeline, vkCmdBindVertexBuffers, vkCmdClearColorImage, vkCmdCopyBuffer, vkCmdDraw, vkCmdDrawIndexed, vkCmdEndRenderPass, vkCmdFillBuffer, vkCmdPushConstants, vkCreateCommandPool, vkDestroyCommandPool, vkEndCommandBuffer, vkFreeCommandBuffers) where
+-- Todo: Return when RayTracing is available.
+module Graphics.Vulkan.Command (createVkClearColorValue, createVkCommandBufferAllocateInfo, createVkCommandBufferBeginInfo, createVkCommandPoolInfo, createVkRenderPassBeginInfo, vkAllocateCommandBuffers, vkBeginCommandBuffer, vkCmdBeginRenderPass, vkCmdBindDescriptorSets, vkCmdBindIndexBuffer, vkCmdBindPipeline, vkCmdBindVertexBuffers, vkCmdBlitImage, {-vkCmdBuildAccelerationStructureKHR,-} vkCmdClearColorImage, vkCmdCopyBuffer, vkCmdDraw, vkCmdDrawIndexed, vkCmdEndRenderPass, vkCmdFillBuffer, vkCmdPushConstants, vkCreateCommandPool, vkDestroyCommandPool, vkEndCommandBuffer, vkFreeCommandBuffers) where
 
 
 import Data.Maybe   (Maybe)
@@ -18,13 +19,14 @@ import Graphics.Vulkan.Types
 
 -- Type aliases.
 type BaseArrayLayer             = Word32
-type BaseMipLevel               = Word32
 type BindingCount               = Word32
+type BufferMemoryBarrierCount   = Word32
 type ClearValueCount            = Word32
 type CommandBufferCount         = Word32
 type Data                       = Word32
 type DescriptorSetCount         = Word32
 type DstBuffer                  = VkBuffer
+type DstStageMask               = VkPipelineStageFlagBits
 type DynamicOffsetCount         = Word32
 type DynamicOffsets             = Word32
 type FirstBinding               = Word32
@@ -32,10 +34,15 @@ type FirstIndex                 = Word32
 type FirstInstance              = Word32
 type FirstSet                   = Word32
 type FirstVertex                = Word32
+type GroupCountX                = Word32
+type GroupCountY                = Word32
+type GroupCountZ                = Word32
+type ImageMemoryBarrierCount    = Word32
 type IndexCount                 = Word32
+type InfoCount                  = Word32
 type InstanceCount              = Word32
 type LayerCount                 = Word32
-type LevelCount                 = Word32
+type MemoryBarrierCount         = Word32
 type Offset                     = VkDeviceSize
 type PushOffset                 = Word32
 type PushSize                   = Word32
@@ -45,6 +52,7 @@ type RegionCount                = Word32
 type Regions                    = [VkBufferCopy]
 type Size                       = VkDeviceSize
 type SrcBuffer                  = VkBuffer
+type SrcStageMask               = VkPipelineStageFlagBits
 type VertexCount                = Word32
 type VertexOffset               = Int32
 
@@ -70,6 +78,14 @@ foreign import ccall unsafe "vkCmdBindPipeline"
 
 foreign import ccall unsafe "vkCmdBindVertexBuffers"
     c_vkCmdBindVertexBuffers :: VkCommandBuffer -> Word32 -> Word32 -> Ptr VkBuffer -> Ptr VkDeviceSize -> IO ()
+
+foreign import ccall unsafe "vkCmdBlitImage"
+    c_vkCmdBlitImage :: VkCommandBuffer -> VkImage -> VkImageLayout -> VkImage -> VkImageLayout -> Word32 -> Ptr VkImageBlit ->
+        VkFilter -> IO ()
+
+foreign import ccall unsafe "vkCmdBuildAccelerationStructureKHR"
+    c_vkCmdBuildAccelerationStructureKHR :: VkCommandBuffer -> Word32 -> Ptr VkAccelerationStructureBuildGeometryInfoKHR ->
+        Ptr VkAccelerationStructureBuildOffsetInfoKHR -> IO ()
 
 foreign import ccall unsafe "vkCmdClearColorImage"
     c_vkCmdClearColorImage :: VkCommandBuffer -> VkImage -> VkImageLayout -> Ptr VkClearColorValue -> Word32 ->
@@ -126,12 +142,6 @@ createVkCommandBufferBeginInfo v cBUFB i = do
 createVkCommandPoolInfo :: Next -> VkCommandPoolCreateFlags -> QueueFamilyIndex -> VkCommandPoolCreateInfo
 createVkCommandPoolInfo = VkCommandPoolCreateInfo structureTypeCommandPoolCreateInfo
 
-createVkImageSubresourceRange :: [VkImageAspectFlagBits] -> BaseMipLevel -> LevelCount -> BaseArrayLayer -> LayerCount ->
-    VkImageSubresourceRange
-createVkImageSubresourceRange iAFB = VkImageSubresourceRange iAF
-    where
-        iAF = VkImageAspectFlags $ vkBits unVkImageAspectFlagBits iAFB
-
 createVkRenderPassBeginInfo :: Next -> VkRenderPass -> VkFramebuffer -> VkRect2D -> ClearValueCount -> [VkClearValue] -> IO VkRenderPassBeginInfo
 createVkRenderPassBeginInfo v rP fB r2D cVC cV = allocaArray i $ \p -> do
     pokeArray p cV
@@ -159,13 +169,11 @@ vkCmdBeginRenderPass cB rPBI sC = alloca $ \p -> do
     c_vkCmdBeginRenderPass cB p sC
 
 vkCmdBindDescriptorSets :: VkCommandBuffer -> VkPipelineBindPoint -> VkPipelineLayout -> FirstSet -> DescriptorSetCount ->
-    [VkDescriptorSet] -> DynamicOffsetCount -> Maybe [DynamicOffsets] -> IO ()
-vkCmdBindDescriptorSets cB pBP pL fS dSC dS dOC dO = allocaArray i $ \pDS -> do
+    Maybe [VkDescriptorSet] -> DynamicOffsetCount -> Maybe [DynamicOffsets] -> IO ()
+vkCmdBindDescriptorSets cB pBP pL fS dSC dS dOC dO = do
+    pDS <- fromMaybeListIO dSC dS
     pDO <- fromMaybeListIO dOC dO
-    pokeArray pDS dS
     c_vkCmdBindDescriptorSets cB pBP pL fS dSC pDS dOC pDO
-    where
-        i = cast dSC
 
 vkCmdBindIndexBuffer :: VkCommandBuffer -> VkBuffer -> Offset -> VkIndexType -> IO ()
 vkCmdBindIndexBuffer = c_vkCmdBindIndexBuffer
@@ -179,6 +187,22 @@ vkCmdBindVertexBuffers cB fB bC b dS = alloca $ \pB ->
         poke pB b
         poke pDS dS
         c_vkCmdBindVertexBuffers cB fB bC pB pDS
+
+vkCmdBlitImage :: VkCommandBuffer -> VkImage -> VkImageLayout -> VkImage -> VkImageLayout -> RegionCount -> [VkImageBlit] -> VkFilter -> IO ()
+vkCmdBlitImage cB sI sIL dI dIL rC iB f = allocaArray i $ \p -> do
+    pokeArray p iB
+    c_vkCmdBlitImage cB sI sIL dI dIL rC p f
+    where
+        i = cast rC
+
+vkCmdBuildAccelerationStructureKHR :: VkCommandBuffer -> InfoCount -> [VkAccelerationStructureBuildGeometryInfoKHR] -> [VkAccelerationStructureBuildOffsetInfoKHR] -> IO ()
+vkCmdBuildAccelerationStructureKHR cB iC aSBGI aSBOI = allocaArray i $ \pASBGI ->
+    allocaArray i $ \pASBOI -> do
+        pokeArray pASBGI aSBGI
+        pokeArray pASBOI aSBOI
+        c_vkCmdBuildAccelerationStructureKHR cB iC pASBGI pASBOI
+        where
+            i = cast iC
 
 vkCmdClearColorImage :: VkCommandBuffer -> VkImage -> VkImageLayout -> VkClearColorValue -> RangeCount ->
     [VkImageSubresourceRange] -> IO ()

@@ -23,9 +23,7 @@ nullHandle :: VkHandle
 nullHandle = 0
 
 -- Vulkan Types
--- 0 = False, 1 = True
 newtype VkBool  = VkBool { unVkBool :: Word32 }
-     deriving (Show)
 newtype VkSampleMask = VkSampleMask { unVkSampleMask :: Word32 }
 
 -- Vulkan Flags
@@ -33,6 +31,7 @@ newtype VkAccessFlags = VkAccessFlags { unVkAccessFlags :: VkFlags }
 newtype VkAttachmentDescriptionFlags = VkAttachmentDescriptionFlags { unVkAttachmentDescriptionFlags :: VkFlags }
 newtype VkBufferCreateFlags = VkBufferCreateFlags { unVkBufferCreateFlags :: VkFlags }
 newtype VkBufferUsageFlags = VkBufferUsageFlags { unVkBufferUsageFlags :: VkFlags }
+newtype VkBuildAccelerationStructureFlagsKHR = VkBuildAccelerationStructureFlagsKHR { unVkBuildAccelerationStructureFlagsKHR :: VkFlags }
 newtype VkColorComponentFlags = VkColorComponentFlags { unVkColorComponentFlags :: VkFlags }
 newtype VkCommandBufferUsageFlags = VkCommandBufferUsageFlags { unVkCommandBufferUsageFlags :: VkFlags }
 newtype VkCommandPoolCreateFlags = VkCommandPoolCreateFlags { unVkCommandPoolCreateFlags :: VkFlags }
@@ -44,6 +43,7 @@ newtype VkDeviceCreateFlags = VkDeviceCreateFlags { unVkDeviceCreateFlags :: VkF
 newtype VkDeviceQueueCreateFlags = VkDeviceQueueCreateFlags { unVkDeviceQueueCreateFlags :: VkFlags }
 newtype VkFenceCreateFlags = VkFenceCreateFlags { unVkFenceCreateFlags :: VkFlags }
 newtype VkFramebufferCreateFlags = VkFramebufferCreateFlags { unVkFramebufferCreateFlags :: VkFlags }
+newtype VkGeometryFlagsKHR = VkGeometryFlagsKHR { unVkGeometryFlagsKHR :: VkFlags }
 newtype VkImageAspectFlags = VkImageAspectFlags { unVkImageAspectFlags :: VkFlags }
 newtype VkImageCreateFlags = VkImageCreateFlags { unVkImageCreateFlags :: VkFlags }
 newtype VkImageUsageFlags = VkImageUsageFlags { unVkImageUsageFlags :: VkFlags }
@@ -74,6 +74,7 @@ newtype VkSwapchainCreateFlagsKHR = VkSwapchainCreateFlagsKHR { unVkSwapchainCre
 
 
 -- Vulkan Handles
+newtype VkAccelerationStructureKHR = VkAccelerationStructureKHR { unVkAccelerationStructureKHR :: VkHandle }
 newtype VkBuffer = VkBuffer { unVkBuffer :: VkHandle }
 newtype VkBufferView = VkBufferView { unVkBufferView :: VkHandle }
 newtype VkCommandBuffer = VkCommandBuffer { unVkCommandBuffer :: VkHandle }
@@ -82,6 +83,7 @@ newtype VkDescriptorPool = VkDescriptorPool { unVkDescriptorPool :: VkHandle }
 newtype VkDescriptorSet = VkDescriptorSet { unVkDescriptorSet :: VkHandle }
 newtype VkDescriptorSetLayout = VkDescriptorSetLayout { unVkDescriptorSetLayout :: VkHandle }
 newtype VkDevice = VkDevice { unVkDevice :: VkHandle }
+newtype VkDeviceAddress = VkDeviceAddress { unVkDeviceAddress :: VkHandle }
 newtype VkDeviceMemory = VkDeviceMemory { unVkDeviceMemory :: VkHandle }
 newtype VkDeviceSize = VkDeviceSize { unVkDeviceSize :: VkHandle }
 newtype VkFence = VkFence { unVkFence :: VkHandle }
@@ -170,6 +172,14 @@ instance Storable VkBufferUsageFlags where
         return (VkBufferUsageFlags v)
     poke p (VkBufferUsageFlags v) = pokeByteOff p 0 v
 
+instance Storable VkBuildAccelerationStructureFlagsKHR where
+    sizeOf _    = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkBuildAccelerationStructureFlagsKHR v)
+    poke p (VkBuildAccelerationStructureFlagsKHR v) = pokeByteOff p 0 v
+
 instance Storable VkColorComponentFlags where
     sizeOf _    = 4
     alignment _ = 4
@@ -257,6 +267,14 @@ instance Storable VkFramebufferCreateFlags where
         v <- peekByteOff p 0
         return (VkFramebufferCreateFlags v)
     poke p (VkFramebufferCreateFlags v) = pokeByteOff p 0 v
+
+instance Storable VkGeometryFlagsKHR where
+    sizeOf _    = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkGeometryFlagsKHR v)
+    poke p (VkGeometryFlagsKHR v) = pokeByteOff p 0 v
 
 instance Storable VkImageAspectFlags where
     sizeOf _    = 4
@@ -480,6 +498,14 @@ instance Storable VkSwapchainCreateFlagsKHR where
 -- Storable instances for Vulkan handles.
 --
 --------------------------------------------------------------------------------------------------------------------------------
+instance Storable VkAccelerationStructureKHR where
+    sizeOf _    = 8
+    alignment _ = 8
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkAccelerationStructureKHR v)
+    poke p (VkAccelerationStructureKHR v) = pokeByteOff p 0 v
+
 instance Storable VkBuffer where
     sizeOf _    = 8
     alignment _ = 8
@@ -543,6 +569,14 @@ instance Storable VkDevice where
         v <- peekByteOff p 0
         return (VkDevice v)
     poke p (VkDevice v) = pokeByteOff p 0 v
+
+instance Storable VkDeviceAddress where
+    sizeOf _    = 8
+    alignment _ = 8
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkDeviceAddress v)
+    poke p (VkDeviceAddress v) = pokeByteOff p 0 v
 
 instance Storable VkDeviceMemory where
     sizeOf _    = 8

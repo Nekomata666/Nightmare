@@ -9,6 +9,8 @@ import Foreign
 
 
 -- Vulkan newtypes
+newtype VkAccelerationStructureTypeKHR = VkAccelerationStructureTypeKHR { unVkAccelerationStructureTypeKHR :: Word32 }
+    deriving (Eq)
 newtype VkAccessFlagBits = VkAccessFlagBits { unVkAccessFlagBits :: Word32 }
     deriving (Eq)
 newtype VkAttachmentLoadOp = VkAttachmentLoadOp { unVkAttachmentLoadOp :: Word32 }
@@ -20,6 +22,8 @@ newtype VkBlendFactor = VkBlendFactor { unVkBlendFactor :: Word32 }
 newtype VkBlendOp = VkBlendOp { unVkBlendOp :: Word32 }
     deriving (Eq)
 newtype VkBufferUsageFlagBits = VkBufferUsageFlagBits { unVkBufferUsageFlagBits :: Word32 }
+    deriving (Eq)
+newtype VkBuildAccelerationStructureFlagBitsKHR = VkBuildAccelerationStructureFlagBitsKHR { unVkBuildAccelerationStructureFlagBitsKHR :: Word32 }
     deriving (Eq)
 newtype VkColorComponentFlagBits = VkColorComponentFlagBits { unVkColorComponentFlagBits :: Word32 }
     deriving (Eq)
@@ -43,9 +47,15 @@ newtype VkDynamicState = VkDynamicState { unVkDynamicState :: Word32 }
     deriving (Eq)
 newtype VkFenceCreateFlagBits = VkFenceCreateFlagBits { unVkFenceCreateFlagBits :: Word32 }
     deriving (Eq)
+newtype VkFilter = VkFilter { unVkFilter :: Word32 }
+    deriving (Eq)
 newtype VkFormat = VkFormat { unVkFormat :: Word32 }
     deriving (Eq)
 newtype VkFrontFace = VkFrontFace { unVkFrontFace :: Word32 }
+    deriving (Eq)
+newtype VkGeometryFlagBitsKHR = VkGeometryFlagBitsKHR { unVkGeometryFlagBitsKHR :: Word32 }
+    deriving (Eq)
+newtype VkGeometryTypeKHR = VkGeometryTypeKHR { unVkGeometryTypeKHR :: Word32 }
     deriving (Eq)
 newtype VkImageAspectFlagBits = VkImageAspectFlagBits { unVkImageAspectFlagBits :: Word32 }
     deriving (Eq)
@@ -79,6 +89,8 @@ newtype VkPresentModeKHR = VkPresentModeKHR { unVkPresentModeKHR :: Word32 }
     deriving (Eq)
 newtype VkPrimitiveTopology = VkPrimitiveTopology { unVkPrimitiveTopology :: Word32 }
     deriving (Eq)
+newtype VkRayTracingShaderGroupTypeKHR = VkRayTracingShaderGroupTypeKHR { unVkRayTracingShaderGroupTypeKHR :: Word32 }
+    deriving (Eq)
 newtype VkResult = VkResult { unVkResult :: Int32 }
     deriving (Eq)
 newtype VkSampleCountFlagBits = VkSampleCountFlagBits { unVkSampleCountFlagBits :: Word32 }
@@ -92,12 +104,14 @@ newtype VkSharingMode = VkSharingMode { unVkSharingMode :: Word32 }
 newtype VkStencilOp = VkStencilOp { unVkStencilOp :: Word32 }
     deriving (Eq)
 newtype VkStructureType = VkStructureType { unVkStructureType :: Int32 }
-    deriving (Eq, Show)
+    deriving (Eq)
 newtype VkSubpassContents = VkSubpassContents { unVkSubpassContents :: Word32 }
     deriving (Eq)
 newtype VkSubpassDescriptionFlagBits = VkSubpassDescriptionFlagBits { unVkSubpassDescriptionFlagBits :: Word32}
     deriving (Eq)
 newtype VkSurfaceTransformFlagBitsKHR = VkSurfaceTransformFlagBitsKHR { unVkSurfaceTransformFlagBitsKHR :: Word32 }
+    deriving (Eq)
+newtype VkSwapchainCreateFlagBitsKHR = VkSwapchainCreateFlagBitsKHR { unVkSwapchainCreateFlagBitsKHR :: Word32 }
     deriving (Eq)
 newtype VkSystemAllocationScope = VkSystemAllocationScope { unVkSystemAllocationScope :: Word32 }
     deriving (Eq)
@@ -106,6 +120,12 @@ newtype VkVertexInputRate = VkVertexInputRate { unVkVertexInputRate :: Word32 }
 
 
 -- Vulkan enumerations
+
+-- VkAccelerationStructureTypeKHR
+accelerationStructureTypeTopLevelKHR    :: VkAccelerationStructureTypeKHR
+accelerationStructureTypeTopLevelKHR    = VkAccelerationStructureTypeKHR 0
+accelerationStructureTypeBottomLevelKHR :: VkAccelerationStructureTypeKHR
+accelerationStructureTypeBottomLevelKHR = VkAccelerationStructureTypeKHR 1
 
 -- VkAccessFlagBits
 accessIndirectCommandReadBit             :: VkAccessFlagBits
@@ -228,6 +248,18 @@ bufferUsageVertexBufferBit           :: VkBufferUsageFlagBits
 bufferUsageVertexBufferBit           = VkBufferUsageFlagBits 128
 bufferUsageIndirectBufferBit         :: VkBufferUsageFlagBits
 bufferUsageIndirectBufferBit         = VkBufferUsageFlagBits 256
+
+-- VkBuildAccelerationStructureFlagBitsKHR
+buildAccelerationStructureAllowUpdateBitKHR     :: VkBuildAccelerationStructureFlagBitsKHR
+buildAccelerationStructureAllowUpdateBitKHR     = VkBuildAccelerationStructureFlagBitsKHR 1
+buildAccelerationStructureAllowCompactionBitKHR :: VkBuildAccelerationStructureFlagBitsKHR
+buildAccelerationStructureAllowCompactionBitKHR = VkBuildAccelerationStructureFlagBitsKHR 2
+buildAccelerationStructurePreferFastTraceBitKHR :: VkBuildAccelerationStructureFlagBitsKHR
+buildAccelerationStructurePreferFastTraceBitKHR = VkBuildAccelerationStructureFlagBitsKHR 4
+buildAccelerationStructurePreferFastBuildBitKHR :: VkBuildAccelerationStructureFlagBitsKHR
+buildAccelerationStructurePreferFastBuildBitKHR = VkBuildAccelerationStructureFlagBitsKHR 8
+buildAccelerationStructureLowMemoryBitKHR       :: VkBuildAccelerationStructureFlagBitsKHR
+buildAccelerationStructureLowMemoryBitKHR       = VkBuildAccelerationStructureFlagBitsKHR 16
 
 -- VkColorComponentFlagBits
 colorComponentRBit               :: VkColorComponentFlagBits
@@ -386,6 +418,14 @@ dynamicStateStencilReference     = VkDynamicState 8
 -- VkFenceCreateFlagBits
 fenceCreateSignaledBit       :: VkFenceCreateFlagBits
 fenceCreateSignaledBit       = VkFenceCreateFlagBits 1
+
+-- VkFilter
+filterNearest   :: VkFilter
+filterNearest   = VkFilter 0
+filterLinear    :: VkFilter
+filterLinear    = VkFilter 1
+filterCubicImg  :: VkFilter
+filterCubicImg  = VkFilter 1000015000
 
 -- VkFormat
 -- Todo: Remove unwanted formats, like: SRGB, SFloat, UFloat, UNorm; need some of these for other stuff
@@ -783,6 +823,20 @@ frontFaceCounterClockwise    = VkFrontFace 0
 frontFaceClockwise           :: VkFrontFace
 frontFaceClockwise           = VkFrontFace 1
 
+-- VkGeometryFlagBitsKHR
+geometryOpaqueBitsKHR                       :: VkGeometryFlagBitsKHR
+geometryOpaqueBitsKHR                       = VkGeometryFlagBitsKHR 1
+geometryNoDuplicateAnyHitInvocationBitKHR   :: VkGeometryFlagBitsKHR
+geometryNoDuplicateAnyHitInvocationBitKHR   = VkGeometryFlagBitsKHR 2
+
+-- VkGeometryTypeKHR
+geometryTypeTrianglesKHR    :: VkGeometryTypeKHR
+geometryTypeTrianglesKHR    = VkGeometryTypeKHR 0
+geometryTypeAABBSKHR        :: VkGeometryTypeKHR
+geometryTypeAABBSKHR        = VkGeometryTypeKHR 1
+geometryTypeInstancesKHR    :: VkGeometryTypeKHR
+geometryTypeInstancesKHR    = VkGeometryTypeKHR 1000150000
+
 -- VkImageAspectFlagBits
 imageAspectColorBit          :: VkImageAspectFlagBits
 imageAspectColorBit          = VkImageAspectFlagBits 1
@@ -1022,6 +1076,14 @@ primitiveTopologyTriangleStripWithAdjacency  :: VkPrimitiveTopology
 primitiveTopologyTriangleStripWithAdjacency  = VkPrimitiveTopology 9
 primitiveTopologyPatchList                   :: VkPrimitiveTopology
 primitiveTopologyPatchList                   = VkPrimitiveTopology 10
+
+-- VkRayTracingShaderGroupTypeKHR
+rayTracingShaderGroupTypeGeneralKHR             :: VkRayTracingShaderGroupTypeKHR
+rayTracingShaderGroupTypeGeneralKHR             = VkRayTracingShaderGroupTypeKHR 0
+rayTracingShaderGroupTypeTrianglesHitGroupKHR   :: VkRayTracingShaderGroupTypeKHR
+rayTracingShaderGroupTypeTrianglesHitGroupKHR   = VkRayTracingShaderGroupTypeKHR 1
+rayTracingShaderGroupTypeProceduralHitGroupKHR  :: VkRayTracingShaderGroupTypeKHR
+rayTracingShaderGroupTypeProceduralHitGroupKHR  = VkRayTracingShaderGroupTypeKHR 2
 
 -- VkResult
 success                      :: VkResult
@@ -1277,6 +1339,48 @@ structureTypePhysicalDeviceProperties2                          :: VkStructureTy
 structureTypePhysicalDeviceProperties2                          = VkStructureType 1000059001
 structureTypeValidationFlagsExt                                 :: VkStructureType
 structureTypeValidationFlagsExt                                 = VkStructureType 1000061000
+structureTypeImageFormatListCreateInfo                          :: VkStructureType
+structureTypeImageFormatListCreateInfo                          = VkStructureType 1000147000
+structureTypeAccelerationStructureBuildGeometryInfoKHR          :: VkStructureType
+structureTypeAccelerationStructureBuildGeometryInfoKHR          = VkStructureType 1000150000
+structureTypeAccelerationStructureCreateGeometryTypeInfoKHR     :: VkStructureType
+structureTypeAccelerationStructureCreateGeometryTypeInfoKHR     = VkStructureType 1000150001
+structureTypeAccelerationStructureDeviceAddressInfoKHR          :: VkStructureType
+structureTypeAccelerationStructureDeviceAddressInfoKHR          = VkStructureType 1000150002
+structureTypeAccelerationStructureGeometryAABBSDataKHR          :: VkStructureType
+structureTypeAccelerationStructureGeometryAABBSDataKHR          = VkStructureType 1000150003
+structureTypeAccelerationStructureGeometryInstancesDataKHR      :: VkStructureType
+structureTypeAccelerationStructureGeometryInstancesDataKHR      = VkStructureType 1000150004
+structureTypeAccelerationStructureGeometryTrianglesDataKHR      :: VkStructureType
+structureTypeAccelerationStructureGeometryTrianglesDataKHR      = VkStructureType 1000150005
+structureTypeAccelerationStructureGeometryKHR                   :: VkStructureType
+structureTypeAccelerationStructureGeometryKHR                   = VkStructureType 1000150006
+structureTypeAccelerationStructureMemoryRequirementsInfoKHR     :: VkStructureType
+structureTypeAccelerationStructureMemoryRequirementsInfoKHR     = VkStructureType 1000150008
+structureTypeAccelerationStructureVersionKHR                    :: VkStructureType
+structureTypeAccelerationStructureVersionKHR                    = VkStructureType 1000150009
+structureTypeCopyAccelerationStructureInfoKHR                   :: VkStructureType
+structureTypeCopyAccelerationStructureInfoKHR                   = VkStructureType 1000150010
+structureTypeCopyAccelerationStructureToMemoryInfoKHR           :: VkStructureType
+structureTypeCopyAccelerationStructureToMemoryInfoKHR           = VkStructureType 1000150011
+structureTypeCopyMemoryToAccelerationStructureInfoKHR           :: VkStructureType
+structureTypeCopyMemoryToAccelerationStructureInfoKHR           = VkStructureType 1000150012
+structureTypePhysicalDeviceRayTracingFeaturesKHR                :: VkStructureType
+structureTypePhysicalDeviceRayTracingFeaturesKHR                = VkStructureType 1000150013
+structureTypePhysicalDeviceRayTracingPropertiesKHR              :: VkStructureType
+structureTypePhysicalDeviceRayTracingPropertiesKHR              = VkStructureType 1000150014
+structureTypeRayTracingPipelineCreateInfoKHR                    :: VkStructureType
+structureTypeRayTracingPipelineCreateInfoKHR                    = VkStructureType 1000150015
+structureTypeRayTracingShaderGroupCreateInfoKHR                 :: VkStructureType
+structureTypeRayTracingShaderGroupCreateInfoKHR                 = VkStructureType 1000150016
+structureTypeAccelerationStructureCreateInfoKHR                 :: VkStructureType
+structureTypeAccelerationStructureCreateInfoKHR                 = VkStructureType 1000150017
+structureTypeRayTracingPipelineInterfaceCreateInfoKHR           :: VkStructureType
+structureTypeRayTracingPipelineInterfaceCreateInfoKHR           = VkStructureType 1000150018
+structureTypeBindAccelerationStructureMemoryInfoKHR             :: VkStructureType
+structureTypeBindAccelerationStructureMemoryInfoKHR             = VkStructureType 1000165006
+structureTypeWriteDescriptorSetAccelerationStructureKHR         :: VkStructureType
+structureTypeWriteDescriptorSetAccelerationStructureKHR         = VkStructureType 1000165007
 structureTypeSemaphoreTypeCreateInfo                            :: VkStructureType
 structureTypeSemaphoreTypeCreateInfo                            = VkStructureType 1000207002
 
@@ -1316,6 +1420,14 @@ surfaceTransformHorizontalMirrorRotate270BitKHR  = VkSurfaceTransformFlagBitsKHR
 surfaceTransformInheritBitKHR                    :: VkSurfaceTransformFlagBitsKHR
 surfaceTransformInheritBitKHR                    = VkSurfaceTransformFlagBitsKHR 256
 
+-- VkSwapchainCreateFlagBitsKHR
+swapchainCreateSplitInstanceBindRegionsBitKHR   :: VkSwapchainCreateFlagBitsKHR
+swapchainCreateSplitInstanceBindRegionsBitKHR   = VkSwapchainCreateFlagBitsKHR 1
+swapchainCreateProtectedBitKHR                  :: VkSwapchainCreateFlagBitsKHR
+swapchainCreateProtectedBitKHR                  = VkSwapchainCreateFlagBitsKHR 2
+swapchainCreateMutableFormatBitKHR              :: VkSwapchainCreateFlagBitsKHR
+swapchainCreateMutableFormatBitKHR              = VkSwapchainCreateFlagBitsKHR 4
+
 -- VkSystemAllocationScope
 systemAllocationScopeCommand     :: VkSystemAllocationScope
 systemAllocationScopeCommand     = VkSystemAllocationScope 0
@@ -1336,6 +1448,14 @@ vertexInputRateInstance      = VkVertexInputRate 1
 
 
 -- Storable instances
+instance Storable VkAccelerationStructureTypeKHR where
+    sizeOf _    = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkAccelerationStructureTypeKHR v)
+    poke p (VkAccelerationStructureTypeKHR v) = pokeByteOff p 0 v
+
 instance Storable VkAccessFlagBits where
     sizeOf _    = 4
     alignment _ = 4
@@ -1384,6 +1504,14 @@ instance Storable VkBufferUsageFlagBits where
         return (VkBufferUsageFlagBits v)
     poke p (VkBufferUsageFlagBits v) = pokeByteOff p 0 v
 
+instance Storable VkBuildAccelerationStructureFlagBitsKHR where
+    sizeOf _    = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkBuildAccelerationStructureFlagBitsKHR v)
+    poke p (VkBuildAccelerationStructureFlagBitsKHR v) = pokeByteOff p 0 v
+
 instance Storable VkColorComponentFlagBits where
     sizeOf _    = 4
     alignment _ = 4
@@ -1409,7 +1537,7 @@ instance Storable VkCommandBufferLevel where
     poke p (VkCommandBufferLevel v) = pokeByteOff p 0 v
 
 instance Storable VkCommandBufferUsageFlagBits where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -1465,12 +1593,20 @@ instance Storable VkDynamicState where
     poke p (VkDynamicState v) = pokeByteOff p 0 v
 
 instance Storable VkFenceCreateFlagBits where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
         return (VkFenceCreateFlagBits v)
     poke p (VkFenceCreateFlagBits v) = pokeByteOff p 0 v
+
+instance Storable VkFilter where
+    sizeOf _    = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkFilter v)
+    poke p (VkFilter v) = pokeByteOff p 0 v
 
 instance Storable VkFormat where
     sizeOf _    = 4
@@ -1487,6 +1623,22 @@ instance Storable VkFrontFace where
         v <- peekByteOff p 0
         return (VkFrontFace v)
     poke p (VkFrontFace v) = pokeByteOff p 0 v
+
+instance Storable VkGeometryFlagBitsKHR where
+    sizeOf _    = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkGeometryFlagBitsKHR v)
+    poke p (VkGeometryFlagBitsKHR v) = pokeByteOff p 0 v
+
+instance Storable VkGeometryTypeKHR where
+    sizeOf _    = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkGeometryTypeKHR v)
+    poke p (VkGeometryTypeKHR v) = pokeByteOff p 0 v
 
 instance Storable VkImageAspectFlagBits where
     sizeOf _    = 4
@@ -1553,7 +1705,7 @@ instance Storable VkImageViewType where
     poke p (VkImageViewType v) = pokeByteOff p 0 v
 
 instance Storable VkIndexType where
-    sizeOf _ = 4
+    sizeOf _    = 4
     alignment _ = 4
     peek p = do
         v <- peekByteOff p 0
@@ -1615,6 +1767,14 @@ instance Storable VkPrimitiveTopology where
         v <- peekByteOff p 0
         return (VkPrimitiveTopology v)
     poke p (VkPrimitiveTopology v) = pokeByteOff p 0 v
+
+instance Storable VkRayTracingShaderGroupTypeKHR where
+    sizeOf _    = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkRayTracingShaderGroupTypeKHR v)
+    poke p (VkRayTracingShaderGroupTypeKHR v) = pokeByteOff p 0 v
 
 instance Storable VkResult where
     sizeOf _    = 4
@@ -1695,6 +1855,14 @@ instance Storable VkSurfaceTransformFlagBitsKHR where
         v <- peekByteOff p 0
         return (VkSurfaceTransformFlagBitsKHR v)
     poke p (VkSurfaceTransformFlagBitsKHR v) = pokeByteOff p 0 v
+
+instance Storable VkSwapchainCreateFlagBitsKHR where
+    sizeOf _    = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkSwapchainCreateFlagBitsKHR v)
+    poke p (VkSwapchainCreateFlagBitsKHR v) = pokeByteOff p 0 v
 
 instance Storable VkSystemAllocationScope where
     sizeOf _    = 4

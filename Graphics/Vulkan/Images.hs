@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Images (createVkImageCreateInfo, createVkImageSubresource, vkBindImageMemory, vkCreateImage, vkCreateImageView, vkDestroyImage, vkDestroyImageView, vkGetImageMemoryRequirements, vkGetImageSubresourceLayout) where
+module Graphics.Vulkan.Images (createVkImageCreateInfo, createVkImageFormatListCreateInfo, createVkImageSubresource, createVkImageSubresourceLayers, createVkImageSubresourceRange, vkBindImageMemory, vkCreateImage, vkCreateImageView, vkDestroyImage, vkDestroyImageView, vkGetImageMemoryRequirements, vkGetImageSubresourceLayout) where
 
 
 import Data.Void (Void)
@@ -13,6 +13,20 @@ import Graphics.Utilities
 import Graphics.Vulkan.Data
 import Graphics.Vulkan.Enumerations
 import Graphics.Vulkan.Types
+
+
+-- Type aliases.
+type ArrayLayer             = Word32
+type ArrayLayers            = Word32
+type BaseArrayLayer         = Word32
+type BaseMipLevel           = Word32
+type LayerCount             = Word32
+type LevelCount             = Word32
+type MipLevel               = Word32
+type MipLevels              = Word32
+type QueueFamilyIndexCount  = Word32
+type QueueFamilyIndices     = [Word32]
+type ViewFormatCount        = Word32
 
 
 foreign import ccall unsafe "vkBindImageMemory"
@@ -37,9 +51,9 @@ foreign import ccall unsafe "vkGetImageSubresourceLayout"
     c_vkGetImageSubresourceLayout :: VkDevice -> VkImage -> Ptr VkImageSubresource -> Ptr VkSubresourceLayout -> IO ()
 
 -- Note: ImageLayout needs to be imageLayoutUndefined or imageLayoutPreinitialized
-createVkImageCreateInfo :: Next -> [VkImageCreateFlagBits] -> VkImageType -> VkFormat -> VkExtent3D -> Word32 -> Word32 ->
-    VkSampleCountFlagBits -> VkImageTiling -> [VkImageUsageFlagBits] -> VkSharingMode -> Word32 -> [Word32] -> VkImageLayout ->
-    IO VkImageCreateInfo
+createVkImageCreateInfo :: Next -> [VkImageCreateFlagBits] -> VkImageType -> VkFormat -> VkExtent3D -> MipLevels -> ArrayLayers ->
+    VkSampleCountFlagBits -> VkImageTiling -> [VkImageUsageFlagBits] -> VkSharingMode -> QueueFamilyIndexCount -> QueueFamilyIndices ->
+    VkImageLayout -> IO VkImageCreateInfo
 createVkImageCreateInfo v cFlags t f e m a s ti uFlags mo iC indices l = allocaArray i $ \p -> do
     pokeArray p indices
     return $ VkImageCreateInfo structureTypeImageCreateInfo v c t f e m a s ti u mo iC p l
@@ -48,10 +62,28 @@ createVkImageCreateInfo v cFlags t f e m a s ti uFlags mo iC indices l = allocaA
             c = VkImageCreateFlags $ vkBits unVkImageCreateFlagBits cFlags
             u = VkImageUsageFlags $ vkBits unVkImageUsageFlagBits uFlags
 
-createVkImageSubresource :: [VkImageAspectFlagBits] -> Word32 -> Word32 -> IO VkImageSubresource
+createVkImageFormatListCreateInfo :: Next -> ViewFormatCount -> [VkFormat] -> IO VkImageFormatListCreateInfo
+createVkImageFormatListCreateInfo v vFC f = allocaArray i $ \p -> do
+    pokeArray p f
+    return $ VkImageFormatListCreateInfo structureTypeImageFormatListCreateInfo v vFC p
+    where
+        i = cast vFC
+
+createVkImageSubresource :: [VkImageAspectFlagBits] -> MipLevel -> ArrayLayer -> IO VkImageSubresource
 createVkImageSubresource b m a = return $ VkImageSubresource f m a
     where
         f = VkImageAspectFlags $ vkBits unVkImageAspectFlagBits b
+
+createVkImageSubresourceLayers :: [VkImageAspectFlagBits] -> MipLevel -> BaseArrayLayer -> LayerCount -> VkImageSubresourceLayers
+createVkImageSubresourceLayers b = VkImageSubresourceLayers f
+    where
+        f = VkImageAspectFlags $ vkBits unVkImageAspectFlagBits b
+
+createVkImageSubresourceRange :: [VkImageAspectFlagBits] -> BaseMipLevel -> LevelCount -> BaseArrayLayer -> LayerCount ->
+    VkImageSubresourceRange
+createVkImageSubresourceRange iAFB = VkImageSubresourceRange iAF
+    where
+        iAF = VkImageAspectFlags $ vkBits unVkImageAspectFlagBits iAFB
 
 vkBindImageMemory :: VkDevice  -> VkImage -> VkDeviceMemory -> VkDeviceSize -> IO VkResult
 vkBindImageMemory = c_vkBindImageMemory

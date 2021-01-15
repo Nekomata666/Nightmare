@@ -14,6 +14,61 @@ import Graphics.Vulkan.Enumerations
 import Graphics.Vulkan.Types
 
 
+data VkAccelerationStructureBuildGeometryInfoKHR = VkAccelerationStructureBuildGeometryInfoKHR{
+    sType                       :: VkStructureType,
+    next                        :: Next,
+    accelerationStructureType   :: VkAccelerationStructureTypeKHR,
+    flags                       :: VkBuildAccelerationStructureFlagsKHR,
+    update                      :: VkBool,
+    srcAccelerationStructure    :: VkAccelerationStructureKHR,
+    dstAccelerationStructure    :: VkAccelerationStructureKHR,
+    geometryArrayOfPointers     :: VkBool,
+    geometryCount               :: Word32,
+    geometries                  :: Ptr (Ptr VkAccelerationStructureGeometryKHR),
+    scratchData                 :: VkDeviceOrHostAddressKHR
+}
+
+data VkAccelerationStructureBuildOffsetInfoKHR = VkAccelerationStructureBuildOffsetInfoKHR{
+    primitiveCount  :: Word32,
+    primitiveOffset :: Word32,
+    firstVertex     :: Word32,
+    transformOffset :: Word32
+}
+
+data VkAccelerationStructureGeometryAabbsDataKHR = VkAccelerationStructureGeometryAabbsDataKHR{
+    sType       :: VkStructureType,
+    next        :: Next,
+    dataAddress :: VkDeviceOrHostAddressConstKHR,
+    stride      :: VkDeviceSize
+}
+
+data VkAccelerationStructureGeometryDataKHR = ASGTriangles VkAccelerationStructureGeometryTrianglesDataKHR | ASGAABBS VkAccelerationStructureGeometryAabbsDataKHR | ASGInstances VkAccelerationStructureGeometryInstancesDataKHR
+
+data VkAccelerationStructureGeometryInstancesDataKHR = VkAccelerationStructureGeometryInstancesDataKHR{
+    sType           :: VkStructureType,
+    next            :: Next,
+    arrayOfPointers :: VkBool,
+    dataAddress     :: VkDeviceOrHostAddressConstKHR
+}
+data VkAccelerationStructureGeometryKHR = VkAccelerationStructureGeometryKHR{
+    sType           :: VkStructureType,
+    next            :: Next,
+    geometryType    :: VkGeometryTypeKHR,
+    geometry        :: VkAccelerationStructureGeometryDataKHR,
+    flags           :: VkGeometryFlagsKHR
+}
+
+data VkAccelerationStructureGeometryTrianglesDataKHR = VkAccelerationStructureGeometryTrianglesDataKHR{
+    sType           :: VkStructureType,
+    next            :: Next,
+    vertexFormat    :: VkFormat,
+    vertexData      :: VkDeviceOrHostAddressConstKHR,
+    vertexStride    :: VkDeviceSize,
+    indexType       :: VkIndexType,
+    indexData       :: VkDeviceOrHostAddressConstKHR,
+    transformData   :: VkDeviceOrHostAddressConstKHR
+}
+
 data VkAllocationCallbacks = VkAllocationCallbacks{
     userData                :: Ptr Void,
     pfnAllocation           :: PFN_vkAllocationFunction,
@@ -25,7 +80,7 @@ data VkAllocationCallbacks = VkAllocationCallbacks{
 
 data VkApplicationInfo = VkApplicationInfo{
     sType               :: VkStructureType,
-    next                :: Ptr Void,
+    next                :: Next,
     applicationName     :: CString,
     applicationVersion  :: Word32,
     engineName          :: CString,
@@ -34,47 +89,59 @@ data VkApplicationInfo = VkApplicationInfo{
 }
 
 data VkAttachmentDescription = VkAttachmentDescription{
-    flags :: VkAttachmentDescriptionFlags,
-    format :: VkFormat,
-    samples :: VkSampleCountFlagBits,
-    loadOp :: VkAttachmentLoadOp,
-    storeOp :: VkAttachmentStoreOp,
-    stencilLoadOp :: VkAttachmentLoadOp,
-    stencilStoreOp :: VkAttachmentStoreOp,
-    initialLayout :: VkImageLayout,
-    finalLayout :: VkImageLayout
+    flags           :: VkAttachmentDescriptionFlags,
+    format          :: VkFormat,
+    samples         :: VkSampleCountFlagBits,
+    loadOp          :: VkAttachmentLoadOp,
+    storeOp         :: VkAttachmentStoreOp,
+    stencilLoadOp   :: VkAttachmentLoadOp,
+    stencilStoreOp  :: VkAttachmentStoreOp,
+    initialLayout   :: VkImageLayout,
+    finalLayout     :: VkImageLayout
 }
 
 data VkAttachmentReference = VkAttachmentReference{
-    attachment :: Word32,
-    layout :: VkImageLayout
+    attachment  :: Word32,
+    layout      :: VkImageLayout
 }
 
 data VkBufferCreateInfo = VkBufferCreateInfo{
-    sType :: VkStructureType,
-    next :: Ptr Void,
-    flags :: VkBufferCreateFlags,
-    size :: VkDeviceSize,
-    usage :: VkBufferUsageFlags,
-    sharingMode :: VkSharingMode,
-    queueFamilyIndexCount :: Word32,
-    queueFamilyIndices :: Ptr Word32
+    sType                   :: VkStructureType,
+    next                    :: Next,
+    flags                   :: VkBufferCreateFlags,
+    size                    :: VkDeviceSize,
+    usage                   :: VkBufferUsageFlags,
+    sharingMode             :: VkSharingMode,
+    queueFamilyIndexCount   :: Word32,
+    queueFamilyIndices      :: Ptr Word32
 }
 
 data VkBufferCopy = VkBufferCopy{
-    srcOffset :: VkDeviceSize,
-    dstOffset :: VkDeviceSize,
-    size :: VkDeviceSize
+    srcOffset   :: VkDeviceSize,
+    dstOffset   :: VkDeviceSize,
+    size        :: VkDeviceSize
+}
+
+data VkBufferMemoryBarrier = VkBufferMemoryBarrier{
+    sType               :: VkStructureType,
+    next                :: Next,
+    srcAccessMask       :: VkAccessFlags,
+    dstAccessMask       :: VkAccessFlags,
+    srcQueueFamilyIndex :: Word32,
+    dstQueueFamilyIndex :: Word32,
+    buffer              :: VkBuffer,
+    offset              :: VkDeviceSize,
+    size                :: VkDeviceSize
 }
 
 -- Note: At most, we can add Int32.
 -- Using only Word32s!
 data VkClearColorValue = VkClearColorValue{
-    word32 :: Ptr Word32 -- [4]
+    word32  :: Ptr Word32 -- [4]
 }
 
 data VkClearDepthStencilValue = VkClearDepthStencilValue{
-    depth :: Float,
+    depth   :: Float,
     stencil :: Word32
 }
 
@@ -82,225 +149,275 @@ data VkClearValue = VkClearValueC{color :: VkClearColorValue} |
     VkClearValueDS{depthStencil :: VkClearDepthStencilValue}
 
 data VkCommandBufferAllocateInfo =VkCommandBufferAllocateInfo{
-    sType :: VkStructureType,
-    next :: Ptr Void,
-    commandPool :: VkCommandPool,
-    level :: VkCommandBufferLevel,
-    commandBufferCount :: Word32
+    sType               :: VkStructureType,
+    next                :: Next,
+    commandPool         :: VkCommandPool,
+    level               :: VkCommandBufferLevel,
+    commandBufferCount  :: Word32
 }
 
 data VkCommandBufferBeginInfo = VkCommandBufferBeginInfo{
-    sType :: VkStructureType,
-    next :: Ptr Void,
-    flags :: VkCommandBufferUsageFlags,
-    pInheritanceInfo :: Ptr VkCommandBufferInheritanceInfo
+    sType               :: VkStructureType,
+    next                :: Next,
+    flags               :: VkCommandBufferUsageFlags,
+    pInheritanceInfo    :: Ptr VkCommandBufferInheritanceInfo
 }
 
 data VkCommandBufferInheritanceInfo = VkCommandBufferInheritanceInfo{
-    sType :: VkStructureType,
-    next :: Ptr Void,
-    renderPass :: VkRenderPass,
-    subpass :: Word32,
-    framebuffer :: VkFramebuffer,
-    occlusionQueryEnable :: VkBool,
-    queryFlags :: VkQueryControlFlags,
-    pipelineStatistics :: VkQueryPipelineStatisticFlags
+    sType                   :: VkStructureType,
+    next                    :: Next,
+    renderPass              :: VkRenderPass,
+    subpass                 :: Word32,
+    framebuffer             :: VkFramebuffer,
+    occlusionQueryEnable    :: VkBool,
+    queryFlags              :: VkQueryControlFlags,
+    pipelineStatistics      :: VkQueryPipelineStatisticFlags
 }
 
 data VkCommandPoolCreateInfo = VkCommandPoolCreateInfo{
-    sType :: VkStructureType,
-    next :: Ptr Void,
-    flags :: VkCommandPoolCreateFlags,
-    queueFamilyIndex :: Word32
+    sType               :: VkStructureType,
+    next                :: Next,
+    flags               :: VkCommandPoolCreateFlags,
+    queueFamilyIndex    :: Word32
 }
 
 data VkComponentMapping = VkComponentMapping{
-    red :: VkComponentSwizzle,
-    green :: VkComponentSwizzle,
-    blue :: VkComponentSwizzle,
-    alpha :: VkComponentSwizzle
+    red     :: VkComponentSwizzle,
+    green   :: VkComponentSwizzle,
+    blue    :: VkComponentSwizzle,
+    alpha   :: VkComponentSwizzle
 }
 
 data VkComputePipelineCreateInfo = VkComputePipelineCreateInfo{
-    sType :: VkStructureType,
-    next :: Ptr Void,
-    flags :: VkPipelineCreateFlags,
-    stage :: VkPipelineShaderStageCreateInfo,
-    layout :: VkPipelineLayout,
-    basePipelineHandle :: VkPipeline,
-    basePipelineIndex :: Int32
+    sType               :: VkStructureType,
+    next                :: Next,
+    flags               :: VkPipelineCreateFlags,
+    stage               :: VkPipelineShaderStageCreateInfo,
+    layout              :: VkPipelineLayout,
+    basePipelineHandle  :: VkPipeline,
+    basePipelineIndex   :: Int32
 }
 
 data VkCopyDescriptorSet = VkCopyDescriptorSet{
-    sType :: VkStructureType,
-    next :: Ptr Void,
-    srcSet :: VkDescriptorSet,
-    srcBinding :: Word32,
+    sType           :: VkStructureType,
+    next            :: Next,
+    srcSet          :: VkDescriptorSet,
+    srcBinding      :: Word32,
     srcArrayElement :: Word32,
-    dstSet :: VkDescriptorSet,
-    dstBinding :: Word32,
+    dstSet          :: VkDescriptorSet,
+    dstBinding      :: Word32,
     dstArrayElement :: Word32,
     descriptorCount :: Word32
 }
 
 data VkDescriptorBufferInfo = VkDescriptorBufferInfo{
-    buffer :: VkBuffer,
-    offset :: VkDeviceSize,
-    range :: VkDeviceSize
+    buffer  :: VkBuffer,
+    offset  :: VkDeviceSize,
+    range   :: VkDeviceSize
 }
 
 data VkDescriptorImageInfo = VkDescriptorImageInfo{
-    sampler :: VkSampler,
-    imageView :: VkImageView,
+    sampler     :: VkSampler,
+    imageView   :: VkImageView,
     imageLayout :: VkImageLayout
 }
 
 data VkDescriptorPoolCreateInfo = VkDescriptorPoolCreateInfo{
-    sType :: VkStructureType,
-    next :: Ptr Void,
-    flags :: VkDescriptorPoolCreateFlags,
-    maxSets :: Word32,
-    poolSizeCount :: Word32,
-    pPoolSizes :: Ptr VkDescriptorPoolSize
+    sType           :: VkStructureType,
+    next            :: Next,
+    flags           :: VkDescriptorPoolCreateFlags,
+    maxSets         :: Word32,
+    poolSizeCount   :: Word32,
+    pPoolSizes      :: Ptr VkDescriptorPoolSize
 }
 
 data VkDescriptorPoolSize = VkDescriptorPoolSize{
-    dType :: VkDescriptorType,
+    dType           :: VkDescriptorType,
     descriptorCount :: Word32
 }
 
 data VkDescriptorSetAllocateInfo = VkDescriptorSetAllocateInfo{
-    sType :: VkStructureType,
-    next :: Ptr Void,
-    descriptorPool :: VkDescriptorPool,
-    descriptorSetCount :: Word32,
-    pSetLayouts :: Ptr VkDescriptorSetLayout
+    sType               :: VkStructureType,
+    next                :: Next,
+    descriptorPool      :: VkDescriptorPool,
+    descriptorSetCount  :: Word32,
+    pSetLayouts         :: Ptr VkDescriptorSetLayout
 }
 
 data VkDescriptorSetLayoutBinding = VkDescriptorSetLayoutBinding{
-    binding :: Word32,
-    descriptorType :: VkDescriptorType,
-    descriptorCount :: Word32,
-    stageFlags :: VkShaderStageFlags,
-    pImmutableSamplers :: Ptr VkSampler
+    binding             :: Word32,
+    descriptorType      :: VkDescriptorType,
+    descriptorCount     :: Word32,
+    stageFlags          :: VkShaderStageFlags,
+    pImmutableSamplers  :: Ptr VkSampler
 }
 
 data VkDescriptorSetLayoutCreateInfo = VkDescriptorSetLayoutCreateInfo{
-    sType :: VkStructureType,
-    next :: Ptr Void,
-    flags :: VkDescriptorSetLayoutCreateFlags,
-    bindingCount :: Word32,
-    pBindings :: Ptr VkDescriptorSetLayoutBinding
+    sType           :: VkStructureType,
+    next            :: Next,
+    flags           :: VkDescriptorSetLayoutCreateFlags,
+    bindingCount    :: Word32,
+    pBindings       :: Ptr VkDescriptorSetLayoutBinding
 }
 
 data VkDeviceCreateInfo = VkDeviceCreateInfo{
-    sType :: VkStructureType,
-    next :: Ptr Void,
-    flags :: VkDeviceCreateFlags,
-    queueCreateInfoCount :: Word32,
-    queueCreateInfos :: Ptr VkDeviceQueueCreateInfo,
-    enabledLayerCount :: Word32,
-    enabledLayerNames :: Ptr CString,
-    enabledExtensionCount :: Word32,
-    enabledExtensionNames :: Ptr CString,
-    enabledFeatures :: Ptr VkPhysicalDeviceFeatures
+    sType                   :: VkStructureType,
+    next                    :: Next,
+    flags                   :: VkDeviceCreateFlags,
+    queueCreateInfoCount    :: Word32,
+    queueCreateInfos        :: Ptr VkDeviceQueueCreateInfo,
+    enabledLayerCount       :: Word32,
+    enabledLayerNames       :: Ptr CString,
+    enabledExtensionCount   :: Word32,
+    enabledExtensionNames   :: Ptr CString,
+    enabledFeatures         :: Ptr VkPhysicalDeviceFeatures
 }
 
+data VkDeviceOrHostAddressConstKHR = DeviceAddressConst VkDeviceAddress | HostAddressConst (Ptr Void)
+
+data VkDeviceOrHostAddressKHR = DeviceAddress VkDeviceAddress | HostAddress (Ptr Void)
+
 data VkDeviceQueueCreateInfo = VkDeviceQueueCreateInfo{
-    sType :: VkStructureType,
-    next :: Ptr Void,
-    flags :: VkDeviceQueueCreateFlags,
-    queueFamilyIndex :: Word32,
-    queueCount :: Word32,
-    queuePriorities :: Ptr Float
+    sType               :: VkStructureType,
+    next                :: Next,
+    flags               :: VkDeviceQueueCreateFlags,
+    queueFamilyIndex    :: Word32,
+    queueCount          :: Word32,
+    queuePriorities     :: Ptr Float
 }
 
 data VkExtent2D = VkExtent2D{
-    width :: Word32,
-    height :: Word32
+    width   :: Word32,
+    height  :: Word32
 }
 
 data VkExtent3D = VkExtent3D{
-    width :: Word32,
-    height :: Word32,
-    depth :: Word32
+    width   :: Word32,
+    height  :: Word32,
+    depth   :: Word32
 }
 
 data VkFenceCreateInfo = VkFenceCreateInfo{
-    sType :: VkStructureType,
-    next :: Ptr Void,
-    flags :: VkFenceCreateFlags
+    sType   :: VkStructureType,
+    next    :: Next,
+    flags   :: VkFenceCreateFlags
 }
 
 data VkFramebufferCreateInfo = VkFramebufferCreateInfo{
-    sType :: VkStructureType,
-    next :: Ptr Void,
-    flags :: VkFramebufferCreateFlags,
-    renderPass :: VkRenderPass,
+    sType           :: VkStructureType,
+    next            :: Next,
+    flags           :: VkFramebufferCreateFlags,
+    renderPass      :: VkRenderPass,
     attachmentCount :: Word32,
-    pAttachments :: Ptr VkImageView,
-    width :: Word32,
-    height :: Word32,
-    layers :: Word32
+    pAttachments    :: Ptr VkImageView,
+    width           :: Word32,
+    height          :: Word32,
+    layers          :: Word32
 }
 
 data VkGraphicsPipelineCreateInfo = VkGraphicsPipelineCreateInfo{
-    sType :: VkStructureType,
-    next :: Ptr Void,
-    flags :: VkPipelineCreateFlags,
-    stageCount :: Word32,
-    pStages :: Ptr VkPipelineShaderStageCreateInfo,
-    pVertexInputState :: Ptr VkPipelineVertexInputStateCreateInfo,
+    sType               :: VkStructureType,
+    next                :: Next,
+    flags               :: VkPipelineCreateFlags,
+    stageCount          :: Word32,
+    pStages             :: Ptr VkPipelineShaderStageCreateInfo,
+    pVertexInputState   :: Ptr VkPipelineVertexInputStateCreateInfo,
     pInputAssemblyState :: Ptr VkPipelineInputAssemblyStateCreateInfo,
-    pTessellationState :: Ptr VkPipelineTessellationStateCreateInfo,
-    pViewportState :: Ptr VkPipelineViewportStateCreateInfo,
+    pTessellationState  :: Ptr VkPipelineTessellationStateCreateInfo,
+    pViewportState      :: Ptr VkPipelineViewportStateCreateInfo,
     pRasterizationState :: Ptr VkPipelineRasterizationStateCreateInfo,
-    pMultisampleState :: Ptr VkPipelineMultisampleStateCreateInfo,
-    pDepthStencilState :: Ptr VkPipelineDepthStencilStateCreateInfo,
-    pColorBlendState :: Ptr VkPipelineColorBlendStateCreateInfo,
-    pDynamicState :: Ptr VkPipelineDynamicStateCreateInfo,
-    layout :: VkPipelineLayout,
-    renderPass :: VkRenderPass,
-    subpass :: Word32,
-    basePipelineHandle :: VkPipeline,
-    basePipelineIndex :: Int32
+    pMultisampleState   :: Ptr VkPipelineMultisampleStateCreateInfo,
+    pDepthStencilState  :: Ptr VkPipelineDepthStencilStateCreateInfo,
+    pColorBlendState    :: Ptr VkPipelineColorBlendStateCreateInfo,
+    pDynamicState       :: Ptr VkPipelineDynamicStateCreateInfo,
+    layout              :: VkPipelineLayout,
+    renderPass          :: VkRenderPass,
+    subpass             :: Word32,
+    basePipelineHandle  :: VkPipeline,
+    basePipelineIndex   :: Int32
+}
+
+-- Note: Marshalling issue with VkOffset3D [2]
+data VkImageBlit = VkImageBlit{
+    srcSubresource  :: VkImageSubresourceLayers,
+    srcOffset0      :: VkOffset3D,
+    srcOffset1      :: VkOffset3D,
+    dstSubresource  :: VkImageSubresourceLayers,
+    dstOffset0      :: VkOffset3D,
+    dstOffset1      :: VkOffset3D
 }
 
 data VkImageCreateInfo = VkImageCreateInfo{
-    sType :: VkStructureType,
-    next :: Ptr Void,
-    flags :: VkImageCreateFlags,
-    imageType :: VkImageType,
-    format :: VkFormat,
-    extent :: VkExtent3D,
-    mipLevels :: Word32,
-    arrayLayers :: Word32,
-    samples :: VkSampleCountFlagBits,
-    tiling :: VkImageTiling,
-    usage :: VkImageUsageFlags,
-    sharingMode :: VkSharingMode,
-    queueFamilyIndexCount :: Word32,
-    queueFamilyIndices :: Ptr Word32,
-    initialLayout :: VkImageLayout
+    sType                   :: VkStructureType,
+    next                    :: Next,
+    flags                   :: VkImageCreateFlags,
+    imageType               :: VkImageType,
+    format                  :: VkFormat,
+    extent                  :: VkExtent3D,
+    mipLevels               :: Word32,
+    arrayLayers             :: Word32,
+    samples                 :: VkSampleCountFlagBits,
+    tiling                  :: VkImageTiling,
+    usage                   :: VkImageUsageFlags,
+    sharingMode             :: VkSharingMode,
+    queueFamilyIndexCount   :: Word32,
+    queueFamilyIndices      :: Ptr Word32,
+    initialLayout           :: VkImageLayout
+}
+
+data VkImageFormatListCreateInfo = VkImageFormatListCreateInfo{
+
+    sType           :: VkStructureType,
+    next            :: Next,
+    viewFormatCount :: Word32,
+    pViewFormats    :: Ptr VkFormat
+}
+
+data VkImageMemoryBarrier = VkImageMemoryBarrier{
+    sType               :: VkStructureType,
+    next                :: Next,
+    srcAccessMask       :: VkAccessFlags,
+    dstAccessMask       :: VkAccessFlags,
+    oldLayout           :: VkImageLayout,
+    newLayout           :: VkImageLayout,
+    srcQueueFamilyIndex :: Word32,
+    dstQueueFamilyIndex :: Word32,
+    image               :: VkImage,
+    subresourceRange    :: VkImageSubresourceRange
+}
+
+data VkImageResolve = VkImageResolve{
+    srcSubresource  :: VkImageSubresourceLayers,
+    srcOffset       :: VkOffset3D,
+    dstSubresource  :: VkImageSubresourceLayers,
+    dstOffset       :: VkOffset3D,
+    extent          :: VkExtent3D
 }
 
 data VkImageSubresource = VkImageSubresource{
-    aspectMask :: VkImageAspectFlags,
-    mipLevel :: Word32,
-    arrayLayer :: Word32
+    aspectMask  :: VkImageAspectFlags,
+    mipLevel    :: Word32,
+    arrayLayer  :: Word32
+}
+
+data VkImageSubresourceLayers = VkImageSubresourceLayers{
+    aspectMask      :: VkImageAspectFlags,
+    mipLevel        :: Word32,
+    baseArrayLayer  :: Word32,
+    layerCount      :: Word32
 }
 
 data VkImageSubresourceRange = VkImageSubresourceRange{
-    aspectMask :: VkImageAspectFlags,
-    baseMipLevel :: Word32,
-    levelCount :: Word32,
-    baseArrayLayer :: Word32,
-    layerCount :: Word32
+    aspectMask      :: VkImageAspectFlags,
+    baseMipLevel    :: Word32,
+    levelCount      :: Word32,
+    baseArrayLayer  :: Word32,
+    layerCount      :: Word32
 }
 
 data VkImageViewCreateInfo = VkImageViewCreateInfo{
     sType               :: VkStructureType,
-    next                :: Ptr Void,
+    next                :: Next,
     flags               :: VkImageViewCreateFlags,
     image               :: VkImage,
     viewType            :: VkImageViewType,
@@ -311,7 +428,7 @@ data VkImageViewCreateInfo = VkImageViewCreateInfo{
 
 data VkInstanceCreateInfo = VkInstanceCreateInfo{
     sType                   :: VkStructureType,
-    next                    :: Ptr Void,
+    next                    :: Next,
     flags                   :: VkFlags,
     applicationInfo         :: Ptr VkApplicationInfo,
     enabledLayerCount       :: Word32,
@@ -321,480 +438,676 @@ data VkInstanceCreateInfo = VkInstanceCreateInfo{
 }
 
 data VkMemoryAllocateInfo = VkMemoryAllocateInfo{
-    sType :: VkStructureType,
-    next :: Ptr Void,
-    allocationSize :: VkDeviceSize,
+    sType           :: VkStructureType,
+    next            :: Next,
+    allocationSize  :: VkDeviceSize,
     memoryTypeIndex :: Word32
 }
 
+data VkMemoryBarrier = VkMemoryBarrier{
+    sType           :: VkStructureType,
+    next            :: Next,
+    srcAccessMask   :: VkAccessFlags,
+    dstAccessMask   :: VkAccessFlags
+}
+
 data VkMemoryRequirements = VkMemoryRequirements{
-    size :: VkDeviceSize,
-    alignment :: VkDeviceSize,
-    memoryTypeBits :: Word32
+    size            :: VkDeviceSize,
+    alignment       :: VkDeviceSize,
+    memoryTypeBits  :: Word32
 }
 
 data VkOffset2D = VkOffset2D{
-    x :: Int32,
-    y :: Int32
+    x   :: Int32,
+    y   :: Int32
+}
+
+data VkOffset3D = VkOffset3D{
+    x   :: Int32,
+    y   :: Int32,
+    z   :: Int32
+}
+
+data VkPhysicalDeviceAccelerationStructureFeaturesKHR = VkPhysicalDeviceAccelerationStructureFeaturesKHR{
+    sType                                                   :: VkStructureType,
+    next                                                    :: Next,
+    accelerationStructure                                   :: VkBool,
+    accelerationStructureCaptureReplay                      :: VkBool,
+    accelerationStructureIndirectBuild                      :: VkBool,
+    accelerationStructureHostCommands                       :: VkBool,
+    descriptorBindingAccelerationStructureUpdateAfterBind   :: VkBool
 }
 
 data VkPhysicalDeviceFeatures = VkPhysicalDeviceFeatures{
-    robustBufferAccess :: VkBool,
-    fullDrawIndexUint32 :: VkBool,
-    imageCubeArray :: VkBool,
-    independentBlend :: VkBool,
-    geometryShader :: VkBool,
-    tessellationShader :: VkBool,
-    sampleRateShading :: VkBool,
-    dualSrcBlend :: VkBool,
-    logicOp :: VkBool,
-    multiDrawIndirect :: VkBool,
-    drawIndirectFirstInstance :: VkBool,
-    depthClamp :: VkBool,
-    depthBiasClamp :: VkBool,
-    fillModeNonSolid :: VkBool,
-    depthBounds :: VkBool,
-    wideLines :: VkBool,
-    largePoints :: VkBool,
-    alphaToOne :: VkBool,
-    multiViewport :: VkBool,
-    samplerAnisotropy :: VkBool,
-    textureCompressionETC2 :: VkBool,
-    textureCompressionASTC_LDR :: VkBool,
-    textureCompressionBC :: VkBool,
-    occlusionQueryPrecise :: VkBool,
-    pipelineStatisticsQuery :: VkBool,
-    vertexPipelineStoresAndAtomics :: VkBool,
-    fragmentStoresAndAtomics :: VkBool,
-    shaderTessellationAndGeometryPointSize :: VkBool,
-    shaderImageGatherExtended :: VkBool,
-    shaderStorageImageExtendedFormats :: VkBool,
-    shaderStorageImageMultisample :: VkBool,
-    shaderStorageImageReadWithoutFormat :: VkBool,
-    shaderStorageImageWriteWithoutFormat :: VkBool,
+    robustBufferAccess                      :: VkBool,
+    fullDrawIndexUint32                     :: VkBool,
+    imageCubeArray                          :: VkBool,
+    independentBlend                        :: VkBool,
+    geometryShader                          :: VkBool,
+    tessellationShader                      :: VkBool,
+    sampleRateShading                       :: VkBool,
+    dualSrcBlend                            :: VkBool,
+    logicOp                                 :: VkBool,
+    multiDrawIndirect                       :: VkBool,
+    drawIndirectFirstInstance               :: VkBool,
+    depthClamp                              :: VkBool,
+    depthBiasClamp                          :: VkBool,
+    fillModeNonSolid                        :: VkBool,
+    depthBounds                             :: VkBool,
+    wideLines                               :: VkBool,
+    largePoints                             :: VkBool,
+    alphaToOne                              :: VkBool,
+    multiViewport                           :: VkBool,
+    samplerAnisotropy                       :: VkBool,
+    textureCompressionETC2                  :: VkBool,
+    textureCompressionASTC_LDR              :: VkBool,
+    textureCompressionBC                    :: VkBool,
+    occlusionQueryPrecise                   :: VkBool,
+    pipelineStatisticsQuery                 :: VkBool,
+    vertexPipelineStoresAndAtomics          :: VkBool,
+    fragmentStoresAndAtomics                :: VkBool,
+    shaderTessellationAndGeometryPointSize  :: VkBool,
+    shaderImageGatherExtended               :: VkBool,
+    shaderStorageImageExtendedFormats       :: VkBool,
+    shaderStorageImageMultisample           :: VkBool,
+    shaderStorageImageReadWithoutFormat     :: VkBool,
+    shaderStorageImageWriteWithoutFormat    :: VkBool,
     shaderUniformBufferArrayDynamicIndexing :: VkBool,
-    shaderSampledImageArrayDynamicIndexing :: VkBool,
+    shaderSampledImageArrayDynamicIndexing  :: VkBool,
     shaderStorageBufferArrayDynamicIndexing :: VkBool,
-    shaderStorageImageArrayDynamicIndexing :: VkBool,
-    shaderClipDistance :: VkBool,
-    shaderCullDistance :: VkBool,
-    shaderFloat64 :: VkBool,
-    shaderInt64 :: VkBool,
-    shaderInt16 :: VkBool,
-    shaderResourceResidency :: VkBool,
-    shaderResourceMinLod :: VkBool,
-    sparseBinding :: VkBool,
-    sparseResidencyBuffer :: VkBool,
-    sparseResidencyImage2D :: VkBool,
-    sparseResidencyImage3D :: VkBool,
-    sparseResidency2Samples :: VkBool,
-    sparseResidency4Samples :: VkBool,
-    sparseResidency8Samples :: VkBool,
-    sparseResidency16Samples :: VkBool,
-    sparseResidencyAliased :: VkBool,
-    variableMultisampleRate :: VkBool,
-    inheritedQueries :: VkBool
-} deriving (Show)
+    shaderStorageImageArrayDynamicIndexing  :: VkBool,
+    shaderClipDistance                      :: VkBool,
+    shaderCullDistance                      :: VkBool,
+    shaderFloat64                           :: VkBool,
+    shaderInt64                             :: VkBool,
+    shaderInt16                             :: VkBool,
+    shaderResourceResidency                 :: VkBool,
+    shaderResourceMinLod                    :: VkBool,
+    sparseBinding                           :: VkBool,
+    sparseResidencyBuffer                   :: VkBool,
+    sparseResidencyImage2D                  :: VkBool,
+    sparseResidencyImage3D                  :: VkBool,
+    sparseResidency2Samples                 :: VkBool,
+    sparseResidency4Samples                 :: VkBool,
+    sparseResidency8Samples                 :: VkBool,
+    sparseResidency16Samples                :: VkBool,
+    sparseResidencyAliased                  :: VkBool,
+    variableMultisampleRate                 :: VkBool,
+    inheritedQueries                        :: VkBool
+}
 
-data VkPhysicalDeviceFeatures2 = VkPhysicalDeviceFeatures2 {
-    sType :: VkStructureType,
-    pNext :: Ptr Void,
-    features :: VkPhysicalDeviceFeatures
-} deriving (Show)
+data VkPhysicalDeviceFeatures2 = VkPhysicalDeviceFeatures2{
+    sType       :: VkStructureType,
+    next        :: Next,
+    features    :: VkPhysicalDeviceFeatures
+}
 
-data VkPhysicalDeviceVulkan11Features = VkPhysicalDeviceVulkan11Features {
-    sType :: VkStructureType,
-    pNext :: Ptr Void,
-    storageBuffer16BitAccess :: VkBool,
-    uniformAndStorageBuffer16BitAccess :: VkBool,
-    storagePushConstant16 :: VkBool,
-    storageInputOutput16 :: VkBool,
-    multiview :: VkBool,
-    multiviewGeometryShader :: VkBool,
-    multiviewTessellationShader :: VkBool,
-    variablePointersStorageBuffer :: VkBool,
-    variablePointers :: VkBool,
-    protectedMemory :: VkBool,
-    samplerYcbcrConversion :: VkBool,
-    shaderDrawParameters :: VkBool
-} deriving (Show)
+data VkPhysicalDeviceVulkan11Features = VkPhysicalDeviceVulkan11Features{
+    sType                               :: VkStructureType,
+    next                                :: Next,
+    storageBuffer16BitAccess            :: VkBool,
+    uniformAndStorageBuffer16BitAccess  :: VkBool,
+    storagePushConstant16               :: VkBool,
+    storageInputOutput16                :: VkBool,
+    multiview                           :: VkBool,
+    multiviewGeometryShader             :: VkBool,
+    multiviewTessellationShader         :: VkBool,
+    variablePointersStorageBuffer       :: VkBool,
+    variablePointers                    :: VkBool,
+    protectedMemory                     :: VkBool,
+    samplerYcbcrConversion              :: VkBool,
+    shaderDrawParameters                :: VkBool
+}
 
-data VkPhysicalDeviceVulkan12Features = VkPhysicalDeviceVulkan12Features {
-    sType :: VkStructureType,
-    pNext :: Ptr Void,
-    samplerMirrorClampToEdge :: VkBool,
-    drawIndirectCount :: VkBool,
-    storageBuffer8BitAccess :: VkBool,
-    uniformAndStorageBuffer8BitAccess :: VkBool,
-    storagePushConstant8 :: VkBool,
-    shaderBufferInt64Atomics :: VkBool,
-    shaderSharedInt64Atomics :: VkBool,
-    shaderFloat16 :: VkBool,
-    shaderInt8 :: VkBool,
-    descriptorIndexing :: VkBool,
-    shaderInputAttachmentArrayDynamicIndexing :: VkBool,
-    shaderUniformTexelBufferArrayDynamicIndexing :: VkBool,
-    shaderStorageTexelBufferArrayDynamicIndexing :: VkBool,
-    shaderUniformBufferArrayNonUniformIndexing :: VkBool,
-    shaderSampledImageArrayNonUniformIndexing :: VkBool,
-    shaderStorageBufferArrayNonUniformIndexing :: VkBool,
-    shaderStorageImageArrayNonUniformIndexing :: VkBool,
-    shaderInputAttachmentArrayNonUniformIndexing :: VkBool,
-    shaderUniformTexelBufferArrayNonUniformIndexing :: VkBool,
-    shaderStorageTexelBufferArrayNonUniformIndexing :: VkBool,
-    descriptorBindingUniformBufferUpdateAfterBind :: VkBool,
-    descriptorBindingSampledImageUpdateAfterBind :: VkBool,
-    descriptorBindingStorageImageUpdateAfterBind :: VkBool,
-    descriptorBindingStorageBufferUpdateAfterBind :: VkBool,
-    descriptorBindingUniformTexelBufferUpdateAfterBind :: VkBool,
-    descriptorBindingStorageTexelBufferUpdateAfterBind :: VkBool,
-    descriptorBindingUpdateUnusedWhilePending :: VkBool,
-    descriptorBindingPartiallyBound :: VkBool,
-    descriptorBindingVariableDescriptorCount :: VkBool,
-    runtimeDescriptorArray :: VkBool,
-    samplerFilterMinmax :: VkBool,
-    scalarBlockLayout :: VkBool,
-    imagelessFramebuffer :: VkBool,
-    uniformBufferStandardLayout :: VkBool,
-    shaderSubgroupExtendedTypes :: VkBool,
-    separateDepthStencilLayouts :: VkBool,
-    hostQueryReset :: VkBool,
-    timelineSemaphore :: VkBool,
-    bufferDeviceAddress :: VkBool,
-    bufferDeviceAddressCaptureReplay :: VkBool,
-    bufferDeviceAddressMultiDevice :: VkBool,
-    vulkanMemoryModel :: VkBool,
-    vulkanMemoryModelDeviceScope :: VkBool,
-    vulkanMemoryModelAvailabilityVisibilityChains :: VkBool,
-    shaderOutputViewportIndex :: VkBool,
-    shaderOutputLayer :: VkBool,
-    subgroupBroadcastDynamicId :: VkBool
-} deriving (Show)
+data VkPhysicalDeviceVulkan12Features = VkPhysicalDeviceVulkan12Features{
+    sType                                               :: VkStructureType,
+    next                                                :: Next,
+    samplerMirrorClampToEdge                            :: VkBool,
+    drawIndirectCount                                   :: VkBool,
+    storageBuffer8BitAccess                             :: VkBool,
+    uniformAndStorageBuffer8BitAccess                   :: VkBool,
+    storagePushConstant8                                :: VkBool,
+    shaderBufferInt64Atomics                            :: VkBool,
+    shaderSharedInt64Atomics                            :: VkBool,
+    shaderFloat16                                       :: VkBool,
+    shaderInt8                                          :: VkBool,
+    descriptorIndexing                                  :: VkBool,
+    shaderInputAttachmentArrayDynamicIndexing           :: VkBool,
+    shaderUniformTexelBufferArrayDynamicIndexing        :: VkBool,
+    shaderStorageTexelBufferArrayDynamicIndexing        :: VkBool,
+    shaderUniformBufferArrayNonUniformIndexing          :: VkBool,
+    shaderSampledImageArrayNonUniformIndexing           :: VkBool,
+    shaderStorageBufferArrayNonUniformIndexing          :: VkBool,
+    shaderStorageImageArrayNonUniformIndexing           :: VkBool,
+    shaderInputAttachmentArrayNonUniformIndexing        :: VkBool,
+    shaderUniformTexelBufferArrayNonUniformIndexing     :: VkBool,
+    shaderStorageTexelBufferArrayNonUniformIndexing     :: VkBool,
+    descriptorBindingUniformBufferUpdateAfterBind       :: VkBool,
+    descriptorBindingSampledImageUpdateAfterBind        :: VkBool,
+    descriptorBindingStorageImageUpdateAfterBind        :: VkBool,
+    descriptorBindingStorageBufferUpdateAfterBind       :: VkBool,
+    descriptorBindingUniformTexelBufferUpdateAfterBind  :: VkBool,
+    descriptorBindingStorageTexelBufferUpdateAfterBind  :: VkBool,
+    descriptorBindingUpdateUnusedWhilePending           :: VkBool,
+    descriptorBindingPartiallyBound                     :: VkBool,
+    descriptorBindingVariableDescriptorCount            :: VkBool,
+    runtimeDescriptorArray                              :: VkBool,
+    samplerFilterMinmax                                 :: VkBool,
+    scalarBlockLayout                                   :: VkBool,
+    imagelessFramebuffer                                :: VkBool,
+    uniformBufferStandardLayout                         :: VkBool,
+    shaderSubgroupExtendedTypes                         :: VkBool,
+    separateDepthStencilLayouts                         :: VkBool,
+    hostQueryReset                                      :: VkBool,
+    timelineSemaphore                                   :: VkBool,
+    bufferDeviceAddress                                 :: VkBool,
+    bufferDeviceAddressCaptureReplay                    :: VkBool,
+    bufferDeviceAddressMultiDevice                      :: VkBool,
+    vulkanMemoryModel                                   :: VkBool,
+    vulkanMemoryModelDeviceScope                        :: VkBool,
+    vulkanMemoryModelAvailabilityVisibilityChains       :: VkBool,
+    shaderOutputViewportIndex                           :: VkBool,
+    shaderOutputLayer                                   :: VkBool,
+    subgroupBroadcastDynamicId                          :: VkBool
+}
 
 data VkPipelineCacheCreateInfo = VkPipelineCacheCreateInfo{
-    sType :: VkStructureType,
-    next :: Ptr Void,
-    flags :: VkPipelineCacheCreateFlags,
+    sType           :: VkStructureType,
+    next            :: Next,
+    flags           :: VkPipelineCacheCreateFlags,
     initialDataSize :: CSize,
-    pInitialData :: Ptr Void
+    pInitialData    :: Ptr Void
 }
 
 data VkPipelineColorBlendAttachmentState = VkPipelineColorBlendAttachmentState{
-    blendEnable :: VkBool,
+    blendEnable         :: VkBool,
     srcColorBlendFactor :: VkBlendFactor,
     dstColorBlendFactor :: VkBlendFactor,
-    colorBlendOp :: VkBlendOp,
+    colorBlendOp        :: VkBlendOp,
     srcAlphaBlendFactor :: VkBlendFactor,
     dstAlphaBlendFactor :: VkBlendFactor,
-    alphaBlendOp :: VkBlendOp,
-    colorWriteMask :: VkColorComponentFlags
+    alphaBlendOp        :: VkBlendOp,
+    colorWriteMask      :: VkColorComponentFlags
 }
 
 data VkPipelineColorBlendStateCreateInfo = VkPipelineColorBlendStateCreateInfo{
-    sType :: VkStructureType,
-    next :: Ptr Void,
-    flags :: VkPipelineColorBlendStateCreateFlags,
-    logicOpEnable :: VkBool,
-    logicOp :: VkLogicOp,
+    sType           :: VkStructureType,
+    next            :: Next,
+    flags           :: VkPipelineColorBlendStateCreateFlags,
+    logicOpEnable   :: VkBool,
+    logicOp         :: VkLogicOp,
     attachmentCount :: Word32,
-    pAttachments :: Ptr VkPipelineColorBlendAttachmentState,
-    blendConstants :: Ptr Float -- [4]
+    pAttachments    :: Ptr VkPipelineColorBlendAttachmentState,
+    blendConstants  :: Ptr Float -- [4]
 }
 
 data VkPipelineDepthStencilStateCreateInfo = VkPipelineDepthStencilStateCreateInfo{
-    sType :: VkStructureType,
-    next :: Ptr Void,
-    flags :: VkPipelineDepthStencilStateCreateFlags,
-    depthTestEnable :: VkBool,
-    depthWriteEnable :: VkBool,
-    depthCompareOp :: VkCompareOp,
-    depthBoundsTestEnable :: VkBool,
-    stencilTestEnable :: VkBool,
-    front :: VkStencilOpState,
-    back :: VkStencilOpState,
-    minDepthBounds :: Float,
-    maxDepthBounds :: Float
+    sType                   :: VkStructureType,
+    next                    :: Next,
+    flags                   :: VkPipelineDepthStencilStateCreateFlags,
+    depthTestEnable         :: VkBool,
+    depthWriteEnable        :: VkBool,
+    depthCompareOp          :: VkCompareOp,
+    depthBoundsTestEnable   :: VkBool,
+    stencilTestEnable       :: VkBool,
+    front                   :: VkStencilOpState,
+    back                    :: VkStencilOpState,
+    minDepthBounds          :: Float,
+    maxDepthBounds          :: Float
 }
 
 data VkPipelineDynamicStateCreateInfo = VkPipelineDynamicStateCreateInfo{
-    sType :: VkStructureType,
-    next :: Ptr Void,
-    flags :: VkPipelineDynamicStateCreateFlags,
-    dynamicStateCount :: Word32,
-    pDynamicStates :: Ptr VkDynamicState
+    sType               :: VkStructureType,
+    next                :: Next,
+    flags               :: VkPipelineDynamicStateCreateFlags,
+    dynamicStateCount   :: Word32,
+    pDynamicStates      :: Ptr VkDynamicState
 }
 
 data VkPipelineInputAssemblyStateCreateInfo = VkPipelineInputAssemblyStateCreateInfo{
-    sType :: VkStructureType,
-    next :: Ptr Void,
-    flags :: VkPipelineInputAssemblyStateCreateFlags,
-    topology :: VkPrimitiveTopology,
-    primitiveRestartEnable :: VkBool
+    sType                   :: VkStructureType,
+    next                    :: Next,
+    flags                   :: VkPipelineInputAssemblyStateCreateFlags,
+    topology                :: VkPrimitiveTopology,
+    primitiveRestartEnable  :: VkBool
 }
 
 data VkPipelineLayoutCreateInfo = VkPipelineLayoutCreateInfo{
-    sType :: VkStructureType,
-    next :: Ptr Void,
-    flags :: VkPipelineLayoutCreateFlags,
-    setLayoutCount :: Word32,
-    pSetLayouts :: Ptr VkDescriptorSetLayout,
-    pushConstantRangeCount :: Word32,
-    pPushConstantRanges :: Ptr VkPushConstantRange
+    sType                   :: VkStructureType,
+    next                    :: Next,
+    flags                   :: VkPipelineLayoutCreateFlags,
+    setLayoutCount          :: Word32,
+    pSetLayouts             :: Ptr VkDescriptorSetLayout,
+    pushConstantRangeCount  :: Word32,
+    pPushConstantRanges     :: Ptr VkPushConstantRange
+}
+
+data VkPipelineLibraryCreateInfoKHR = VkPipelineLibraryCreateInfoKHR{
+    sType           :: VkStructureType,
+    next            :: Next,
+    libraryCount    :: Word32,
+    pLibraries      :: Ptr VkPipeline
 }
 
 data VkPipelineMultisampleStateCreateInfo = VkPipelineMultisampleStateCreateInfo{
-    sType :: VkStructureType,
-    next :: Ptr Void,
-    flags :: VkPipelineMultisampleStateCreateFlags,
-    rasterizationSamples :: VkSampleCountFlagBits,
-    sampleShadingEnable :: VkBool,
-    minSampleShading :: Float,
-    pSampleMask :: Ptr VkSampleMask,
-    alphaToCoverageEnable :: VkBool,
-    alphaToOneEnable :: VkBool
+    sType                   :: VkStructureType,
+    next                    :: Next,
+    flags                   :: VkPipelineMultisampleStateCreateFlags,
+    rasterizationSamples    :: VkSampleCountFlagBits,
+    sampleShadingEnable     :: VkBool,
+    minSampleShading        :: Float,
+    pSampleMask             :: Ptr VkSampleMask,
+    alphaToCoverageEnable   :: VkBool,
+    alphaToOneEnable        :: VkBool
 }
 
 data VkPipelineRasterizationStateCreateInfo = VkPipelineRasterizationStateCreateInfo{
-    sType :: VkStructureType,
-    next :: Ptr Void,
-    flags :: VkPipelineRasterizationStateCreateFlags,
-    depthClampEnable :: VkBool,
+    sType                   :: VkStructureType,
+    next                    :: Next,
+    flags                   :: VkPipelineRasterizationStateCreateFlags,
+    depthClampEnable        :: VkBool,
     rasterizerDiscardEnable :: VkBool,
-    polygonMode :: VkPolygonMode,
-    cullMode :: VkCullModeFlags,
-    frontFace :: VkFrontFace,
-    depthBiasEnable :: VkBool,
+    polygonMode             :: VkPolygonMode,
+    cullMode                :: VkCullModeFlags,
+    frontFace               :: VkFrontFace,
+    depthBiasEnable         :: VkBool,
     depthBiasConstantFactor :: Float,
-    depthBiasClamp :: Float,
-    depthBiasSlopeFactor :: Float,
-    lineWidth :: Float
+    depthBiasClamp          :: Float,
+    depthBiasSlopeFactor    :: Float,
+    lineWidth               :: Float
 }
 
 data VkPipelineShaderStageCreateInfo = VkPipelineShaderStageCreateInfo{
-    sType :: VkStructureType,
-    next :: Ptr Void,
-    flags :: VkPipelineShaderStageCreateFlags,
-    stage :: VkShaderStageFlagBits,
-    vkModule :: VkShaderModule,
-    pName :: CString,
+    sType               :: VkStructureType,
+    next                :: Next,
+    flags               :: VkPipelineShaderStageCreateFlags,
+    stage               :: VkShaderStageFlagBits,
+    vkModule            :: VkShaderModule,
+    pName               :: CString,
     pSpecializationInfo :: Ptr VkSpecializationInfo
 }
 
 data VkPipelineTessellationStateCreateInfo = VkPipelineTessellationStateCreateInfo{
-    sType :: VkStructureType,
-    next :: Ptr Void,
-    flags :: VkPipelineTessellationStateCreateFlags,
-    patchControlPoints :: Word32
+    sType               :: VkStructureType,
+    next                :: Next,
+    flags               :: VkPipelineTessellationStateCreateFlags,
+    patchControlPoints  :: Word32
 }
 
 data VkPipelineVertexInputStateCreateInfo = VkPipelineVertexInputStateCreateInfo{
-    sType :: VkStructureType,
-    next :: Ptr Void,
-    flags :: VkPipelineVertexInputStateCreateFlags,
-    vertexBindingDescriptionCount :: Word32,
-    pVertexBindingDescriptions :: Ptr VkVertexInputBindingDescription,
+    sType                           :: VkStructureType,
+    next                            :: Next,
+    flags                           :: VkPipelineVertexInputStateCreateFlags,
+    vertexBindingDescriptionCount   :: Word32,
+    pVertexBindingDescriptions      :: Ptr VkVertexInputBindingDescription,
     vertexAttributeDescriptionCount :: Word32,
-    pVertexAttributeDescriptions :: Ptr VkVertexInputAttributeDescription
+    pVertexAttributeDescriptions    :: Ptr VkVertexInputAttributeDescription
 }
 
 data VkPipelineViewportStateCreateInfo = VkPipelineViewportStateCreateInfo{
-    sType :: VkStructureType,
-    next :: Ptr Void,
-    flags :: VkPipelineViewportStateCreateFlags,
-    viewportCount :: Word32,
-    pViewports :: Ptr VkViewport,
-    scissorCount :: Word32,
-    pScissors :: Ptr VkRect2D
+    sType           :: VkStructureType,
+    next            :: Next,
+    flags           :: VkPipelineViewportStateCreateFlags,
+    viewportCount   :: Word32,
+    pViewports      :: Ptr VkViewport,
+    scissorCount    :: Word32,
+    pScissors       :: Ptr VkRect2D
 }
 
 data VkPresentInfoKHR = VkPresentInfoKHR{
-    sType :: VkStructureType,
-    next :: Ptr Void,
-    waitSemaphoreCount :: Word32,
-    pWaitSemaphores :: Ptr VkSemaphore,
-    swapchainCount :: Word32,
-    pSwapchains :: Ptr VkSwapchainKHR,
-    pImageIndices :: Ptr Word32,
-    pResults :: Ptr VkResult
+    sType               :: VkStructureType,
+    next                :: Next,
+    waitSemaphoreCount  :: Word32,
+    pWaitSemaphores     :: Ptr VkSemaphore,
+    swapchainCount      :: Word32,
+    pSwapchains         :: Ptr VkSwapchainKHR,
+    pImageIndices       :: Ptr Word32,
+    pResults            :: Ptr VkResult
 }
 
 data VkPushConstantRange = VkPushConstantRange{
-    stageFlags :: VkShaderStageFlags,
-    offset :: Word32,
-    size :: Word32
+    stageFlags  :: VkShaderStageFlags,
+    offset      :: Word32,
+    size        :: Word32
+}
+
+data VkRayTracingPipelineCreateInfoKHR = VkRayTracingPipelineCreateInfoKHR{
+    sType                           :: VkStructureType,
+    next                            :: Next,
+    flags                           :: VkPipelineCreateFlags,
+    stageCount                      :: Word32,
+    pStages                         :: Ptr VkPipelineShaderStageCreateInfo,
+    groupCount                      :: Word32,
+    pGroups                         :: Ptr VkRayTracingShaderGroupCreateInfoKHR,
+    maxPipelineRayRecursionDepth    :: Word32,
+    pLibraryInfo                    :: Ptr VkPipelineLibraryCreateInfoKHR,
+    pLibraryInterface               :: Ptr VkRayTracingPipelineInterfaceCreateInfoKHR,
+    pDynamicState                   :: Ptr VkPipelineDynamicStateCreateInfo,
+    layout                          :: VkPipelineLayout,
+    basePipelineHandle              :: VkPipeline,
+    basePipelineIndex               :: Int32
+}
+
+data VkRayTracingPipelineInterfaceCreateInfoKHR = VkRayTracingPipelineInterfaceCreateInfoKHR{
+    sType                           :: VkStructureType,
+    next                            :: Next,
+    maxPipelineRayPayloadSize       :: Word32,
+    maxPipelineRayHitAttributeSize  :: Word32
+}
+
+data VkRayTracingShaderGroupCreateInfoKHR = VkRayTracingShaderGroupCreateInfoKHR{
+    sType                           :: VkStructureType,
+    next                            :: Next,
+    shaderGroupType                 :: VkRayTracingShaderGroupTypeKHR,
+    generalShader                   :: Word32,
+    closestHitShader                :: Word32,
+    anyHitShader                    :: Word32,
+    intersectionShader              :: Word32,
+    pShaderGroupCaptureReplayHandle :: Ptr Void
 }
 
 data VkRect2D = VkRect2D{
-    offset :: VkOffset2D,
-    extent :: VkExtent2D
+    offset  :: VkOffset2D,
+    extent  :: VkExtent2D
 }
 
 data VkRenderPassBeginInfo = VkRenderPassBeginInfo{
-    sType :: VkStructureType,
-    next :: Ptr Void,
-    renderPass :: VkRenderPass,
-    framebuffer :: VkFramebuffer,
-    renderArea :: VkRect2D,
+    sType           :: VkStructureType,
+    next            :: Next,
+    renderPass      :: VkRenderPass,
+    framebuffer     :: VkFramebuffer,
+    renderArea      :: VkRect2D,
     clearValueCount :: Word32,
-    pClearValues :: Ptr VkClearValue
+    pClearValues    :: Ptr VkClearValue
 }
 
 data VkRenderPassCreateInfo = VkRenderPassCreateInfo{
-    sType :: VkStructureType,
-    next :: Ptr Void,
-    flags :: VkRenderPassCreateFlags,
+    sType           :: VkStructureType,
+    next            :: Next,
+    flags           :: VkRenderPassCreateFlags,
     attachmentCount :: Word32,
-    pAttachments :: Ptr VkAttachmentDescription,
-    subpassCount :: Word32,
-    pSubpasses :: Ptr VkSubpassDescription,
+    pAttachments    :: Ptr VkAttachmentDescription,
+    subpassCount    :: Word32,
+    pSubpasses      :: Ptr VkSubpassDescription,
     dependencyCount :: Word32,
-    pDependencies :: Ptr VkSubpassDependency
+    pDependencies   :: Ptr VkSubpassDependency
 }
 
 data VkSemaphoreCreateInfo = VkSemaphoreCreateInfo{
-    sType :: VkStructureType,
-    next :: Ptr Void,
-    flags :: VkSemaphoreCreateFlags
+    sType   :: VkStructureType,
+    next    :: Next,
+    flags   :: VkSemaphoreCreateFlags
 }
 
 data VkSemaphoreTypeCreateInfo = VkSemaphoreTypeCreateInfo{
-    sType :: VkStructureType,
-    next :: Ptr Void,
-    semaphoreType :: VkSemaphoreType,
-    initialValue :: Word64
+    sType           :: VkStructureType,
+    next            :: Next,
+    semaphoreType   :: VkSemaphoreType,
+    initialValue    :: Word64
 }
 
 data VkShaderModuleCreateInfo = VkShaderModuleCreateInfo{
-    sType :: VkStructureType,
-    next :: Ptr Void,
-    flags :: VkShaderModuleCreateFlags,
-    codeSize :: CSize,
-    pCode :: Ptr Word32
+    sType       :: VkStructureType,
+    next        :: Next,
+    flags       :: VkShaderModuleCreateFlags,
+    codeSize    :: CSize,
+    pCode       :: Ptr Word32
 }
 
 data VkSpecializationInfo = VkSpecializationInfo{
-    mapEntryCount :: Word32,
-    pMapEntries :: Ptr VkSpecializationMapEntry,
-    dataSize :: CSize,
-    pData :: Ptr Void
+    mapEntryCount   :: Word32,
+    pMapEntries     :: Ptr VkSpecializationMapEntry,
+    dataSize        :: CSize,
+    pData           :: Ptr Void
 }
 
 data VkSpecializationMapEntry = VkSpecializationMapEntry{
-    constantID :: Word32,
-    offset :: Word32,
-    size :: CSize
+    constantID  :: Word32,
+    offset      :: Word32,
+    size        :: CSize
 }
 
 data VkStencilOpState = VkStencilOpState{
-    failOp :: VkStencilOp,
-    passOp :: VkStencilOp,
+    failOp      :: VkStencilOp,
+    passOp      :: VkStencilOp,
     depthFailOp :: VkStencilOp,
-    compareOp :: VkCompareOp,
+    compareOp   :: VkCompareOp,
     compareMask :: Word32,
-    writeMask :: Word32,
-    reference :: Word32
+    writeMask   :: Word32,
+    reference   :: Word32
 }
 
 data VkSubmitInfo = VkSubmitInfo{
-    sType :: VkStructureType,
-    next :: Ptr Void,
-    waitSemaphoreCount :: Word32,
-    pWaitSemaphores :: Ptr VkSemaphore,
-    pWaitDstStageMask :: Ptr VkPipelineStageFlags,
-    commandBufferCount :: Word32,
-    pCommandBuffers :: Ptr VkCommandBuffer,
-    signalSemaphoreCount :: Word32,
-    pSignalSemaphores :: Ptr VkSemaphore
+    sType                   :: VkStructureType,
+    next                    :: Next,
+    waitSemaphoreCount      :: Word32,
+    pWaitSemaphores         :: Ptr VkSemaphore,
+    pWaitDstStageMask       :: Ptr VkPipelineStageFlags,
+    commandBufferCount      :: Word32,
+    pCommandBuffers         :: Ptr VkCommandBuffer,
+    signalSemaphoreCount    :: Word32,
+    pSignalSemaphores   :: Ptr VkSemaphore
 }
 
 data VkSubpassDependency = VkSubpassDependency{
-    srcSubpass :: Word32,
-    dstSubpass :: Word32,
-    srcStageMask :: VkPipelineStageFlags,
-    dstStageMask :: VkPipelineStageFlags,
-    srcAccessMask :: VkAccessFlags,
-    dstAccessMask :: VkAccessFlags,
+    srcSubpass      :: Word32,
+    dstSubpass      :: Word32,
+    srcStageMask    :: VkPipelineStageFlags,
+    dstStageMask    :: VkPipelineStageFlags,
+    srcAccessMask   :: VkAccessFlags,
+    dstAccessMask   :: VkAccessFlags,
     dependencyFlags :: VkDependencyFlags
 }
 
 data VkSubpassDescription = VkSubpassDescription{
-    flags :: VkSubpassDescriptionFlags,
-    pipelineBindPoint :: VkPipelineBindPoint,
-    inputAttachmentCount :: Word32,
-    pInputAttachments :: Ptr VkAttachmentReference,
-    colorAttachmentCount :: Word32,
-    pColorAttachments :: Ptr VkAttachmentReference,
-    pResolveAttachments :: Ptr VkAttachmentReference,
+    flags                   :: VkSubpassDescriptionFlags,
+    pipelineBindPoint       :: VkPipelineBindPoint,
+    inputAttachmentCount    :: Word32,
+    pInputAttachments       :: Ptr VkAttachmentReference,
+    colorAttachmentCount    :: Word32,
+    pColorAttachments       :: Ptr VkAttachmentReference,
+    pResolveAttachments     :: Ptr VkAttachmentReference,
     pDepthStencilAttachment :: Ptr VkAttachmentReference,
     preserveAttachmentCount :: Word32,
-    pPreserveAttachments :: Ptr Word32
+    pPreserveAttachments    :: Ptr Word32
 }
 
 data VkSubresourceLayout = VkSubresourceLayout{
-    offset :: VkDeviceSize,
-    size :: VkDeviceSize,
-    rowPitch :: VkDeviceSize,
-    arrayPitch :: VkDeviceSize,
-    depthPitch :: VkDeviceSize
+    offset      :: VkDeviceSize,
+    size        :: VkDeviceSize,
+    rowPitch    :: VkDeviceSize,
+    arrayPitch  :: VkDeviceSize,
+    depthPitch  :: VkDeviceSize
 }
 
 data VkSwapchainCreateInfoKHR = VkSwapchainCreateInfoKHR{
-    sType :: VkStructureType,
-    next :: Ptr Void,
-    flags :: VkSwapchainCreateFlagsKHR,
-    surface :: VkSurfaceKHR,
-    minImageCount :: Word32,
-    imageFormat :: VkFormat,
-    imageColorSpace :: VkColorSpaceKHR,
-    imageExtent :: VkExtent2D,
-    imageArrayLayers :: Word32,
-    imageUsage :: VkImageUsageFlags,
-    imageSharingMode :: VkSharingMode,
-    queueFamilyIndexCount :: Word32,
-    queueFamilyIndices :: Ptr Word32,
-    preTransform :: VkSurfaceTransformFlagBitsKHR,
-    compositeAlpha :: VkCompositeAlphaFlagBitsKHR,
-    presentMode :: VkPresentModeKHR,
-    clipped :: VkBool,
-    oldSwapchain :: VkSwapchainKHR
+    sType                   :: VkStructureType,
+    next                    :: Next,
+    flags                   :: VkSwapchainCreateFlagBitsKHR,
+    surface                 :: VkSurfaceKHR,
+    minImageCount           :: Word32,
+    imageFormat             :: VkFormat,
+    imageColorSpace         :: VkColorSpaceKHR,
+    imageExtent             :: VkExtent2D,
+    imageArrayLayers        :: Word32,
+    imageUsage              :: VkImageUsageFlags,
+    imageSharingMode        :: VkSharingMode,
+    queueFamilyIndexCount   :: Word32,
+    queueFamilyIndices      :: Ptr Word32,
+    preTransform            :: VkSurfaceTransformFlagBitsKHR,
+    compositeAlpha          :: VkCompositeAlphaFlagBitsKHR,
+    presentMode             :: VkPresentModeKHR,
+    clipped                 :: VkBool,
+    oldSwapchain            :: VkSwapchainKHR
 }
 
 data VkVertexInputAttributeDescription = VkVertexInputAttributeDescription{
-    location :: Word32,
-    binding :: Word32,
-    format :: VkFormat,
-    offset :: Word32
+    location    :: Word32,
+    binding     :: Word32,
+    format      :: VkFormat,
+    offset      :: Word32
 }
 
 data VkVertexInputBindingDescription = VkVertexInputBindingDescription{
-    binding :: Word32,
-    stride :: Word32,
-    inputRate :: VkVertexInputRate
+    binding     :: Word32,
+    stride      :: Word32,
+    inputRate   :: VkVertexInputRate
 }
 
 data VkViewport = VkViewport{
-    x :: Float,
-    y :: Float,
-    width :: Float,
-    height :: Float,
-    minDepth :: Float,
-    maxDepth :: Float
+    x           :: Float,
+    y           :: Float,
+    width       :: Float,
+    height      :: Float,
+    minDepth    :: Float,
+    maxDepth    :: Float
 }
 
 data VkWriteDescriptorSet = VkWriteDescriptorSet{
-    sType :: VkStructureType,
-    next :: Ptr Void,
-    dstSet :: VkDescriptorSet,
-    dstBinding :: Word32,
-    dstArrayElement :: Word32,
-    descriptorCount :: Word32,
-    descriptorType :: VkDescriptorType,
-    pImageInfo :: Ptr VkDescriptorImageInfo,
-    pBufferInfo :: Ptr VkDescriptorBufferInfo,
-    pTexelBufferView :: Ptr VkBufferView
+    sType               :: VkStructureType,
+    next                :: Next,
+    dstSet              :: VkDescriptorSet,
+    dstBinding          :: Word32,
+    dstArrayElement     :: Word32,
+    descriptorCount     :: Word32,
+    descriptorType      :: VkDescriptorType,
+    pImageInfo          :: Ptr VkDescriptorImageInfo,
+    pBufferInfo         :: Ptr VkDescriptorBufferInfo,
+    pTexelBufferView    :: Ptr VkBufferView
 }
 
 -- Storable instances
+-- Note: Pointers need to be aligned on 8s!
+instance Storable VkAccelerationStructureBuildGeometryInfoKHR where
+    sizeOf _    = 72
+    alignment _ = 8
+    peek p = do
+        v01 <- peekByteOff p 0
+        v02 <- peekByteOff p 8
+        v03 <- peekByteOff p 16
+        v04 <- peekByteOff p 20
+        v05 <- peekByteOff p 24
+        v06 <- peekByteOff p 32
+        v07 <- peekByteOff p 40
+        v08 <- peekByteOff p 48
+        v09 <- peekByteOff p 52
+        v10 <- peekByteOff p 56
+        v11 <- peekByteOff p 64
+        return (VkAccelerationStructureBuildGeometryInfoKHR v01 v02 v03 v04 v05 v06 v07 v08 v09 v10 v11)
+    poke p (VkAccelerationStructureBuildGeometryInfoKHR v01 v02 v03 v04 v05 v06 v07 v08 v09 v10 v11) = do
+        pokeByteOff p 0 v01
+        pokeByteOff p 8 v02
+        pokeByteOff p 16 v03
+        pokeByteOff p 20 v04
+        pokeByteOff p 24 v05
+        pokeByteOff p 32 v06
+        pokeByteOff p 40 v07
+        pokeByteOff p 48 v08
+        pokeByteOff p 52 v09
+        pokeByteOff p 56 v10
+        pokeByteOff p 64 v11
+
+instance Storable VkAccelerationStructureBuildOffsetInfoKHR where
+    sizeOf _    = 16
+    alignment _ = 4
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 4
+        v3 <- peekByteOff p 8
+        v4 <- peekByteOff p 12
+        return (VkAccelerationStructureBuildOffsetInfoKHR v1 v2 v3 v4)
+    poke p (VkAccelerationStructureBuildOffsetInfoKHR v1 v2 v3 v4) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 4 v2
+        pokeByteOff p 8 v3
+        pokeByteOff p 12 v4
+
+instance Storable VkAccelerationStructureGeometryAabbsDataKHR where
+    sizeOf _    = 32
+    alignment _ = 8
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 8
+        v3 <- peekByteOff p 16
+        v4 <- peekByteOff p 24
+        return (VkAccelerationStructureGeometryAabbsDataKHR v1 v2 v3 v4)
+    poke p (VkAccelerationStructureGeometryAabbsDataKHR v1 v2 v3 v4) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 8 v2
+        pokeByteOff p 16 v3
+        pokeByteOff p 24 v4
+
+instance Storable VkAccelerationStructureGeometryDataKHR where
+    sizeOf _    = 64
+    alignment _ = 8
+    peek p = do
+        v <- peekByteOff p 0
+        return (ASGTriangles v)
+    peek p = do
+        v <- peekByteOff p 0
+        return (ASGAABBS v)
+    peek p = do
+        v <- peekByteOff p 0
+        return (ASGInstances v)
+    poke p (ASGTriangles v) = pokeByteOff p 0 v
+    poke p (ASGAABBS v) = pokeByteOff p 0 v
+    poke p (ASGInstances v) = pokeByteOff p 0 v
+
+instance Storable VkAccelerationStructureGeometryInstancesDataKHR where
+    sizeOf _    = 32
+    alignment _ = 8
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 8
+        v3 <- peekByteOff p 16
+        v4 <- peekByteOff p 24
+        return (VkAccelerationStructureGeometryInstancesDataKHR v1 v2 v3 v4)
+    poke p (VkAccelerationStructureGeometryInstancesDataKHR v1 v2 v3 v4) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 8 v2
+        pokeByteOff p 16 v3
+        pokeByteOff p 24 v4
+
+instance Storable VkAccelerationStructureGeometryKHR where
+    sizeOf _    = 32
+    alignment _ = 8
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 8
+        v3 <- peekByteOff p 16
+        v4 <- peekByteOff p 24
+        v5 <- peekByteOff p 88
+        return (VkAccelerationStructureGeometryKHR v1 v2 v3 v4 v5)
+    poke p (VkAccelerationStructureGeometryKHR v1 v2 v3 v4 v5) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 8 v2
+        pokeByteOff p 16 v3
+        pokeByteOff p 24 v4
+        pokeByteOff p 88 v5
+
+instance Storable VkAccelerationStructureGeometryTrianglesDataKHR where
+    sizeOf _    = 64
+    alignment _ = 8
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 8
+        v3 <- peekByteOff p 16
+        v4 <- peekByteOff p 24
+        v5 <- peekByteOff p 32
+        v6 <- peekByteOff p 40
+        v7 <- peekByteOff p 48
+        v8 <- peekByteOff p 56
+        return (VkAccelerationStructureGeometryTrianglesDataKHR v1 v2 v3 v4 v5 v6 v7 v8)
+    poke p (VkAccelerationStructureGeometryTrianglesDataKHR v1 v2 v3 v4 v5 v6 v7 v8) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 8 v2
+        pokeByteOff p 16 v3
+        pokeByteOff p 24 v4
+        pokeByteOff p 32 v5
+        pokeByteOff p 40 v6
+        pokeByteOff p 48 v7
+        pokeByteOff p 56 v8
+
 instance Storable VkAllocationCallbacks where
     sizeOf _    = 48
     alignment _ = 8
@@ -907,6 +1220,31 @@ instance Storable VkBufferCopy where
         pokeByteOff p 8 v2
         pokeByteOff p 16 v3
 
+instance Storable VkBufferMemoryBarrier where
+    sizeOf _    = 56
+    alignment _ = 8
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 8
+        v3 <- peekByteOff p 16
+        v4 <- peekByteOff p 20
+        v5 <- peekByteOff p 24
+        v6 <- peekByteOff p 28
+        v7 <- peekByteOff p 32
+        v8 <- peekByteOff p 40
+        v9 <- peekByteOff p 48
+        return (VkBufferMemoryBarrier v1 v2 v3 v4 v5 v6 v7 v8 v9)
+    poke p (VkBufferMemoryBarrier v1 v2 v3 v4 v5 v6 v7 v8 v9) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 8 v2
+        pokeByteOff p 16 v3
+        pokeByteOff p 20 v4
+        pokeByteOff p 24 v5
+        pokeByteOff p 28 v6
+        pokeByteOff p 32 v7
+        pokeByteOff p 40 v8
+        pokeByteOff p 48 v9
+
 instance Storable VkClearColorValue where
     sizeOf _    = 16
     alignment _ = 4
@@ -935,8 +1273,8 @@ instance Storable VkClearValue where
     peek p = do
         v <- peekByteOff p 0
         return (VkClearValueDS v)
-    poke p (VkClearValueC v) = pokeByteOff p 0 v
-    poke p (VkClearValueDS v) = pokeByteOff p 0 v
+    poke p (VkClearValueC v)    = pokeByteOff p 0 v
+    poke p (VkClearValueDS v)   = pokeByteOff p 0 v
 
 instance Storable VkCommandBufferAllocateInfo where
     sizeOf _    = 32
@@ -1203,6 +1541,30 @@ instance Storable VkDeviceCreateInfo where
         pokeByteOff p 56 v09
         pokeByteOff p 64 v10
 
+instance Storable VkDeviceOrHostAddressConstKHR where
+    sizeOf _    = 8
+    alignment _ = 8
+    peek p = do
+        v <- peekByteOff p 0
+        return (DeviceAddressConst v)
+    peek p = do
+        v <- peekByteOff p 0
+        return (HostAddressConst v)
+    poke p (DeviceAddressConst v)   = pokeByteOff p 0 v
+    poke p (HostAddressConst v)     = pokeByteOff p 0 v
+
+instance Storable VkDeviceOrHostAddressKHR where
+    sizeOf _    = 8
+    alignment _ = 8
+    peek p = do
+        v <- peekByteOff p 0
+        return (DeviceAddress v)
+    peek p = do
+        v <- peekByteOff p 0
+        return (HostAddress v)
+    poke p (DeviceAddress v)    = pokeByteOff p 0 v
+    poke p (HostAddress v)      = pokeByteOff p 0 v
+
 instance Storable VkDeviceQueueCreateInfo where
     sizeOf _    = 40
     alignment _ = 8
@@ -1329,6 +1691,25 @@ instance Storable VkGraphicsPipelineCreateInfo where
         pokeByteOff p 128 v18
         pokeByteOff p 136 v19
 
+instance Storable VkImageBlit where
+    sizeOf _    = 80
+    alignment _ = 8
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 16
+        v3 <- peekByteOff p 28
+        v4 <- peekByteOff p 40
+        v5 <- peekByteOff p 56
+        v6 <- peekByteOff p 68
+        return (VkImageBlit v1 v2 v3 v4 v5 v6)
+    poke p (VkImageBlit v1 v2 v3 v4 v5 v6) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 16 v2
+        pokeByteOff p 28 v3
+        pokeByteOff p 40 v4
+        pokeByteOff p 56 v5
+        pokeByteOff p 68 v6
+
 instance Storable VkImageCreateInfo where
     sizeOf _    = 88
     alignment _ = 8
@@ -1366,6 +1747,65 @@ instance Storable VkImageCreateInfo where
         pokeByteOff p 72 v14
         pokeByteOff p 80 v15
 
+instance Storable VkImageFormatListCreateInfo where
+    sizeOf _    = 32
+    alignment _ = 8
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 8
+        v3 <- peekByteOff p 16
+        v4 <- peekByteOff p 24
+        return (VkImageFormatListCreateInfo v1 v2 v3 v4)
+    poke p (VkImageFormatListCreateInfo v1 v2 v3 v4) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 8 v2
+        pokeByteOff p 16 v3
+        pokeByteOff p 24 v4
+
+instance Storable VkImageMemoryBarrier where
+    sizeOf _    = 68
+    alignment _ = 8
+    peek p = do
+        v01 <- peekByteOff p 0
+        v02 <- peekByteOff p 8
+        v03 <- peekByteOff p 16
+        v04 <- peekByteOff p 20
+        v05 <- peekByteOff p 24
+        v06 <- peekByteOff p 28
+        v07 <- peekByteOff p 32
+        v08 <- peekByteOff p 36
+        v09 <- peekByteOff p 40
+        v10 <- peekByteOff p 48
+        return (VkImageMemoryBarrier v01 v02 v03 v04 v05 v06 v07 v08 v09 v10)
+    poke p (VkImageMemoryBarrier v01 v02 v03 v04 v05 v06 v07 v08 v09 v10) = do
+        pokeByteOff p 0 v01
+        pokeByteOff p 8 v02
+        pokeByteOff p 16 v03
+        pokeByteOff p 20 v04
+        pokeByteOff p 24 v05
+        pokeByteOff p 28 v06
+        pokeByteOff p 32 v07
+        pokeByteOff p 36 v08
+        pokeByteOff p 40 v09
+        pokeByteOff p 48 v10
+
+instance Storable VkImageResolve where
+    sizeOf _    = 68
+    alignment _ = 4
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 16
+        v3 <- peekByteOff p 28
+        v4 <- peekByteOff p 44
+        v5 <- peekByteOff p 56
+        return (VkImageResolve v1 v2 v3 v4 v5)
+    poke p (VkImageResolve v1 v2 v3 v4 v5) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 16 v2
+        pokeByteOff p 28 v3
+        pokeByteOff p 44 v4
+        pokeByteOff p 56 v5
+
 instance Storable VkImageSubresource where
     sizeOf _    = 12
     alignment _ = 4
@@ -1378,6 +1818,21 @@ instance Storable VkImageSubresource where
         pokeByteOff p 0 v1
         pokeByteOff p 4 v2
         pokeByteOff p 8 v3
+
+instance Storable VkImageSubresourceLayers where
+    sizeOf _    = 16
+    alignment _ = 4
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 4
+        v3 <- peekByteOff p 8
+        v4 <- peekByteOff p 12
+        return (VkImageSubresourceLayers v1 v2 v3 v4)
+    poke p (VkImageSubresourceLayers v1 v2 v3 v4) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 4 v2
+        pokeByteOff p 8 v3
+        pokeByteOff p 12 v4
 
 instance Storable VkImageSubresourceRange where
     sizeOf _    = 20
@@ -1457,6 +1912,21 @@ instance Storable VkMemoryAllocateInfo where
         pokeByteOff p 16 v3
         pokeByteOff p 24 v4
 
+instance Storable VkMemoryBarrier where
+    sizeOf _    = 24
+    alignment _ = 8
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 8
+        v3 <- peekByteOff p 16
+        v4 <- peekByteOff p 20
+        return (VkMemoryBarrier v1 v2 v3 v4)
+    poke p (VkMemoryBarrier v1 v2 v3 v4) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 8 v2
+        pokeByteOff p 16 v3
+        pokeByteOff p 20 v4
+
 instance Storable VkMemoryRequirements where
     sizeOf _    = 24
     alignment _ = 8
@@ -1480,6 +1950,40 @@ instance Storable VkOffset2D where
     poke p (VkOffset2D v1 v2) = do
         pokeByteOff p 0 v1
         pokeByteOff p 4 v2
+
+instance Storable VkOffset3D where
+    sizeOf _    = 12
+    alignment _ = 4
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 4
+        v3 <- peekByteOff p 8
+        return (VkOffset3D v1 v2 v3)
+    poke p (VkOffset3D v1 v2 v3) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 4 v2
+        pokeByteOff p 8 v3
+
+instance Storable VkPhysicalDeviceAccelerationStructureFeaturesKHR where
+    sizeOf _    = 36
+    alignment _ = 8
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 8
+        v3 <- peekByteOff p 16
+        v4 <- peekByteOff p 20
+        v5 <- peekByteOff p 24
+        v6 <- peekByteOff p 28
+        v7 <- peekByteOff p 32
+        return (VkPhysicalDeviceAccelerationStructureFeaturesKHR v1 v2 v3 v4 v5 v6 v7)
+    poke p (VkPhysicalDeviceAccelerationStructureFeaturesKHR v1 v2 v3 v4 v5 v6 v7) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 8 v2
+        pokeByteOff p 16 v3
+        pokeByteOff p 20 v4
+        pokeByteOff p 24 v5
+        pokeByteOff p 28 v6
+        pokeByteOff p 32 v7
 
 instance Storable VkPhysicalDeviceFeatures where
     sizeOf _    = 220
@@ -1647,109 +2151,109 @@ instance Storable VkPhysicalDeviceVulkan11Features where
         pokeByteOff p 60 v14
 
 instance Storable VkPhysicalDeviceVulkan12Features where
-    sizeOf _    = 200
-    alignment _ = 4
+    sizeOf _    = 204
+    alignment _ = 8
     peek p = do
         v01 <- peekByteOff p 0
-        v02 <- peekByteOff p 4
-        v03 <- peekByteOff p 12
-        v04 <- peekByteOff p 16
-        v05 <- peekByteOff p 20
-        v06 <- peekByteOff p 24
-        v07 <- peekByteOff p 28
-        v08 <- peekByteOff p 32
-        v09 <- peekByteOff p 36
-        v10 <- peekByteOff p 40
-        v11 <- peekByteOff p 44
-        v12 <- peekByteOff p 48
-        v13 <- peekByteOff p 52
-        v14 <- peekByteOff p 56
-        v15 <- peekByteOff p 60
-        v16 <- peekByteOff p 64
-        v17 <- peekByteOff p 68
-        v18 <- peekByteOff p 72
-        v19 <- peekByteOff p 76
-        v20 <- peekByteOff p 80
-        v21 <- peekByteOff p 84
-        v22 <- peekByteOff p 88
-        v23 <- peekByteOff p 92
-        v24 <- peekByteOff p 96
-        v25 <- peekByteOff p 100
-        v26 <- peekByteOff p 104
-        v27 <- peekByteOff p 108
-        v28 <- peekByteOff p 112
-        v29 <- peekByteOff p 116
-        v30 <- peekByteOff p 120
-        v31 <- peekByteOff p 124
-        v32 <- peekByteOff p 128
-        v33 <- peekByteOff p 132
-        v34 <- peekByteOff p 136
-        v35 <- peekByteOff p 140
-        v36 <- peekByteOff p 144
-        v37 <- peekByteOff p 148
-        v38 <- peekByteOff p 152
-        v39 <- peekByteOff p 156
-        v40 <- peekByteOff p 160
-        v41 <- peekByteOff p 164
-        v42 <- peekByteOff p 168
-        v43 <- peekByteOff p 172
-        v44 <- peekByteOff p 176
-        v45 <- peekByteOff p 180
-        v46 <- peekByteOff p 184
-        v47 <- peekByteOff p 188
-        v48 <- peekByteOff p 192
-        v49 <- peekByteOff p 196
+        v02 <- peekByteOff p 8
+        v03 <- peekByteOff p 16
+        v04 <- peekByteOff p 20
+        v05 <- peekByteOff p 24
+        v06 <- peekByteOff p 28
+        v07 <- peekByteOff p 32
+        v08 <- peekByteOff p 36
+        v09 <- peekByteOff p 40
+        v10 <- peekByteOff p 44
+        v11 <- peekByteOff p 48
+        v12 <- peekByteOff p 52
+        v13 <- peekByteOff p 56
+        v14 <- peekByteOff p 60
+        v15 <- peekByteOff p 64
+        v16 <- peekByteOff p 68
+        v17 <- peekByteOff p 72
+        v18 <- peekByteOff p 76
+        v19 <- peekByteOff p 80
+        v20 <- peekByteOff p 84
+        v21 <- peekByteOff p 88
+        v22 <- peekByteOff p 92
+        v23 <- peekByteOff p 96
+        v24 <- peekByteOff p 100
+        v25 <- peekByteOff p 104
+        v26 <- peekByteOff p 108
+        v27 <- peekByteOff p 112
+        v28 <- peekByteOff p 116
+        v29 <- peekByteOff p 120
+        v30 <- peekByteOff p 124
+        v31 <- peekByteOff p 128
+        v32 <- peekByteOff p 132
+        v33 <- peekByteOff p 136
+        v34 <- peekByteOff p 140
+        v35 <- peekByteOff p 144
+        v36 <- peekByteOff p 148
+        v37 <- peekByteOff p 152
+        v38 <- peekByteOff p 156
+        v39 <- peekByteOff p 160
+        v40 <- peekByteOff p 164
+        v41 <- peekByteOff p 168
+        v42 <- peekByteOff p 172
+        v43 <- peekByteOff p 176
+        v44 <- peekByteOff p 180
+        v45 <- peekByteOff p 184
+        v46 <- peekByteOff p 188
+        v47 <- peekByteOff p 192
+        v48 <- peekByteOff p 196
+        v49 <- peekByteOff p 200
         return (VkPhysicalDeviceVulkan12Features v01 v02 v03 v04 v05 v06 v07 v08 v09 v10 v11 v12 v13 v14 v15 v16 v17 v18 v19 v20 v21 v22 v23 v24 v25 v26 v27 v28 v29 v30 v31 v32 v33 v34 v35 v36 v37 v38 v39 v40 v41 v42 v43 v44 v45 v46 v47 v48 v49)
     poke p (VkPhysicalDeviceVulkan12Features v01 v02 v03 v04 v05 v06 v07 v08 v09 v10 v11 v12 v13 v14 v15 v16 v17 v18 v19 v20 v21 v22 v23 v24 v25 v26 v27 v28 v29 v30 v31 v32 v33 v34 v35 v36 v37 v38 v39 v40 v41 v42 v43 v44 v45 v46 v47 v48 v49) = do
         pokeByteOff p 0 v01
-        pokeByteOff p 4 v02
-        pokeByteOff p 12 v03
-        pokeByteOff p 16 v04
-        pokeByteOff p 20 v05
-        pokeByteOff p 24 v06
-        pokeByteOff p 28 v07
-        pokeByteOff p 32 v08
-        pokeByteOff p 36 v09
-        pokeByteOff p 40 v10
-        pokeByteOff p 44 v11
-        pokeByteOff p 48 v12
-        pokeByteOff p 52 v13
-        pokeByteOff p 56 v14
-        pokeByteOff p 60 v15
-        pokeByteOff p 64 v16
-        pokeByteOff p 68 v17
-        pokeByteOff p 72 v18
-        pokeByteOff p 76 v19
-        pokeByteOff p 80 v20
-        pokeByteOff p 84 v21
-        pokeByteOff p 88 v22
-        pokeByteOff p 92 v23
-        pokeByteOff p 96 v24
-        pokeByteOff p 100 v25
-        pokeByteOff p 104 v26
-        pokeByteOff p 108 v27
-        pokeByteOff p 112 v28
-        pokeByteOff p 116 v29
-        pokeByteOff p 120 v30
-        pokeByteOff p 124 v31
-        pokeByteOff p 128 v32
-        pokeByteOff p 132 v33
-        pokeByteOff p 136 v34
-        pokeByteOff p 140 v35
-        pokeByteOff p 144 v36
-        pokeByteOff p 148 v37
-        pokeByteOff p 152 v38
-        pokeByteOff p 156 v39
-        pokeByteOff p 160 v40
-        pokeByteOff p 164 v41
-        pokeByteOff p 168 v42
-        pokeByteOff p 172 v43
-        pokeByteOff p 176 v44
-        pokeByteOff p 180 v45
-        pokeByteOff p 184 v46
-        pokeByteOff p 188 v47
-        pokeByteOff p 192 v48
-        pokeByteOff p 196 v49
+        pokeByteOff p 8 v02
+        pokeByteOff p 16 v03
+        pokeByteOff p 20 v04
+        pokeByteOff p 24 v05
+        pokeByteOff p 28 v06
+        pokeByteOff p 32 v07
+        pokeByteOff p 36 v08
+        pokeByteOff p 40 v09
+        pokeByteOff p 44 v10
+        pokeByteOff p 48 v11
+        pokeByteOff p 52 v12
+        pokeByteOff p 56 v13
+        pokeByteOff p 60 v14
+        pokeByteOff p 64 v15
+        pokeByteOff p 68 v16
+        pokeByteOff p 72 v17
+        pokeByteOff p 76 v18
+        pokeByteOff p 80 v19
+        pokeByteOff p 84 v20
+        pokeByteOff p 88 v21
+        pokeByteOff p 92 v22
+        pokeByteOff p 96 v23
+        pokeByteOff p 100 v24
+        pokeByteOff p 104 v25
+        pokeByteOff p 108 v26
+        pokeByteOff p 112 v27
+        pokeByteOff p 116 v28
+        pokeByteOff p 120 v29
+        pokeByteOff p 124 v30
+        pokeByteOff p 128 v31
+        pokeByteOff p 132 v32
+        pokeByteOff p 136 v33
+        pokeByteOff p 140 v34
+        pokeByteOff p 144 v35
+        pokeByteOff p 148 v36
+        pokeByteOff p 152 v37
+        pokeByteOff p 156 v38
+        pokeByteOff p 160 v39
+        pokeByteOff p 164 v40
+        pokeByteOff p 168 v41
+        pokeByteOff p 172 v42
+        pokeByteOff p 176 v43
+        pokeByteOff p 180 v44
+        pokeByteOff p 184 v45
+        pokeByteOff p 188 v46
+        pokeByteOff p 192 v47
+        pokeByteOff p 196 v48
+        pokeByteOff p 200 v49
 
 instance Storable VkPipelineCacheCreateInfo where
     sizeOf _    = 40
@@ -1899,6 +2403,21 @@ instance Storable VkPipelineLayoutCreateInfo where
         pokeByteOff p 24 v5
         pokeByteOff p 32 v6
         pokeByteOff p 40 v7
+
+instance Storable VkPipelineLibraryCreateInfoKHR where
+    sizeOf _    = 32
+    alignment _ = 8
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 8
+        v3 <- peekByteOff p 16
+        v4 <- peekByteOff p 24
+        return (VkPipelineLibraryCreateInfoKHR v1 v2 v3 v4)
+    poke p (VkPipelineLibraryCreateInfoKHR v1 v2 v3 v4) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 8 v2
+        pokeByteOff p 16 v3
+        pokeByteOff p 24 v4
 
 instance Storable VkPipelineMultisampleStateCreateInfo where
     sizeOf _    = 48
@@ -2071,6 +2590,79 @@ instance Storable VkPushConstantRange where
         pokeByteOff p 0 v1
         pokeByteOff p 4 v2
         pokeByteOff p 8 v3
+
+instance Storable VkRayTracingPipelineCreateInfoKHR where
+    sizeOf _    = 100
+    alignment _ = 8
+    peek p = do
+        v01 <- peekByteOff p 0
+        v02 <- peekByteOff p 8
+        v03 <- peekByteOff p 16
+        v04 <- peekByteOff p 20
+        v05 <- peekByteOff p 24
+        v06 <- peekByteOff p 32
+        v07 <- peekByteOff p 40
+        v08 <- peekByteOff p 48
+        v09 <- peekByteOff p 56
+        v10 <- peekByteOff p 64
+        v11 <- peekByteOff p 72
+        v12 <- peekByteOff p 80
+        v13 <- peekByteOff p 88
+        v14 <- peekByteOff p 96
+        return (VkRayTracingPipelineCreateInfoKHR v01 v02 v03 v04 v05 v06 v07 v08 v09 v10 v11 v12 v13 v14)
+    poke p (VkRayTracingPipelineCreateInfoKHR v01 v02 v03 v04 v05 v06 v07 v08 v09 v10 v11 v12 v13 v14) = do
+        pokeByteOff p 0 v01
+        pokeByteOff p 8 v02
+        pokeByteOff p 16 v03
+        pokeByteOff p 20 v04
+        pokeByteOff p 24 v05
+        pokeByteOff p 32 v06
+        pokeByteOff p 40 v07
+        pokeByteOff p 48 v08
+        pokeByteOff p 56 v09
+        pokeByteOff p 64 v10
+        pokeByteOff p 72 v11
+        pokeByteOff p 80 v12
+        pokeByteOff p 88 v13
+        pokeByteOff p 96 v14
+
+instance Storable VkRayTracingPipelineInterfaceCreateInfoKHR where
+    sizeOf _    = 24
+    alignment _ = 8
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 8
+        v3 <- peekByteOff p 16
+        v4 <- peekByteOff p 20
+        return (VkRayTracingPipelineInterfaceCreateInfoKHR v1 v2 v3 v4)
+    poke p (VkRayTracingPipelineInterfaceCreateInfoKHR v1 v2 v3 v4) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 8 v2
+        pokeByteOff p 16 v3
+        pokeByteOff p 20 v4
+
+instance Storable VkRayTracingShaderGroupCreateInfoKHR where
+    sizeOf _    = 48
+    alignment _ = 8
+    peek p = do
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 8
+        v3 <- peekByteOff p 16
+        v4 <- peekByteOff p 20
+        v5 <- peekByteOff p 24
+        v6 <- peekByteOff p 28
+        v7 <- peekByteOff p 32
+        v8 <- peekByteOff p 40
+        return (VkRayTracingShaderGroupCreateInfoKHR v1 v2 v3 v4 v5 v6 v7 v8)
+    poke p (VkRayTracingShaderGroupCreateInfoKHR v1 v2 v3 v4 v5 v6 v7 v8) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 8 v2
+        pokeByteOff p 16 v3
+        pokeByteOff p 20 v4
+        pokeByteOff p 24 v5
+        pokeByteOff p 28 v6
+        pokeByteOff p 32 v7
+        pokeByteOff p 40 v8
 
 instance Storable VkRect2D where
     sizeOf _    = 16
