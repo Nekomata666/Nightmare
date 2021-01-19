@@ -8,7 +8,10 @@ import Data.Word (Word8)
 
 import Foreign (Storable)
 
+import Graphics.Violet.Rasterizer as R
+
 import Graphics.Vulkan
+import Graphics.Vulkan.Enumerations (VkPipelineStageFlagBits)
 import Graphics.Vulkan.Types
 
 import Loaders.Obj
@@ -39,9 +42,9 @@ main = do
     --
     ----------------------------------------------------------------------------------------------------------------------------
     model <- loadObj config
-    (buffer, vkCoBu, vkCPo0, vkDeP0, deSLay, vkDev0, memory, uniMe, fences, vFrame, vkIma0, swapIV, pipe, vkPiCa, pipeLa, vkQue0, vkRePa, sema, vkSC) <- initialize vkInst vkSurf model
+    (buffer, vkCoBu, vkCPo0, vkDeP0, deSLay, vkDev0, memory, uniMe, fences, vFrame, swapIV, pipe, pipeLa, vkPSFB, vkQue0, vkRePa, sema, vkSC) <- initializeRasterizer vkInst vkSurf model
 
-    loop False sdlFirstEvent vkDev0 uniMe fences vkSC sema vkCoBu vkQue0 0 u 0
+    loop False sdlFirstEvent vkDev0 uniMe fences vkSC sema vkCoBu vkPSFB vkQue0 0 u 0
 
 
     ----------------------------------------------------------------------------------------------------------------------------
@@ -49,7 +52,8 @@ main = do
     -- Shutdown
     --
     ----------------------------------------------------------------------------------------------------------------------------
-    shutdown buffer vkCPo0 vkDeP0 deSLay vkDev0 (memory ++ uniMe) fences vFrame vkIma0 swapIV vkInst pipe vkPiCa pipeLa vkQue0 vkRePa sema vkSurf vkSC
+    R.shutdown buffer vkCPo0 vkDeP0 deSLay vkDev0 (memory ++ uniMe) fences vFrame swapIV vkInst pipe pipeLa vkQue0 vkRePa sema vkSurf vkSC
+
     sdl2DestroyWindow hW
     sdl2Quit
     where
@@ -57,15 +61,15 @@ main = do
         c = conjugate a
         u = UBO a c
 
-loop :: Bool -> SDLEventType -> VkDevice -> [VkDeviceMemory] -> [VkFence] -> VkSwapchainKHR -> ([VkSemaphore], [VkSemaphore]) -> [VkCommandBuffer] -> VkQueue -> Frame -> UBO Float -> Float -> IO ()
-loop True (SDLEventType 256) _ _ _ _ _ _ _ _ _ _ = return ()
-loop _ _ vkDev0 uniMe fences vkSC sema vkCoBu vkQue0 f ubo s = do
+loop :: Bool -> SDLEventType -> VkDevice -> [VkDeviceMemory] -> [VkFence] -> VkSwapchainKHR -> ([VkSemaphore], [VkSemaphore]) -> [VkCommandBuffer] -> [VkPipelineStageFlagBits] -> VkQueue -> Frame -> UBO Float -> Float -> IO ()
+loop True (SDLEventType 256) _ _ _ _ _ _ _ _ _ _ _ = return ()
+loop _ _ vkDev0 uniMe fences vkSC sema vkCoBu vkPSFB vkQue0 f ubo s = do
     a@(r, e) <- sdl2PollEvent
     k <- sdl2GetKeyboardState
     let (u', s') = actions k ubo s
     -- when r $ print a
-    f' <- draw vkDev0 uniMe fences vkSC sema vkCoBu vkQue0 f ubo
-    loop r (SDLEventType $ eType e) vkDev0 uniMe fences vkSC sema vkCoBu vkQue0 f' u' s'
+    f' <- R.draw vkDev0 uniMe fences vkSC sema vkCoBu vkPSFB vkQue0 f ubo
+    loop r (SDLEventType $ eType e) vkDev0 uniMe fences vkSC sema vkCoBu vkPSFB vkQue0 f' u' s'
     where
         a = quaternion (Vertex3 0 0 1) $ s * step
         c = conjugate a
