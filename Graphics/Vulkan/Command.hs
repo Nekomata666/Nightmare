@@ -1,7 +1,7 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
 -- Todo: Return when RayTracing is available.
-module Graphics.Vulkan.Command (createVkClearColorValue, createVkCommandBufferAllocateInfo, createVkCommandBufferBeginInfo, createVkCommandPoolInfo, createVkRenderPassBeginInfo, vkAllocateCommandBuffers, vkBeginCommandBuffer, vkCmdBeginRenderPass, vkCmdBindDescriptorSets, vkCmdBindIndexBuffer, vkCmdBindPipeline, vkCmdPipelineBarrier, vkCmdBindVertexBuffers, vkCmdBlitImage, {-vkCmdBuildAccelerationStructureKHR,-} vkCmdClearColorImage, vkCmdCopyBuffer, vkCmdDispatch, vkCmdDraw, vkCmdDrawIndexed, vkCmdEndRenderPass, vkCmdFillBuffer, vkCmdPushConstants, vkCmdResolveImage, vkCreateCommandPool, vkDestroyCommandPool, vkEndCommandBuffer, vkFreeCommandBuffers) where
+module Graphics.Vulkan.Command (createVkCommandBufferAllocateInfo, createVkCommandBufferBeginInfo, createVkCommandPoolInfo, createVkRenderPassBeginInfo, vkAllocateCommandBuffers, vkBeginCommandBuffer, vkCmdBeginRenderPass, vkCmdBindDescriptorSets, vkCmdBindIndexBuffer, vkCmdBindPipeline, vkCmdPipelineBarrier, vkCmdBindVertexBuffers, vkCmdBlitImage, {-vkCmdBuildAccelerationStructureKHR,-} vkCmdClearColorImage, vkCmdCopyBuffer, vkCmdDispatch, vkCmdDraw, vkCmdDrawIndexed, vkCmdEndRenderPass, vkCmdFillBuffer, vkCmdPushConstants, vkCmdResolveImage, vkCreateCommandPool, vkDestroyCommandPool, vkEndCommandBuffer, vkFreeCommandBuffers) where
 
 
 import Data.Maybe   (Maybe)
@@ -132,11 +132,6 @@ foreign import ccall unsafe "vkEndCommandBuffer"
 foreign import ccall unsafe "vkFreeCommandBuffers"
     c_vkFreeCommandBuffers :: VkDevice -> VkCommandPool -> Word32 -> Ptr VkCommandBuffer -> IO ()
 
-
-createVkClearColorValue :: [Word32] -> IO VkClearColorValue
-createVkClearColorValue v = allocaArray 4 $ \p -> do
-    pokeArray p v
-    return $ VkClearColorValue p
 
 createVkCommandBufferAllocateInfo :: Next -> VkCommandPool -> VkCommandBufferLevel -> CommandBufferCount -> VkCommandBufferAllocateInfo
 createVkCommandBufferAllocateInfo = VkCommandBufferAllocateInfo structureTypeCommandBufferAllocateInfo

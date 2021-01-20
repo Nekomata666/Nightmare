@@ -16,9 +16,9 @@ import Graphics.Utilities
 import Graphics.Vulkan
 
 import Graphics.Vulkan.Buffers (vkDestroyBuffer)
-import Graphics.Vulkan.Command -- (createVkClearColorValue, createVkCommandBufferBeginInfo, createVkCommandPoolInfo, createVkRenderPassBeginInfo, vkBeginCommandBuffer, vkCmdBeginRenderPass, vkCmdBindDescriptorSets, vkCmdBindIndexBuffer, vkCmdBindPipeline, vkCmdBindVertexBuffers, vkCmdDrawIndexed, vkCmdEndRenderPass, vkCreateCommandPool, vkDestroyCommandPool, vkEndCommandBuffer)
+import Graphics.Vulkan.Command -- (createVkCommandBufferBeginInfo, createVkCommandPoolInfo, createVkRenderPassBeginInfo, vkBeginCommandBuffer, vkCmdBeginRenderPass, vkCmdBindDescriptorSets, vkCmdBindIndexBuffer, vkCmdBindPipeline, vkCmdBindVertexBuffers, vkCmdDrawIndexed, vkCmdEndRenderPass, vkCreateCommandPool, vkDestroyCommandPool, vkEndCommandBuffer)
 import Graphics.Vulkan.Constants
-import Graphics.Vulkan.Data (VkAttachmentDescription(..), VkAttachmentReference(..), VkClearValue(..), VkCommandBufferBeginInfo, VkDescriptorBufferInfo(..), VkExtent2D(..), VkOffset2D(..), VkPipelineColorBlendAttachmentState(..), VkPipelineInputAssemblyStateCreateInfo(..), VkPipelineMultisampleStateCreateInfo(..), VkPipelineRasterizationStateCreateInfo(..), VkPresentInfoKHR(..), VkRect2D(..), VkRenderPassBeginInfo(..), VkSubpassDependency(..), VkVertexInputAttributeDescription(..), VkVertexInputBindingDescription(..), VkViewport(..))
+import Graphics.Vulkan.Data (VkAttachmentDescription(..), VkAttachmentReference(..), VkClearColorValue(..), VkClearValue(..), VkCommandBufferBeginInfo, VkDescriptorBufferInfo(..), VkExtent2D(..), VkOffset2D(..), VkPipelineColorBlendAttachmentState(..), VkPipelineInputAssemblyStateCreateInfo(..), VkPipelineMultisampleStateCreateInfo(..), VkPipelineRasterizationStateCreateInfo(..), VkPresentInfoKHR(..), VkRect2D(..), VkRenderPassBeginInfo(..), VkSubpassDependency(..), VkVertexInputAttributeDescription(..), VkVertexInputBindingDescription(..), VkViewport(..))
 import Graphics.Vulkan.Descriptor (createVkDescriptorSetAllocateInfo, createVkDescriptorSetLayoutBinding, createVkDescriptorSetLayoutCreateInfo, createVkWriteDescriptorSet, vkAllocateDescriptorSets, vkCreateDescriptorSetLayout, vkDestroyDescriptorPool, vkDestroyDescriptorSetLayout, vkUpdateDescriptorSets)
 import Graphics.Vulkan.Devices
 import Graphics.Vulkan.Enumerations
@@ -49,8 +49,8 @@ createGraphicsCommandBuffer :: VkDevice -> VkBuffer -> VkBuffer -> VkCommandPool
 createGraphicsCommandBuffer vkDev0 verBuf indBuf cmdPo0 pipe layout rendPa indices (desSet, frameB) = do
     cmdBuf  <- allocateCommandBuffer vkDev0 cmdPo0
     cmdBBI  <- createVkCommandBufferBeginInfo nullPtr (VkCommandBufferUsageFlagBits 0) Nothing
-    vkCCVa  <- createVkClearColorValue [0,0,0,0]
-    let vkClVa = VkClearValueC vkCCVa
+    let vkCCVa = VkClearColorValue 0 0 0 0
+        vkClVa = VkClearValueC vkCCVa
     renPBI  <- createVkRenderPassBeginInfo nullPtr rendPa frameB rendAr 1 [vkClVa]
 
     _ <- vkBeginCommandBuffer cmdBuf cmdBBI
@@ -131,8 +131,9 @@ draw vkDev0 unifMe fences swap (semaIm, semaPr) vkCoBu vkPSFB vkQue0 f ubo = do
     _ <- vkQueuePresentKHR vkQue0 vkPrIn
     _ <- vkQueueWaitIdle vkQue0
     _ <- vkWaitForFences vkDev0 1 [fences !! f] vkTrue wait
-    return $ mod (f + 1) $ cast swapChainCount
+    return $ mod (f + 1) l
     where
+        l   = length vkCoBu
         wait = 18446744073709551615
 
 initializeRasterizer :: VkInstance -> VkSurfaceKHR -> Model -> IO ([VkBuffer], [VkCommandBuffer], VkCommandPool, VkDescriptorPool, VkDescriptorSetLayout, VkDevice, [VkDeviceMemory], [VkDeviceMemory], [VkFence], [VkFramebuffer], [VkImageView], VkPipeline, VkPipelineLayout, [VkPipelineStageFlagBits], VkQueue, VkRenderPass, ([VkSemaphore], [VkSemaphore]), VkSwapchainKHR)

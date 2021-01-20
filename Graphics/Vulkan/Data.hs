@@ -137,7 +137,10 @@ data VkBufferMemoryBarrier = VkBufferMemoryBarrier{
 -- Note: At most, we can add Int32.
 -- Using only Word32s!
 data VkClearColorValue = VkClearColorValue{
-    word32  :: Ptr Word32 -- [4]
+    r   :: Word32,
+    g   :: Word32,
+    b   :: Word32,
+    a   :: Word32
 }
 
 data VkClearDepthStencilValue = VkClearDepthStencilValue{
@@ -929,7 +932,7 @@ data VkSwapchainCreateInfoKHR = VkSwapchainCreateInfoKHR{
     imageFormat             :: VkFormat,
     imageColorSpace         :: VkColorSpaceKHR,
     imageExtent             :: VkExtent2D,
-    imageArrayLayers        :: Word32,
+    imageArrayLayers        :: Word32, -- For VR
     imageUsage              :: VkImageUsageFlags,
     imageSharingMode        :: VkSharingMode,
     queueFamilyIndexCount   :: Word32,
@@ -1249,9 +1252,16 @@ instance Storable VkClearColorValue where
     sizeOf _    = 16
     alignment _ = 4
     peek p = do
-        v <- peekByteOff p 0
-        return (VkClearColorValue v)
-    poke p (VkClearColorValue v) = pokeByteOff p 0 v
+        v1 <- peekByteOff p 0
+        v2 <- peekByteOff p 4
+        v3 <- peekByteOff p 8
+        v4 <- peekByteOff p 12
+        return (VkClearColorValue v1 v2 v3 v4)
+    poke p (VkClearColorValue v1 v2 v3 v4) = do
+        pokeByteOff p 0 v1
+        pokeByteOff p 4 v2
+        pokeByteOff p 8 v3
+        pokeByteOff p 12 v4
 
 instance Storable VkClearDepthStencilValue where
     sizeOf _    = 8
