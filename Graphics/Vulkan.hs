@@ -37,7 +37,10 @@ import Math.Data
 
 
 -- Type aliases.
-type Frame = Int
+type Frame  = Int
+type ResX   = Word32
+type ResY   = Word32
+type SSAA   = Word32
 
 frameTime :: Float
 frameTime = 1/200
@@ -55,16 +58,16 @@ vertex4ToList (Vertex4 x y z w)         = [x, y, z, w]
 uboToList :: Num a => UBO a -> [a]
 uboToList (UBO (Quaternion x1 y1 z1 w1) (Quaternion x2 y2 z2 w2)) = [x1, y1, z1, w1, x2, y2, z2, w2]
 
-allocateCommandBuffer :: VkDevice -> VkCommandPool -> IO VkCommandBuffer
-allocateCommandBuffer vkDev0 cmdPo0 = do
+allocateCommandBuffer :: VkDevice -> VkCommandPool -> VkCommandBufferLevel -> IO VkCommandBuffer
+allocateCommandBuffer vkDev0 cmdPo0 lvl = do
     vkCoBu  <- vkAllocateCommandBuffers vkDev0 vkCBAI
     return $ head vkCoBu
     where
-        vkCBAI = createVkCommandBufferAllocateInfo nullPtr cmdPo0 commandBufferLevelPrimary 1
+        vkCBAI = createVkCommandBufferAllocateInfo nullPtr cmdPo0 lvl 1
 
 copyBuffer :: VkDevice -> VkBuffer -> VkBuffer -> VkCommandPool -> VkDeviceSize -> VkQueue -> IO ()
 copyBuffer vkDev0 src dst cmdPo0 s q = do
-    cmdBuf  <- allocateCommandBuffer vkDev0 cmdPo0
+    cmdBuf  <- allocateCommandBuffer vkDev0 cmdPo0 commandBufferLevelPrimary
     cmdBBI  <- createVkCommandBufferBeginInfo nullPtr commandBufferUsageOneSubmitBit Nothing
     _ <- vkBeginCommandBuffer cmdBuf cmdBBI
     vkCmdCopyBuffer cmdBuf src dst 1 [buffCo]
@@ -81,8 +84,8 @@ createBuffer :: VkDevice -> [VkBufferUsageFlagBits] -> VkDeviceSize -> Word32 ->
 createBuffer vkDev0 f dS i = do
     vkBCI   <- createVkBufferInfo  nullPtr (VkBufferCreateFlags 0) dS f sharingModeExclusive 0 [0]
     buffer  <- vkCreateBuffer vkDev0 vkBCI
-    vkBuMR  <- vkGetBufferMemoryRequirements vkDev0 buffer
-    let vkMAI = createVkMemoryAllocateInfo nullPtr (size vkBuMR) i
+    buffMR  <- vkGetBufferMemoryRequirements vkDev0 buffer
+    let vkMAI = createVkMemoryAllocateInfo nullPtr (size buffMR) i
     bufMem  <- vkAllocateMemory vkDev0 vkMAI
     _  <- vkBindBufferMemory vkDev0 buffer bufMem (VkDeviceSize 0)
     return (buffer, bufMem)
@@ -102,7 +105,7 @@ createInstance :: IO VkInstance
 createInstance = do
     let api = makeAPI 1 2 164
     vkApIn  <- createVkApplicationInfo nullPtr "Nightmare" 0 "Nightmare" 0 api
-    vkInCI  <- createVkInstanceCreateInfo nullPtr 0 (Just vkApIn) 1 (Just ["VK_LAYER_KHRONOS_validation"]) 3 -- 7
+    vkInCI  <- createVkInstanceCreateInfo nullPtr 0 (Just vkApIn) 2 (Just ["VK_LAYER_KHRONOS_validation", "VK_LAYER_MESA_overlay"]) 3 -- 7
         (Just ["VK_EXT_debug_report", {-"VK_KHR_acceleration_structure", "VK_KHR_deferred_host_operations", "VK_KHR_pipeline_library", "VK_KHR_ray_tracing_pipeline",-} "VK_KHR_surface", "VK_KHR_xlib_surface"])
     vkCreateInstance vkInCI
 
@@ -127,15 +130,15 @@ createStagingIndexBuffer = createStagingBuffer
 createStagingVertexBuffer :: VkDevice -> [Float] -> IO (VkBuffer, VkDeviceMemory)
 createStagingVertexBuffer = createStagingBuffer
 
-createSwapchain :: VkDevice -> VkSurfaceKHR -> [VkImageUsageFlagBits] -> IO (VkSwapchainKHR, [VkImage], [VkImageView])
-createSwapchain vkDev0 vkSurf vkIUFB = do
-    vkSCCI  <- createVkSwapchainCreateInfo nullPtr (VkSwapchainCreateFlagBitsKHR 0) vkSurf swapChainCount formatB8G8R8A8SRGB
-                    colorSpaceSRGBNonlinearKHR (VkExtent2D 1600 900) 1 vkIUFB sharingModeExclusive 1 [0] surfaceTransformIdentityBitKHR
+createSwapchain :: VkDevice -> VkSurfaceKHR -> VkFormat -> [VkImageUsageFlagBits] -> ResX -> ResY -> IO (VkSwapchainKHR, [VkImage], [VkImageView])
+createSwapchain vkDev0 vkSurf format vkIUFB x y = do
+    vkSCCI  <- createVkSwapchainCreateInfo nullPtr (VkSwapchainCreateFlagBitsKHR 0) vkSurf swapChainCount format
+                    colorSpaceSRGBNonlinearKHR (VkExtent2D x y) 1 vkIUFB sharingModeExclusive 1 [0] surfaceTransformIdentityBitKHR
                     compositeAlphaOpaqueBitKHR {-presentModeFIFOKHR-} presentModeMailboxKHR vkTrue (VkSwapchainKHR nullHandle)
     vkSC    <- vkCreateSwapchainKHR vkDev0 vkSCCI
     swapIs  <- vkGetSwapchainImagesKHR vkDev0 vkSC
     let vkIVCI = map (\x -> VkImageViewCreateInfo structureTypeImageViewCreateInfo nullPtr (VkImageViewCreateFlags 0) x
-                    imageViewType2D formatB8G8R8A8SRGB vkCMId vkISR0) swapIs
+                    imageViewType2D format vkCMId vkISR0) swapIs
     imageV   <- mapM (vkCreateImageView vkDev0) vkIVCI
 
     return (vkSC, swapIs, imageV)
@@ -174,9 +177,9 @@ updateUniformBuffer vkDev0 uniMe ubo = allocaArray l $ \p -> do
         l = length u
         w = cast l
 
-initializeSwapChain :: VkDevice -> VkSurfaceKHR -> [VkImageUsageFlagBits] -> IO ([VkFence], [VkImage], [VkImageView], ([VkSemaphore], [VkSemaphore]), VkSwapchainKHR)
-initializeSwapChain vkDev0 vkSurf vkIUFB = do
-    (vkSC, swapIs, swapIV) <- createSwapchain vkDev0 vkSurf vkIUFB
+initializeSwapChain :: VkDevice -> VkSurfaceKHR -> VkFormat -> [VkImageUsageFlagBits] -> ResX -> ResY -> IO ([VkFence], [VkImage], [VkImageView], ([VkSemaphore], [VkSemaphore]), VkSwapchainKHR)
+initializeSwapChain vkDev0 vkSurf format vkIUFB x y = do
+    (vkSC, swapIs, swapIV) <- createSwapchain vkDev0 vkSurf format vkIUFB x y
     let i = length swapIs
     semaph <- createSwapchainSemaphores vkDev0 i
     fences <- replicateM i $ createSwapchainFence vkDev0

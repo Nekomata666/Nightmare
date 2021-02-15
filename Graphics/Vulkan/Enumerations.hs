@@ -21,6 +21,8 @@ newtype VkBlendFactor = VkBlendFactor { unVkBlendFactor :: Word32 }
     deriving (Eq)
 newtype VkBlendOp = VkBlendOp { unVkBlendOp :: Word32 }
     deriving (Eq)
+newtype VkBorderColor = VkBorderColor { unVkBorderColor :: Word32 }
+    deriving (Eq)
 newtype VkBufferUsageFlagBits = VkBufferUsageFlagBits { unVkBufferUsageFlagBits :: Word32 }
     deriving (Eq)
 newtype VkBuildAccelerationStructureFlagBitsKHR = VkBuildAccelerationStructureFlagBitsKHR { unVkBuildAccelerationStructureFlagBitsKHR :: Word32 }
@@ -79,6 +81,8 @@ newtype VkInternalAllocationType = VkInternalAllocationType { unVkInternalAlloca
     deriving (Eq)
 newtype VkLogicOp = VkLogicOp { unVkLogicOp :: Word32 }
     deriving (Eq)
+newtype VkMemoryPropertyFlagBits = VkMemoryPropertyFlagBits { unVkMemoryPropertyFlagBits :: Word32 }
+    deriving (Eq)
 newtype VkPipelineBindPoint = VkPipelineBindPoint { unVkPipelineBindPoint :: Word32 }
     deriving (Eq)
 newtype VkPipelineStageFlagBits = VkPipelineStageFlagBits { unVkPipelineStageFlagBits :: Word32 }
@@ -94,6 +98,10 @@ newtype VkRayTracingShaderGroupTypeKHR = VkRayTracingShaderGroupTypeKHR { unVkRa
 newtype VkResult = VkResult { unVkResult :: Int32 }
     deriving (Eq)
 newtype VkSampleCountFlagBits = VkSampleCountFlagBits { unVkSampleCountFlagBits :: Word32 }
+    deriving (Eq)
+newtype VkSamplerAddressMode = VkSamplerAddressMode { unVkSamplerAddressMode :: Word32 }
+    deriving (Eq)
+newtype VkSamplerMipmapMode = VkSamplerMipmapMode { unVkSamplerMipmapMode :: Word32 }
     deriving (Eq)
 newtype VkSemaphoreType = VkSemaphoreType { unVkSemaphoreType :: Word64 }
     deriving (Eq)
@@ -228,6 +236,20 @@ blendOpMin               :: VkBlendOp
 blendOpMin               = VkBlendOp 3
 blendOpMax               :: VkBlendOp
 blendOpMax               = VkBlendOp 4
+
+-- VkBorderColor
+borderColorFloatTransparentBlack     :: VkBorderColor
+borderColorFloatTransparentBlack     = VkBorderColor 0
+borderColorIntTransparentBlack       :: VkBorderColor
+borderColorIntTransparentBlack       = VkBorderColor 1
+borderColorFloatOpaqueBlack          :: VkBorderColor
+borderColorFloatOpaqueBlack          = VkBorderColor 2
+borderColorIntOpaqueBlack            :: VkBorderColor
+borderColorIntOpaqueBlack            = VkBorderColor 3
+borderColorFloatOpaqueWhite          :: VkBorderColor
+borderColorFloatOpaqueWhite          = VkBorderColor 4
+borderColorIntOpaqueWhite            :: VkBorderColor
+borderColorIntOpaqueWhite            = VkBorderColor 5
 
 -- VkBufferUsageFlagBits
 bufferUsageTransferSRCBit            :: VkBufferUsageFlagBits
@@ -981,6 +1003,20 @@ logicOpNand          = VkLogicOp 14
 logicOpSet           :: VkLogicOp
 logicOpSet           = VkLogicOp 15
 
+-- VkMemoryPropertyFlagBits
+memoryPropertyDeviceLocalBit        :: VkMemoryPropertyFlagBits
+memoryPropertyDeviceLocalBit        = VkMemoryPropertyFlagBits 1
+memoryPropertyHostVisibleBit        :: VkMemoryPropertyFlagBits
+memoryPropertyHostVisibleBit        = VkMemoryPropertyFlagBits 2
+memoryPropertyHostCoherentBit       :: VkMemoryPropertyFlagBits
+memoryPropertyHostCoherentBit       = VkMemoryPropertyFlagBits 4
+memoryPropertyHostCachedBit         :: VkMemoryPropertyFlagBits
+memoryPropertyHostCachedBit         = VkMemoryPropertyFlagBits 8
+memoryPropertyLazilyAllocatedBit    :: VkMemoryPropertyFlagBits
+memoryPropertyLazilyAllocatedBit    = VkMemoryPropertyFlagBits 16
+memoryPropertyProtectedBit          :: VkMemoryPropertyFlagBits
+memoryPropertyProtectedBit          = VkMemoryPropertyFlagBits 32
+
 -- VkPipelineBindPoint
 pipelineBindPointGraphics       :: VkPipelineBindPoint
 pipelineBindPointGraphics       = VkPipelineBindPoint 0
@@ -1152,6 +1188,24 @@ sampleCount32Bit             :: VkSampleCountFlagBits
 sampleCount32Bit             = VkSampleCountFlagBits 32
 sampleCount64Bit             :: VkSampleCountFlagBits
 sampleCount64Bit             = VkSampleCountFlagBits 64
+
+-- VkSamplerAddressMode
+samplerAddressModeRepeat             :: VkSamplerAddressMode
+samplerAddressModeRepeat             = VkSamplerAddressMode 0
+samplerAddressModeMirroredRepeat     :: VkSamplerAddressMode
+samplerAddressModeMirroredRepeat     = VkSamplerAddressMode 1
+samplerAddressModeClampToEdge        :: VkSamplerAddressMode
+samplerAddressModeClampToEdge        = VkSamplerAddressMode 2
+samplerAddressModeClampToBorder      :: VkSamplerAddressMode
+samplerAddressModeClampToBorder      = VkSamplerAddressMode 3
+samplerAddressModeMirrorClampToEdge  :: VkSamplerAddressMode
+samplerAddressModeMirrorClampToEdge  = VkSamplerAddressMode 4
+
+-- VkSamplerMipmapMode
+samplerMipmapModeNearest     :: VkSamplerMipmapMode
+samplerMipmapModeNearest     = VkSamplerMipmapMode 0
+samplerMipmapModeLinear      :: VkSamplerMipmapMode
+samplerMipmapModeLinear      = VkSamplerMipmapMode 1
 
 -- VkSemaphoreType
 vkSemaphoreTypeBinary   :: VkSemaphoreType
@@ -1496,6 +1550,14 @@ instance Storable VkBlendOp where
         return (VkBlendOp v)
     poke p (VkBlendOp v) = pokeByteOff p 0 v
 
+instance Storable VkBorderColor where
+    sizeOf _    = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkBorderColor v)
+    poke p (VkBorderColor v) = pokeByteOff p 0 v
+
 instance Storable VkBufferUsageFlagBits where
     sizeOf _    = 4
     alignment _ = 4
@@ -1728,6 +1790,14 @@ instance Storable VkLogicOp where
         return (VkLogicOp v)
     poke p (VkLogicOp v) = pokeByteOff p 0 v
 
+instance Storable VkMemoryPropertyFlagBits where
+    sizeOf _    = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkMemoryPropertyFlagBits v)
+    poke p (VkMemoryPropertyFlagBits v) = pokeByteOff p 0 v
+
 instance Storable VkPipelineBindPoint where
     sizeOf _    = 4
     alignment _ = 4
@@ -1791,6 +1861,22 @@ instance Storable VkSampleCountFlagBits where
         v <- peekByteOff p 0
         return (VkSampleCountFlagBits v)
     poke p (VkSampleCountFlagBits v) = pokeByteOff p 0 v
+
+instance Storable VkSamplerAddressMode where
+    sizeOf _    = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkSamplerAddressMode v)
+    poke p (VkSamplerAddressMode v) = pokeByteOff p 0 v
+
+instance Storable VkSamplerMipmapMode where
+    sizeOf _    = 4
+    alignment _ = 4
+    peek p = do
+        v <- peekByteOff p 0
+        return (VkSamplerMipmapMode v)
+    poke p (VkSamplerMipmapMode v) = pokeByteOff p 0 v
 
 instance Storable VkSemaphoreType where
     sizeOf _    = 8

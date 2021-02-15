@@ -5,8 +5,8 @@ module Graphics.Violet.Rasterizer where
 
 import Control.Monad (replicateM)
 
-import Data.Bits ((.|.), shiftR)
-import Data.Word (Word8, Word32)
+import Data.Bits ((.|.))
+import Data.Word (Word32)
 
 import Foreign (Storable)
 import Foreign.Ptr (nullPtr)
@@ -16,9 +16,9 @@ import Graphics.Utilities
 import Graphics.Vulkan
 
 import Graphics.Vulkan.Buffers (vkDestroyBuffer)
-import Graphics.Vulkan.Command -- (createVkCommandBufferBeginInfo, createVkCommandPoolInfo, createVkRenderPassBeginInfo, vkBeginCommandBuffer, vkCmdBeginRenderPass, vkCmdBindDescriptorSets, vkCmdBindIndexBuffer, vkCmdBindPipeline, vkCmdBindVertexBuffers, vkCmdDrawIndexed, vkCmdEndRenderPass, vkCreateCommandPool, vkDestroyCommandPool, vkEndCommandBuffer)
+import Graphics.Vulkan.Command (createVkCommandBufferBeginInfo, createVkCommandPoolInfo, createVkRenderPassBeginInfo, vkBeginCommandBuffer, vkCmdBeginRenderPass, vkCmdBindDescriptorSets, vkCmdBindIndexBuffer, vkCmdBindPipeline, vkCmdBindVertexBuffers, vkCmdDrawIndexed, vkCmdEndRenderPass, vkCreateCommandPool, vkDestroyCommandPool, vkEndCommandBuffer)
 import Graphics.Vulkan.Constants
-import Graphics.Vulkan.Data (VkAttachmentDescription(..), VkAttachmentReference(..), VkClearColorValue(..), VkClearValue(..), VkCommandBufferBeginInfo, VkDescriptorBufferInfo(..), VkExtent2D(..), VkOffset2D(..), VkPipelineColorBlendAttachmentState(..), VkPipelineInputAssemblyStateCreateInfo(..), VkPipelineMultisampleStateCreateInfo(..), VkPipelineRasterizationStateCreateInfo(..), VkPresentInfoKHR(..), VkRect2D(..), VkRenderPassBeginInfo(..), VkSubpassDependency(..), VkVertexInputAttributeDescription(..), VkVertexInputBindingDescription(..), VkViewport(..))
+import Graphics.Vulkan.Data (VkAttachmentDescription(..), VkAttachmentReference(..), VkClearColorValue(..), VkClearValue(..), VkDescriptorBufferInfo(..), VkExtent2D(..), VkOffset2D(..), VkPipelineColorBlendAttachmentState(..), VkPipelineInputAssemblyStateCreateInfo(..), VkPipelineMultisampleStateCreateInfo(..), VkPipelineRasterizationStateCreateInfo(..), VkRect2D(..), VkSubpassDependency(..), VkVertexInputAttributeDescription(..), VkVertexInputBindingDescription(..), VkViewport(..))
 import Graphics.Vulkan.Descriptor (createVkDescriptorSetAllocateInfo, createVkDescriptorSetLayoutBinding, createVkDescriptorSetLayoutCreateInfo, createVkWriteDescriptorSet, vkAllocateDescriptorSets, vkCreateDescriptorSetLayout, vkDestroyDescriptorPool, vkDestroyDescriptorSetLayout, vkUpdateDescriptorSets)
 import Graphics.Vulkan.Devices
 import Graphics.Vulkan.Enumerations
@@ -40,14 +40,14 @@ import Loaders.Obj
 import Math.Data
 
 
-createFramebuffer :: VkDevice -> VkRenderPass -> VkImageView -> IO VkFramebuffer
-createFramebuffer vkDev0 rendPa imageV = do
-    fraCIn  <- createVkFramebufferCreateInfo nullPtr (VkFramebufferCreateFlags 0) rendPa 1 [imageV] 1600 900 1
+createFramebuffer :: VkDevice -> VkRenderPass -> ResX -> ResY -> VkImageView -> IO VkFramebuffer
+createFramebuffer vkDev0 rendPa x y imageV = do
+    fraCIn  <- createVkFramebufferCreateInfo nullPtr (VkFramebufferCreateFlags 0) rendPa 1 [imageV] x y 1
     vkCreateFramebuffer vkDev0 fraCIn
 
-createGraphicsCommandBuffer :: VkDevice -> VkBuffer -> VkBuffer -> VkCommandPool -> VkPipeline -> VkPipelineLayout -> VkRenderPass -> [Word32] -> (VkDescriptorSet, VkFramebuffer) -> IO VkCommandBuffer
-createGraphicsCommandBuffer vkDev0 verBuf indBuf cmdPo0 pipe layout rendPa indices (desSet, frameB) = do
-    cmdBuf  <- allocateCommandBuffer vkDev0 cmdPo0
+createGraphicsCommandBuffer :: VkDevice -> VkBuffer -> VkBuffer -> VkCommandPool -> VkPipeline -> VkPipelineLayout -> VkRenderPass -> [Word32] -> ResX -> ResY -> (VkDescriptorSet, VkFramebuffer) -> IO VkCommandBuffer
+createGraphicsCommandBuffer vkDev0 verBuf indBuf cmdPo0 pipe layout rendPa indices x y (desSet, frameB) = do
+    cmdBuf  <- allocateCommandBuffer vkDev0 cmdPo0 commandBufferLevelPrimary
     cmdBBI  <- createVkCommandBufferBeginInfo nullPtr (VkCommandBufferUsageFlagBits 0) Nothing
     let vkCCVa = VkClearColorValue 0 0 0 0
         vkClVa = VkClearValueC vkCCVa
@@ -65,11 +65,11 @@ createGraphicsCommandBuffer vkDev0 verBuf indBuf cmdPo0 pipe layout rendPa indic
     return cmdBuf
     where
         indeCo  = fromIntegral $ length indices
-        rendAr  = VkRect2D (VkOffset2D 0 0) (VkExtent2D 1600 900)
+        rendAr  = VkRect2D (VkOffset2D 0 0) (VkExtent2D x y)
         zero    = VkDeviceSize 0
 
-createGraphicsPipeline :: VkDevice -> VkRenderPass -> IO (VkPipelineLayout, [VkPipeline], VkDescriptorSetLayout)
-createGraphicsPipeline vkDev0 vkRePa = do
+createGraphicsPipeline :: VkDevice -> VkRenderPass -> ResX -> ResY -> IO (VkPipelineLayout, [VkPipeline], VkDescriptorSetLayout)
+createGraphicsPipeline vkDev0 vkRePa x y = do
     vkSMIV  <- createVkShaderModuleInfo nullPtr (VkShaderModuleCreateFlags 0) "Shaders/Violet/Rasterizer/Simple.v.spv"
     vkSMIF  <- createVkShaderModuleInfo nullPtr (VkShaderModuleCreateFlags 0) "Shaders/Violet/Rasterizer/Simple.f.spv"
     vkSMoV  <- vkCreateShaderModule vkDev0 vkSMIV
@@ -86,8 +86,8 @@ createGraphicsPipeline vkDev0 vkRePa = do
         vVIADC = VkVertexInputAttributeDescription 1 0 vertexXYZFloat 0
     vPVICI  <- createVkPipelineVertexInputStateCreateInfo nullPtr (VkPipelineVertexInputStateCreateFlags 0) 1 (Just [vkVIBD]) 2 (Just [vVIADV, vVIADC])
     let vPISCI = VkPipelineInputAssemblyStateCreateInfo structureTypePipelineInputAssembyStateCreateInfo nullPtr (VkPipelineInputAssemblyStateCreateFlags 0) primitiveTopologyTriangleList vkFalse
-        vkView = VkViewport 0 0 1600 900 0 1
-        scisso = VkRect2D (VkOffset2D 0 0) (VkExtent2D 1600 900)
+        vkView = VkViewport 0 0 (cast x) (cast y) 0 1
+        scisso = VkRect2D (VkOffset2D 0 0) (VkExtent2D x y)
     vPVSCI  <- createVkPipelineViewportStateCreateInfo nullPtr (VkPipelineViewportStateCreateFlags 0) 1 [vkView] 1 [scisso]
     let vPRSCI = VkPipelineRasterizationStateCreateInfo structureTypePipelineRasterizationStateCreateInfo nullPtr (VkPipelineRasterizationStateCreateFlags 0) vkFalse vkFalse polygonModeFill (VkCullModeFlags $ unVkCullModeFlagBits cullModeBackBit) frontFaceClockwise vkFalse 0 0 0 1
         vPMSCI = VkPipelineMultisampleStateCreateInfo structureTypePipelineMultisampleStateCreateInfo nullPtr (VkPipelineMultisampleStateCreateFlags 0) sampleCount1Bit vkFalse 1 nullPtr vkFalse vkFalse
@@ -134,17 +134,18 @@ draw vkDev0 unifMe fences swap (semaIm, semaPr) vkCoBu vkPSFB vkQue0 f ubo = do
     return $ mod (f + 1) l
     where
         l   = length vkCoBu
+        -- nanoseconds
         wait = 18446744073709551615
 
-initializeRasterizer :: VkInstance -> VkSurfaceKHR -> Model -> IO ([VkBuffer], [VkCommandBuffer], VkCommandPool, VkDescriptorPool, VkDescriptorSetLayout, VkDevice, [VkDeviceMemory], [VkDeviceMemory], [VkFence], [VkFramebuffer], [VkImageView], VkPipeline, VkPipelineLayout, [VkPipelineStageFlagBits], VkQueue, VkRenderPass, ([VkSemaphore], [VkSemaphore]), VkSwapchainKHR)
-initializeRasterizer vkInst vkSurf (Model v n indices) = do
+initializeRasterizer :: VkInstance -> VkSurfaceKHR -> Model -> ResX -> ResY -> IO ([VkBuffer], [VkCommandBuffer], VkCommandPool, VkDescriptorPool, VkDescriptorSetLayout, VkDevice, [VkDeviceMemory], [VkDeviceMemory], [VkFence], [VkFramebuffer], [VkImageView], VkPipeline, VkPipelineLayout, [VkPipelineStageFlagBits], VkQueue, VkRenderPass, ([VkSemaphore], [VkSemaphore]), VkSwapchainKHR)
+initializeRasterizer vkInst vkSurf (Model v n indices) x y = do
     vkDev0 <- createDevice vkInst vkSurf
     vkRePa <- createRenderpass vkDev0
-    (vkPLGr, [graphP], uboDSL) <- createGraphicsPipeline vkDev0 vkRePa
-    (fences, swapIs, swapIV, semaph, vkSC) <- initializeSwapChain vkDev0 vkSurf [imageUsageColorAttachmentBit]
+    (vkPLGr, [graphP], uboDSL) <- createGraphicsPipeline vkDev0 vkRePa x y
+    (fences, swapIs, swapIV, semaph, vkSC) <- initializeSwapChain vkDev0 vkSurf formatB8G8R8A8SRGB [imageUsageColorAttachmentBit] x y
 
 
-    vFrame  <- mapM (createFramebuffer vkDev0 vkRePa) swapIV
+    vFrame  <- mapM (createFramebuffer vkDev0 vkRePa x y) swapIV
 
     let vkCPIn  = createVkCommandPoolInfo nullPtr (VkCommandPoolCreateFlags 0) 0
         sCC     = length swapIs
@@ -170,11 +171,11 @@ initializeRasterizer vkInst vkSurf (Model v n indices) = do
     vkDSAI  <- createVkDescriptorSetAllocateInfo nullPtr vkDeP0 sCC' $ replicate sCC uboDSL
     vkAlDS  <- vkAllocateDescriptorSets vkDev0 vkDSAI
     let uniDBI = map (\x -> VkDescriptorBufferInfo x (VkDeviceSize 0) wholeSize) uniBuf
-    vkWDSU  <- mapM (\x -> createVkWriteDescriptorSet nullPtr (vkAlDS !! x) 0 0 1 descriptorTypeUniformBuffer Nothing (Just $ uniDBI !! x) Nothing) [0 .. (sCC - 1)]
+    vkWDSU  <- mapM (\x -> createVkWriteDescriptorSet nullPtr (vkAlDS !! x) 0 0 1 descriptorTypeUniformBuffer Nothing (Just [uniDBI !! x]) Nothing) [0 .. (sCC - 1)]
     mapM_ (\x -> vkUpdateDescriptorSets vkDev0 1 (Just [x]) 0 Nothing) vkWDSU
 
     let zipped = zip vkAlDS vFrame
-    vkCoBu  <- mapM (createGraphicsCommandBuffer vkDev0 vertex index vkCPo0 graphP vkPLGr vkRePa indices) zipped
+    vkCoBu  <- mapM (createGraphicsCommandBuffer vkDev0 vertex index vkCPo0 graphP vkPLGr vkRePa indices x y) zipped
 
 
     return ([color, index, stageC, stageI, stageV, vertex] ++ uniBuf, vkCoBu, vkCPo0, vkDeP0, uboDSL, vkDev0, [coloMe, indeMe, stagCM, stagIM, stagVM, vertMe], unifMe, fences, vFrame, swapIV, graphP, vkPLGr, vkPSFB, vkQue0, vkRePa, semaph, vkSC)

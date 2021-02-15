@@ -1,12 +1,54 @@
 #version 460 core
 layout (local_size_x = 16, local_size_y = 16, local_size_z = 1) in;
-layout (rgba16ui, binding = 0) uniform uimage2D image;
+layout (rgba8, binding = 0) uniform writeonly image2D image;
+
+struct sphere{
+    vec3 c;
+    float r;
+};
+
+vec3 direction = vec3(0, 0, 10);
+sphere s = sphere(vec3(900, 360, 40), 100);
 
 void main(void)
 {
-    uvec4 pixel     = uvec4(0, 0, 0, 1);
+    ivec2 size = imageSize(image);
+    if (gl_GlobalInvocationID.x >= size.x || gl_GlobalInvocationID.y >= size.y)
+        return;
+    vec4 pixel     = vec4(0, 0, 0, 1);
 
     ivec2 coords    = ivec2(gl_GlobalInvocationID.xy);
+
+
+    vec3 oc = vec3(coords.xy, 0) - s.c;
+    float a = dot(direction, direction);
+    float b = dot(oc, direction);
+    float c = dot(oc, oc) - s.r * s.r;
+    float d = b * b - a * c;
+    float s = sqrt(d);
+    float t1 = (-b - s) / a;
+    float t2 = (-b + s) / a;
+
+    if(t1 > 0)
+    {
+        pixel = vec4(1, 0, 0.5, 1);
+    }
+    else if(t2 > 0)
+    {
+        pixel = vec4(0.5, 0, 1, 1);
+    }
+
+
+    // vec3 a = vec3(coords.xy, 0) - s.c;
+    // float b = dot(direction, a);
+    // float c = dot(a, a) - s.r * s.r;
+    // float d = b * b - c;
+    // float t = -b - sqrt(d);
+
+    // if(t > 0)
+    // {
+    //     pixel = vec4(1, 0, 0.5, 1);
+    // }
 
 
     imageStore(image, coords, pixel);

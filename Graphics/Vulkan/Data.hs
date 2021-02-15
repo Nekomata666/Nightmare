@@ -369,13 +369,13 @@ data VkImageCreateInfo = VkImageCreateInfo{
 }
 
 data VkImageFormatListCreateInfo = VkImageFormatListCreateInfo{
-
     sType           :: VkStructureType,
     next            :: Next,
     viewFormatCount :: Word32,
     pViewFormats    :: Ptr VkFormat
 }
 
+-- Note: Marshalling issue when passing more than one barrier to vkCmdPipelineBarrier.
 data VkImageMemoryBarrier = VkImageMemoryBarrier{
     sType               :: VkStructureType,
     next                :: Next,
@@ -834,6 +834,27 @@ data VkRenderPassCreateInfo = VkRenderPassCreateInfo{
     pSubpasses      :: Ptr VkSubpassDescription,
     dependencyCount :: Word32,
     pDependencies   :: Ptr VkSubpassDependency
+}
+
+data VkSamplerCreateInfo = VkSamplerCreateInfo{
+    sType                   :: VkStructureType,
+    next                    :: Ptr Void,
+    flags                   :: VkSamplerCreateFlags,
+    magFilter               :: VkFilter,
+    minFilter               :: VkFilter,
+    mipmapMode              :: VkSamplerMipmapMode,
+    addressModeU            :: VkSamplerAddressMode,
+    addressModeV            :: VkSamplerAddressMode,
+    addressModeW            :: VkSamplerAddressMode,
+    mipLodBias              :: Float,
+    anisotropyEnable        :: VkBool,
+    maxAnisotropy           :: Float,
+    compareEnable           :: VkBool,
+    compareOp               :: VkCompareOp,
+    minLod                  :: Float,
+    maxLod                  :: Float,
+    borderColor             :: VkBorderColor,
+    unnormalizedCoordinates :: VkBool
 }
 
 data VkSemaphoreCreateInfo = VkSemaphoreCreateInfo{
@@ -2730,6 +2751,49 @@ instance Storable VkRenderPassCreateInfo where
         pokeByteOff p 40 v7
         pokeByteOff p 48 v8
         pokeByteOff p 56 v9
+
+instance Storable VkSamplerCreateInfo where
+    sizeOf _ = 80
+    alignment _ = 8
+    peek p = do
+        v01 <- peekByteOff p 0
+        v02 <- peekByteOff p 8
+        v03 <- peekByteOff p 16
+        v04 <- peekByteOff p 20
+        v05 <- peekByteOff p 24
+        v06 <- peekByteOff p 28
+        v07 <- peekByteOff p 32
+        v08 <- peekByteOff p 36
+        v09 <- peekByteOff p 40
+        v10 <- peekByteOff p 44
+        v11 <- peekByteOff p 48
+        v12 <- peekByteOff p 52
+        v13 <- peekByteOff p 56
+        v14 <- peekByteOff p 60
+        v15 <- peekByteOff p 64
+        v16 <- peekByteOff p 68
+        v17 <- peekByteOff p 72
+        v18 <- peekByteOff p 76
+        return (VkSamplerCreateInfo v01 v02 v03 v04 v05 v06 v07 v08 v09 v10 v11 v12 v13 v14 v15 v16 v17 v18)
+    poke p (VkSamplerCreateInfo v01 v02 v03 v04 v05 v06 v07 v08 v09 v10 v11 v12 v13 v14 v15 v16 v17 v18) = do
+        pokeByteOff p 0 v01
+        pokeByteOff p 8 v02
+        pokeByteOff p 16 v03
+        pokeByteOff p 20 v04
+        pokeByteOff p 24 v05
+        pokeByteOff p 28 v06
+        pokeByteOff p 32 v07
+        pokeByteOff p 36 v08
+        pokeByteOff p 40 v09
+        pokeByteOff p 44 v10
+        pokeByteOff p 48 v11
+        pokeByteOff p 52 v12
+        pokeByteOff p 56 v13
+        pokeByteOff p 60 v14
+        pokeByteOff p 64 v15
+        pokeByteOff p 68 v16
+        pokeByteOff p 72 v17
+        pokeByteOff p 76 v18
 
 instance Storable VkSemaphoreCreateInfo where
     sizeOf _    = 24

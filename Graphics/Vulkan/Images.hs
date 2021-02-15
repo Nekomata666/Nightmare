@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
-module Graphics.Vulkan.Images (createVkImageCreateInfo, createVkImageFormatListCreateInfo, createVkImageSubresource, createVkImageSubresourceLayers, createVkImageSubresourceRange, vkBindImageMemory, vkCreateImage, vkCreateImageView, vkDestroyImage, vkDestroyImageView, vkGetImageMemoryRequirements, vkGetImageSubresourceLayout) where
+module Graphics.Vulkan.Images (createVkImageCreateInfo, createVkImageFormatListCreateInfo, createVkImageSubresource, createVkImageSubresourceLayers, createVkImageSubresourceRange, vkBindImageMemory, vkCreateImage, vkCreateImageView, vkCreateSampler, vkDestroyImage, vkDestroyImageView, vkDestroySampler, vkGetImageMemoryRequirements, vkGetImageSubresourceLayout) where
 
 
 import Data.Void (Void)
@@ -38,11 +38,17 @@ foreign import ccall unsafe "vkCreateImage"
 foreign import ccall unsafe "vkCreateImageView"
     c_vkCreateImageView :: VkDevice -> Ptr VkImageViewCreateInfo -> Ptr VkAllocationCallbacks -> Ptr VkImageView -> IO VkResult
 
+foreign import ccall unsafe "vkCreateSampler"
+    c_vkCreateSampler :: VkDevice -> Ptr VkSamplerCreateInfo -> Ptr VkAllocationCallbacks -> Ptr VkSampler -> IO VkResult
+
 foreign import ccall unsafe "vkDestroyImage"
     c_vkDestroyImage :: VkDevice -> VkImage -> Ptr VkAllocationCallbacks -> IO ()
 
 foreign import ccall unsafe "vkDestroyImageView"
     c_vkDestroyImageView :: VkDevice -> VkImageView -> Ptr VkAllocationCallbacks -> IO ()
+
+foreign import ccall unsafe "vkDestroySampler"
+    c_vkDestroySampler :: VkDevice -> VkSampler -> Ptr VkAllocationCallbacks -> IO ()
 
 foreign import ccall unsafe "vkGetImageMemoryRequirements"
     c_vkGetImageMemoryRequirements :: VkDevice -> VkImage -> Ptr VkMemoryRequirements -> IO ()
@@ -102,11 +108,21 @@ vkCreateImageView d i = alloca $ \pIVCI ->
         _ <- c_vkCreateImageView d pIVCI nullPtr pIV
         peek pIV
 
+vkCreateSampler :: VkDevice -> VkSamplerCreateInfo -> IO VkSampler
+vkCreateSampler d sCI = alloca $ \pSCI ->
+    alloca $ \pS -> do
+        poke pSCI sCI
+        _ <- c_vkCreateSampler d pSCI nullPtr pS
+        peek pS
+
 vkDestroyImage :: VkDevice -> VkImage -> IO ()
 vkDestroyImage d i = c_vkDestroyImage d i nullPtr
 
 vkDestroyImageView :: VkDevice -> VkImageView -> IO ()
 vkDestroyImageView d v = c_vkDestroyImageView d v nullPtr
+
+vkDestroySampler :: VkDevice -> VkSampler -> IO ()
+vkDestroySampler d s = c_vkDestroySampler d s nullPtr
 
 vkGetImageMemoryRequirements :: VkDevice -> VkImage -> IO VkMemoryRequirements
 vkGetImageMemoryRequirements d i = alloca $ \p -> do

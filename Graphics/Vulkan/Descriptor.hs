@@ -79,11 +79,11 @@ createVkDescriptorSetLayoutCreateInfo v dSLCF bC dSLB = do
     return $ VkDescriptorSetLayoutCreateInfo structureTypeDescriptorSetLayoutCreateInfo v dSLCF bC p
 
 createVkWriteDescriptorSet :: Next -> VkDescriptorSet -> Binding -> ArrayElement -> DescriptorCount -> VkDescriptorType ->
-    Maybe VkDescriptorImageInfo -> Maybe VkDescriptorBufferInfo -> Maybe VkBufferView -> IO VkWriteDescriptorSet
+    Maybe [VkDescriptorImageInfo] -> Maybe [VkDescriptorBufferInfo] -> Maybe [VkBufferView] -> IO VkWriteDescriptorSet
 createVkWriteDescriptorSet v dS b aE dC dT dII dBI bV = do
-    pDII <- fromMaybeIO dII
-    pDBI <- fromMaybeIO dBI
-    pBV  <- fromMaybeIO bV
+    pDII <- fromMaybeListIO dC dII
+    pDBI <- fromMaybeListIO dC dBI
+    pBV  <- fromMaybeListIO dC bV
     return $ VkWriteDescriptorSet structureTypeWriteDescriptorSet v dS b aE dC dT pDII pDBI pBV
 
 vkAllocateDescriptorSets :: VkDevice -> VkDescriptorSetAllocateInfo -> IO [VkDescriptorSet]

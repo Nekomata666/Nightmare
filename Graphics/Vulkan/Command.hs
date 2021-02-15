@@ -1,7 +1,7 @@
 {-# LANGUAGE ForeignFunctionInterface, Safe #-}
 
 -- Todo: Return when RayTracing is available.
-module Graphics.Vulkan.Command (createVkCommandBufferAllocateInfo, createVkCommandBufferBeginInfo, createVkCommandPoolInfo, createVkRenderPassBeginInfo, vkAllocateCommandBuffers, vkBeginCommandBuffer, vkCmdBeginRenderPass, vkCmdBindDescriptorSets, vkCmdBindIndexBuffer, vkCmdBindPipeline, vkCmdPipelineBarrier, vkCmdBindVertexBuffers, vkCmdBlitImage, {-vkCmdBuildAccelerationStructureKHR,-} vkCmdClearColorImage, vkCmdCopyBuffer, vkCmdDispatch, vkCmdDraw, vkCmdDrawIndexed, vkCmdEndRenderPass, vkCmdFillBuffer, vkCmdPushConstants, vkCmdResolveImage, vkCreateCommandPool, vkDestroyCommandPool, vkEndCommandBuffer, vkFreeCommandBuffers) where
+module Graphics.Vulkan.Command (createVkCommandBufferAllocateInfo, createVkCommandBufferBeginInfo, createVkCommandPoolInfo, createVkRenderPassBeginInfo, vkAllocateCommandBuffers, vkBeginCommandBuffer, vkCmdBeginRenderPass, vkCmdBindDescriptorSets, vkCmdBindIndexBuffer, vkCmdBindPipeline, vkCmdBindVertexBuffers, vkCmdBlitImage, {-vkCmdBuildAccelerationStructureKHR,-} vkCmdClearColorImage, vkCmdCopyBuffer, vkCmdDispatch, vkCmdDraw, vkCmdDrawIndexed, vkCmdEndRenderPass,vkCmdExecuteCommands, vkCmdFillBuffer, vkCmdPipelineBarrier, vkCmdPushConstants, vkCmdResolveImage, vkCreateCommandPool, vkDestroyCommandPool, vkEndCommandBuffer, vkFreeCommandBuffers) where
 
 
 import Data.Maybe   (Maybe)
@@ -105,6 +105,9 @@ foreign import ccall unsafe "vkCmdDrawIndexed"
 
 foreign import ccall unsafe "vkCmdEndRenderPass"
     c_vkCmdEndRenderPass :: VkCommandBuffer -> IO ()
+
+foreign import ccall unsafe "vkCmdExecuteCommands"
+    c_vkCmdExecuteCommands :: VkCommandBuffer -> Word32 -> Ptr VkCommandBuffer -> IO ()
 
 foreign import ccall unsafe "vkCmdFillBuffer"
     c_vkCmdFillBuffer :: VkCommandBuffer -> VkBuffer -> VkDeviceSize -> VkDeviceSize -> Word32 -> IO ()
@@ -238,6 +241,13 @@ vkCmdDrawIndexed = c_vkCmdDrawIndexed
 vkCmdEndRenderPass :: VkCommandBuffer -> IO ()
 vkCmdEndRenderPass = c_vkCmdEndRenderPass
 
+vkCmdExecuteCommands :: VkCommandBuffer -> CommandBufferCount -> [VkCommandBuffer] -> IO ()
+vkCmdExecuteCommands prime cBC ss = allocaArray i $ \p -> do
+    pokeArray p ss
+    c_vkCmdExecuteCommands prime cBC p
+    where
+        i = cast cBC
+
 -- Note: Offset and Size need to be in multiples of 4.
 vkCmdFillBuffer :: VkCommandBuffer -> VkBuffer -> Offset -> Size -> Data -> IO ()
 vkCmdFillBuffer = c_vkCmdFillBuffer
@@ -246,9 +256,9 @@ vkCmdPipelineBarrier :: VkCommandBuffer -> SrcStageMask -> DstStageMask -> VkDep
     Maybe [VkMemoryBarrier] -> BufferMemoryBarrierCount -> Maybe [VkBufferMemoryBarrier] -> ImageMemoryBarrierCount ->
     Maybe [VkImageMemoryBarrier] -> IO ()
 vkCmdPipelineBarrier cB src dst f mBC mB bMBC bMB iMBC iMB = do
-    pMB <- fromMaybeListIO mBC mB
-    pBMB <- fromMaybeListIO bMBC bMB
-    pIMB <- fromMaybeListIO iMBC iMB
+    pMB     <- fromMaybeListIO mBC mB
+    pBMB    <- fromMaybeListIO bMBC bMB
+    pIMB    <- fromMaybeListIO iMBC iMB
     c_vkCmdPipelineBarrier cB src' dst' f mBC pMB bMBC pBMB iMBC pIMB
     where
         src' = VkPipelineStageFlags $ unVkPipelineStageFlagBits src
